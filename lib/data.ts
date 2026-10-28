@@ -262,7 +262,6 @@ export const NAV: NavItem[] = [
     { href: "/gtecinternational", label: "G-TEC International" },
   ] },
   { href: "/courses", label: "Courses" },
-  { href: "/blog", label: "Blog" },
   { href: "/trainingandcertifications", label: "Training & Certifications" },
   { label: "Affiliations & Awards", children: [
     { href: "/affiliations", label: "Affiliations" },
@@ -287,15 +286,19 @@ export const NAV: NavItem[] = [
 ];
 
 export const MORE_NAV: { label: string; children: NavLink[] }[] = [
+  { label: "Read", children: [
+    { href: "/blog", label: "Blog" },
+    { href: "/newsandevent", label: "News and Events" },
+  ] },
   { label: "Gallery", children: [
     { href: "/photogallery", label: "Photo Gallery" },
     { href: "/videogallery", label: "Video Gallery" },
   ] },
-  { label: "News and Events", children: [{ href: "/newsandevent", label: "Latest News" }] },
   { label: "Contact Us", children: [
     { href: "/ouroffices", label: "Our Offices" },
     { href: "/supportdesk", label: "Support Desk" },
     { href: "/postamessage", label: "Post A Message" },
     { href: "/becomeapartner", label: "Become a Partner" },
+    { href: "/onlinepayment", label: "Pay Online" },
   ] },
 ];

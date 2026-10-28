@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, ChevronDown, MoreHorizontal, Phone, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronDown, Phone, X } from "lucide-react";
 import { CONTACT, MORE_NAV, NAV, type NavItem, type NavLink } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -19,33 +19,29 @@ function MenuLink({ link, className }: { link: NavLink; className?: string }) {
   );
 }
 
-const topLink = "relative flex items-center gap-1 py-2 text-[12.5px] font-semibold tracking-[.06em] whitespace-nowrap uppercase transition-colors";
+// Every top-level item is the same 36px-tall pill, so links and dropdown triggers line up exactly.
+const topLink =
+  "flex h-9 items-center gap-1 rounded-full px-2.5 text-[14px] font-medium whitespace-nowrap transition-colors hover:bg-white/8 hover:text-white 2xl:px-3.5";
 const panel =
   "invisible absolute top-full z-10 pt-3 opacity-0 transition duration-200 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100";
-const panelInner = "min-w-56 rounded-2xl border border-white/10 bg-navy/97 p-2 shadow-[0_24px_60px_rgba(0,0,0,.45)] backdrop-blur-xl";
+const panelInner = "min-w-60 rounded-2xl border border-white/10 bg-navy/97 p-2 shadow-[0_24px_60px_rgba(0,0,0,.45)] backdrop-blur-xl";
 const panelLink = "block rounded-xl px-3.5 py-2.5 text-[14px] font-medium text-white/75 transition hover:bg-white/8 hover:text-white";
-
-function Underline({ on }: { on: boolean }) {
-  return <span className={cn("absolute inset-x-0 -bottom-0.5 h-px origin-left bg-red transition-transform duration-300", on ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100")} />;
-}
 
 function DesktopItem({ item, pathname }: { item: NavItem; pathname: string }) {
   if ("href" in item) {
     const on = isActive(pathname, item.href);
     return (
-      <Link href={item.href} aria-current={on ? "page" : undefined} className={cn("group", topLink, on ? "text-white" : "text-white/65 hover:text-white")}>
+      <Link href={item.href} aria-current={on ? "page" : undefined} className={cn(topLink, on ? "bg-white/10 text-white" : "text-white/70")}>
         {item.label}
-        <Underline on={on} />
       </Link>
     );
   }
   const on = item.children.some((c) => isActive(pathname, c.href));
   return (
     <div className="group relative">
-      <button type="button" aria-haspopup="true" className={cn(topLink, on ? "text-white" : "text-white/65 hover:text-white group-focus-within:text-white")}>
+      <button type="button" aria-haspopup="true" className={cn(topLink, on ? "bg-white/10 text-white" : "text-white/70 group-focus-within:text-white group-hover:bg-white/8 group-hover:text-white")}>
         {item.label}
-        <ChevronDown className="size-3.5 transition-transform group-hover:rotate-180" />
-        <Underline on={on} />
+        <ChevronDown className="size-3.5 opacity-60 transition-transform group-hover:rotate-180" />
       </button>
       <div className={cn(panel, "left-1/2 -translate-x-1/2")}>
         <div className={panelInner}>
@@ -80,16 +76,22 @@ export function Header() {
           scrolled ? "border-b border-white/8 bg-navy/95 backdrop-blur-xl" : "border-b border-transparent bg-gradient-to-b from-navy/80 to-transparent",
         )}
       >
-        <div className={cn("mx-auto flex max-w-[1440px] items-center justify-between gap-6 px-5 transition-[height] duration-500 lg:px-8", scrolled ? "h-18" : "h-22")}>
-          <Link href="/" aria-label="G-TEC Education home" className="flex-none">
-            <img src="/logo-mark.png" alt="G-TEC Education" className={cn("block w-auto transition-[height] duration-500", scrolled ? "h-12" : "h-15")} />
+        <div
+          className={cn(
+            "mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-5 transition-[height] duration-500 lg:px-8 xl:grid xl:grid-cols-[1fr_auto_1fr]",
+            scrolled ? "h-18" : "h-22",
+          )}
+        >
+          <Link href="/" aria-label="G-TEC Education home" className="flex-none justify-self-start">
+            <img src="/logo-mark.png" alt="G-TEC Education" className={cn("block w-auto transition-[height] duration-500", scrolled ? "h-11" : "h-13")} />
           </Link>
 
-          <nav aria-label="Main" className="hidden items-center gap-5 xl:flex 2xl:gap-7">
+          <nav aria-label="Main" className="hidden items-center gap-0.5 rounded-full border border-white/10 bg-white/[.04] p-1 backdrop-blur-md xl:flex">
             {NAV.map((item) => <DesktopItem key={item.label} item={item} pathname={pathname} />)}
             <div className="group relative">
-              <button type="button" aria-label="More pages" aria-haspopup="true" className="flex size-9 items-center justify-center rounded-full border border-white/15 text-white/75 transition hover:border-white/40 hover:text-white group-focus-within:border-white/40">
-                <MoreHorizontal className="size-4.5" />
+              <button type="button" aria-haspopup="true" className={cn(topLink, "text-white/70 group-focus-within:text-white group-hover:bg-white/8 group-hover:text-white")}>
+                More
+                <ChevronDown className="size-3.5 opacity-60 transition-transform group-hover:rotate-180" />
               </button>
               <div className={cn(panel, "right-0")}>
                 <div className={cn(panelInner, "grid w-[560px] grid-cols-3 gap-2 p-4")}>
@@ -104,13 +106,18 @@ export function Header() {
             </div>
           </nav>
 
-          <div className="hidden items-center gap-5 xl:flex">
-            <Link href={CONTACT.pay} className="text-[12.5px] font-semibold tracking-[.06em] whitespace-nowrap text-white/65 uppercase transition hover:text-white">
-              Pay Now
+          <div className="hidden items-center gap-2 justify-self-end xl:flex">
+            <Link href={CONTACT.pay} className="hidden h-11 items-center rounded-full px-4 text-[14px] font-medium whitespace-nowrap text-white/70 transition hover:bg-white/8 hover:text-white min-[1760px]:flex">
+              Pay now
             </Link>
-            <a href="#enquire" className="group inline-flex items-center gap-2 border border-red/70 px-5 py-2.5 text-[12.5px] font-bold tracking-[.06em] uppercase transition hover:bg-red">
-              Enquire
-              <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <a
+              href="#enquire"
+              className="group inline-flex h-11 items-center gap-2 rounded-full bg-red pr-2 pl-5 text-[14px] font-semibold whitespace-nowrap shadow-[0_8px_24px_rgba(255,1,0,.3)] transition hover:bg-red-dark"
+            >
+              Enquire now
+              <span className="flex size-7 items-center justify-center rounded-full bg-white/15 transition-transform group-hover:translate-x-0.5">
+                <ArrowRight className="size-3.5" strokeWidth={2.4} />
+              </span>
             </a>
           </div>
 

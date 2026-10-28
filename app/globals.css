@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* G-TEC brand tokens (Tailwind v4 theme). */
+@theme inline {
+  --color-red: #ff0100;
+  --color-red-dark: #e60000;
+  --color-coral: #ff4d4d;
+  --color-blue: #004282;
+  --color-blue-dark: #003366;
+  --color-navy: #050c1f;
+  --color-deep: #071533;
+  --color-abyss: #02060f;
+  --color-ink: #0b1a33;
+  --color-ink-2: #4a5873;
+  --color-mist: #f5f7fb;
+  --color-ice: #e6eef8;
+  --color-sky: #8ec5ff;
+  --color-muted: #0b1a33;
+  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-navy text-white antialiased;
+  overflow-x: clip;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgb(255 255 255 / 0.4);
+}
+select option {
+  background: #0b1a33;
+  color: #fff;
+}
+
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+@keyframes float-a {
+  50% { transform: translate(60px, -40px) scale(1.1); }
+}
+@keyframes float-b {
+  50% { transform: translate(-70px, 40px) scale(1.15); }
+}
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 1, 0, 0.45); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 1, 0, 0); }
+}
+@keyframes pop {
+  from { opacity: 0; transform: translateY(24px) scale(.96); }
+}
+@keyframes rise {
+  from { transform: translateY(110%); }
+}
+
+.marquee { animation: marquee var(--dur, 40s) linear infinite; }
+.marquee:hover { animation-play-state: paused; }
+
+/* Hero headline: each word slides up out of its mask. */
+.hero-word {
+  display: inline-block;
+  animation: rise 1s var(--ease-out-expo) both;
+  animation-delay: calc(0.2s + var(--i) * 0.11s);
+}
+
+/* Scroll reveal — `.motion` is set on <html> before paint unless reduced motion is on, so no-JS still shows content. */
+.motion [data-reveal] {
+  transition: opacity 0.85s var(--ease-out-expo), transform 0.85s var(--ease-out-expo);
+  transition-delay: var(--d, 0s);
+}
+.motion [data-reveal]:not(.in) {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+/* Cursor spotlight on course cards; --mx/--my are set by components/Motion.tsx. */
+[data-spot]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(0, 120, 255, 0.28), transparent 60%);
+}
+[data-spot]:hover::before { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee, .hero-word, .animate-float { animation: none !important; }
+}
+
+/* Rich text scraped from the live site (course outlines, centre pages, blog posts). */
+.prose-gtec { color: var(--color-ink-2); font-size: 16px; line-height: 1.75; }
+.prose-gtec h2, .prose-gtec h3, .prose-gtec h4, .prose-gtec h5 { font-family: var(--font-display); color: var(--color-ink); font-weight: 700; letter-spacing: -0.01em; margin: 2em 0 0.6em; text-transform: none; }
+.prose-gtec h2 { font-size: 26px; } .prose-gtec h3 { font-size: 21px; } .prose-gtec h4, .prose-gtec h5 { font-size: 18px; }
+.prose-gtec > :first-child { margin-top: 0; }
+.prose-gtec p { margin: 0 0 1em; }
+.prose-gtec strong { color: var(--color-ink); font-weight: 700; }
+.prose-gtec a { color: var(--color-blue); text-decoration: underline; text-underline-offset: 3px; }
+.prose-gtec ul, .prose-gtec ol { display: grid; gap: 0.5em; margin: 0 0 1.4em; padding: 0; list-style: none; }
+.prose-gtec li { position: relative; padding-left: 1.6em; }
+.prose-gtec ul > li::before { content: ""; position: absolute; left: 0.2em; top: 0.68em; width: 0.5em; height: 0.5em; border-radius: 99px; background: var(--color-red); }
+.prose-gtec ol { counter-reset: n; } .prose-gtec ol > li { counter-increment: n; }
+.prose-gtec ol > li::before { content: counter(n) "."; position: absolute; left: 0; font-weight: 700; color: var(--color-blue); }
+.prose-gtec table { width: 100%; border-collapse: collapse; margin: 0 0 1.4em; font-size: 15px; }
+.prose-gtec td, .prose-gtec th { border: 1px solid rgb(11 26 51 / 0.1); padding: 0.6em 0.8em; text-align: left; }

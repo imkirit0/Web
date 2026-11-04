@@ -23,7 +23,7 @@ export default function VacanciesPage() {
                 <p className="mt-1 leading-relaxed text-ink-2">Currently, we don&apos;t have any updates. Please check back later.</p>
               </div>
             </div>
-            <Link href="/postvacancy" className="inline-flex items-center gap-2 text-sm font-semibold text-blue">
+            <Link href="/postvacancy" className="inline-flex items-center gap-2 py-2 text-sm font-semibold text-blue">
               Hiring? Post a vacancy <ArrowRight className="size-4" />
             </Link>
           </>

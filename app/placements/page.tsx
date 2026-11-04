@@ -31,7 +31,7 @@ export default function PlacementsPage() {
           <h2 className={`${h2} mb-10`}>Recent placements</h2>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-5">
             {WEEKS.map((w) => (
-              <a key={w.src} href={w.src} target="_blank" rel="noreferrer" className="group overflow-hidden rounded-[28px] bg-white ring-1 ring-ink/6 transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(11,26,51,.12)]">
+              <a key={w.src} href={w.src} target="_blank" rel="noreferrer" className="group overflow-hidden rounded-[28px] bg-white ring-1 ring-ink/[.07] shadow-card transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(11,26,51,.12)]">
                 <img src={w.src} alt={`G-TEC placements, ${w.label}`} loading="lazy" className="aspect-[4/5] w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
                 <p className="font-display px-5 py-4 text-[15px] font-bold">{w.label}</p>
               </a>

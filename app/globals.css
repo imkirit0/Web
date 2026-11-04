@@ -12,13 +12,14 @@
   --color-deep: #071533;
   --color-abyss: #02060f;
   --color-ink: #0b1a33;
-  --color-ink-2: #4a5873;
+  --color-ink-2: #3e4b64;
   --color-mist: #f5f7fb;
   --color-ice: #e6eef8;
   --color-sky: #8ec5ff;
   --color-muted: #0b1a33;
-  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display-face), ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-nav: var(--font-nav-face), "Helvetica Neue", Helvetica, Arial, sans-serif;
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -28,16 +29,21 @@ html {
 
 body {
   @apply bg-navy text-white antialiased;
+  font-feature-settings: "ss01", "cv11";
+  text-rendering: optimizeLegibility;
   overflow-x: clip;
 }
 
-input::placeholder,
-textarea::placeholder {
-  color: rgb(255 255 255 / 0.4);
-}
-select option {
-  background: #0b1a33;
-  color: #fff;
+/* In the base layer so light forms can override with placeholder:/text- utilities. */
+@layer base {
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(255 255 255 / 0.4);
+  }
+  select option {
+    background: #0b1a33;
+    color: #fff;
+  }
 }
 
 @keyframes marquee {
@@ -64,6 +70,14 @@ select option {
 .marquee:hover { animation-play-state: paused; }
 
 /* Hero headline: each word slides up out of its mask. */
+/* CSS only, so above-the-fold hero text never waits on JavaScript. */
+.hero-fade {
+  animation: hero-fade 0.85s var(--ease-out-expo) both;
+  animation-delay: var(--d, 0s);
+}
+@keyframes hero-fade {
+  from { opacity: 0; transform: translateY(28px); }
+}
 .hero-word {
   display: inline-block;
   animation: rise 1s var(--ease-out-expo) both;
@@ -93,7 +107,7 @@ select option {
 [data-spot]:hover::before { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee, .hero-word, .animate-float { animation: none !important; }
+  .marquee, .hero-word, .hero-fade, .animate-float { animation: none !important; }
 }
 
 /* Rich text scraped from the live site (course outlines, centre pages, blog posts). */
@@ -111,3 +125,11 @@ select option {
 .prose-gtec ol > li::before { content: counter(n) "."; position: absolute; left: 0; font-weight: 700; color: var(--color-blue); }
 .prose-gtec table { width: 100%; border-collapse: collapse; margin: 0 0 1.4em; font-size: 15px; }
 .prose-gtec td, .prose-gtec th { border: 1px solid rgb(11 26 51 / 0.1); padding: 0.6em 0.8em; text-align: left; }
+
+/* Display type: Bricolage is optically sized, so big headings get tighter spacing automatically. */
+@layer base {
+  .font-display { font-optical-sizing: auto; }
+}
+
+/* Soft layered elevation for light cards. */
+.shadow-card { box-shadow: 0 1px 2px rgb(11 26 51 / 0.04), 0 12px 32px -12px rgb(11 26 51 / 0.12); }

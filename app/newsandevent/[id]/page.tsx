@@ -32,9 +32,9 @@ export default async function NewsItemPage({ params }: Props) {
           alt={n.title}
           aside={
             <>
-              {n.image && <img src={n.image} alt={n.title} className="w-full rounded-[28px] object-cover ring-1 ring-ink/6" />}
+              {n.image && <img src={n.image} alt={n.title} className="w-full rounded-[28px] object-cover ring-1 ring-ink/[.07] shadow-card" />}
               {recent.length > 0 && (
-                <div className="rounded-[28px] bg-white p-7 ring-1 ring-ink/6">
+                <div className="rounded-[28px] bg-white p-7 ring-1 ring-ink/[.07] shadow-card">
                   <p className="font-display mb-4 text-lg font-bold tracking-tight">Recent news</p>
                   <ul className="grid gap-3">
                     {recent.map((x) => (

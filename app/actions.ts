@@ -67,7 +67,7 @@ export async function submitEnquiry(_: EnquiryState, form: FormData): Promise<En
 
 export type FormState = { ok: boolean; message: string };
 
-const FORMS = ["feedback", "postamessage", "becomeapartner", "postvacancy", "vacancy-application", "jobfair", "testimonial", "placement", "centre-enquiry", "course-enquiry", "support"] as const;
+const FORMS = ["feedback", "postamessage", "becomeapartner", "postvacancy", "vacancy-application", "careers", "jobfair", "testimonial", "placement", "centre-enquiry", "course-enquiry", "support"] as const;
 
 /** Generic handler for the site's simple contact-style forms. Fields are free-form; we only check the basics. */
 export async function submitForm(_: FormState, form: FormData): Promise<FormState> {

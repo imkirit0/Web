@@ -35,8 +35,10 @@ export default function BecomeAPartnerPage() {
           <FieldGrid>
             <Field label="Name" required><input name="name" required autoComplete="name" className={fieldClass} /></Field>
             <Field label="Email" required><input name="email" type="email" required autoComplete="email" className={fieldClass} /></Field>
+            <Field label="Phone number" required><input name="phone" type="tel" required autoComplete="tel" className={fieldClass} /></Field>
+            <Field label="Location" required><input name="location" required autoComplete="address-level2" placeholder="City, country" className={fieldClass} /></Field>
             <Field label="Company / organisation" required wide><input name="company" required autoComplete="organization" className={fieldClass} /></Field>
-            <Field label="Enquiry details" required wide><textarea name="address" rows={5} required className={fieldClass} /></Field>
+            <Field label="Enquiry details" required wide><textarea name="message" rows={5} required className={fieldClass} /></Field>
           </FieldGrid>
         </SiteForm>
       </Split>

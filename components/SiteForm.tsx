@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { submitForm, type FormState } from "@/app/actions";
 
 export const fieldClass =
-  "w-full rounded-[14px] border border-ink/12 bg-white px-4 py-3.5 text-[15px] text-ink outline-none transition focus:border-blue focus:ring-4 focus:ring-blue/10";
+  "w-full rounded-[14px] border border-ink/10 bg-mist/70 px-4 py-3.5 text-[15px] text-ink outline-none transition placeholder:text-ink/35 hover:border-ink/20 focus:border-blue focus:bg-white focus:ring-4 focus:ring-blue/10";
 
 /**
  * Light-theme form shell for simple site forms. Pass the inputs as children (use `fieldClass`);
@@ -15,14 +15,14 @@ export function SiteForm({ form, submit = "Send", success = "Thanks! We've got y
   const [state, action, pending] = useActionState<FormState, FormData>(submitForm, { ok: false, message: "" });
   if (state.ok)
     return (
-      <div role="status" className="rounded-[28px] bg-white p-10 text-center ring-1 ring-ink/6">
+      <div role="status" className="rounded-[28px] bg-white p-10 text-center ring-1 ring-ink/[.07] shadow-card">
         <span className="mx-auto mb-5 flex size-14 items-center justify-center rounded-full bg-ice text-blue"><Check className="size-6" strokeWidth={2.6} /></span>
         <p className="font-display text-xl font-bold text-ink">{success}</p>
       </div>
     );
   return (
     <form
-      className="grid gap-4 rounded-[28px] bg-white p-[clamp(24px,4vw,40px)] ring-1 ring-ink/6"
+      className="grid gap-4 rounded-[28px] bg-white p-[clamp(24px,4vw,40px)] ring-1 ring-ink/[.07] shadow-card"
       onSubmit={(e) => {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
@@ -32,7 +32,7 @@ export function SiteForm({ form, submit = "Send", success = "Thanks! We've got y
     >
       {children}
       {state.message && <p role="alert" className="text-sm font-semibold text-red">{state.message}</p>}
-      <button disabled={pending} className="justify-self-start rounded-full bg-blue px-7 py-3.5 text-[15px] font-bold text-white transition hover:bg-blue-dark disabled:opacity-60">
+      <button disabled={pending} className="mt-1 inline-flex justify-self-start rounded-full bg-red px-7 py-3.5 text-[15px] font-bold text-white shadow-[0_10px_28px_rgba(255,1,0,.28)] transition hover:-translate-y-0.5 hover:bg-red-dark disabled:opacity-60">
         {pending ? "Sending…" : submit}
       </button>
     </form>

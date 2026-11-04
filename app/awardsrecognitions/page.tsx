@@ -42,7 +42,7 @@ export default function AwardsPage() {
       <Band>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,270px),1fr))] gap-4">
           {HIGHLIGHTS.map((h, i) => (
-            <figure key={h} className="group overflow-hidden rounded-[28px] bg-white ring-1 ring-ink/6">
+            <figure key={h} className="group overflow-hidden rounded-[28px] bg-white ring-1 ring-ink/[.07] shadow-card">
               <div className="aspect-[4/3] overflow-hidden bg-ice">
                 {photos[i] && <img src={photos[i]} alt={h} loading={i < 4 ? undefined : "lazy"} className="size-full object-cover transition duration-700 ease-out-expo group-hover:scale-105" />}
               </div>

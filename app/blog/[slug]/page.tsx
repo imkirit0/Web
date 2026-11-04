@@ -33,7 +33,7 @@ export default async function PostPage({ params }: Props) {
           alt={p.title}
           aside={
             <>
-              <div className="rounded-[28px] bg-white p-7 ring-1 ring-ink/6">
+              <div className="rounded-[28px] bg-white p-7 ring-1 ring-ink/[.07] shadow-card">
                 <p className="font-display mb-4 text-lg font-bold tracking-tight">More posts</p>
                 <ul className="grid gap-3">
                   {others.map((x) => <li key={x.slug}><Link href={`/blog/${x.slug}`} className="text-[15px] font-semibold text-ink-2 hover:text-blue">{x.title}</Link></li>)}

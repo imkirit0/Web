@@ -3,13 +3,13 @@ import { ArrowUpRight, CalendarDays, MapPin, Play } from "lucide-react";
 import { wrap } from "@/components/courses";
 import type { Centre, NewsItem, Post } from "@/lib/pages-data";
 
-const card = "group flex flex-col overflow-hidden rounded-[28px] bg-white ring-1 ring-ink/6 transition duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(0,66,130,.14)]";
+const card = "group flex flex-col overflow-hidden rounded-[28px] bg-white ring-1 ring-ink/[.07] shadow-card transition duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(0,66,130,.14)]";
 const grid = "grid grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))] gap-5";
 
 /** Light section wrapper used by every page in this group. */
 export function MistSection({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <section className="bg-mist py-16 text-ink">
+    <section className="bg-mist py-[clamp(64px,8vw,112px)] text-ink">
       <div className={`${wrap} ${className}`}>{children}</div>
     </section>
   );
@@ -79,7 +79,7 @@ export function PhotoGrid({ photos, alt }: { photos: string[]; alt: string }) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
       {photos.map((src, i) => (
-        <a key={src} href={src} target="_blank" rel="noopener noreferrer" className="group block aspect-square overflow-hidden rounded-[20px] bg-ice ring-1 ring-ink/6">
+        <a key={src} href={src} target="_blank" rel="noopener noreferrer" className="group block aspect-square overflow-hidden rounded-[20px] bg-ice ring-1 ring-ink/[.07] shadow-card">
           <img src={src} alt={`${alt} photo ${i + 1}`} loading="lazy" className="size-full object-cover transition duration-700 ease-out-expo group-hover:scale-105" />
         </a>
       ))}
@@ -107,7 +107,7 @@ export function VideoGrid({ videos }: { videos: { id: string; title: string }[] 
 export function ArticleLayout({ html, image, alt, aside }: { html: string; image?: string; alt: string; aside?: React.ReactNode }) {
   return (
     <div className="grid items-start gap-10 lg:grid-cols-[1fr_360px]">
-      <article className="rounded-[28px] bg-white p-[clamp(24px,4vw,48px)] ring-1 ring-ink/6">
+      <article className="rounded-[28px] bg-white p-[clamp(24px,4vw,48px)] ring-1 ring-ink/[.07] shadow-card">
         {image && <img src={image} alt={alt} className="mb-8 w-full rounded-[20px] object-cover" />}
         <div className="prose-gtec" dangerouslySetInnerHTML={{ __html: html }} />
       </article>

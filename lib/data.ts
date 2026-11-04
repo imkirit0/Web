@@ -107,25 +107,26 @@ const COORDS: Record<string, [number, number]> = {
   Tanzania: [-6, 35], UAE: [24, 54], UK: [54, -2], USA: [39, -98], Zambia: [-13, 28],
 };
 
+// Africa, Egypt, Kuwait, Malaysia and Singapore point to Our Offices because their own sites are down, expired or (Africa) redirecting to an unrelated site. Restore their URLs once fixed.
 export const COUNTRIES = (
   [
-    ["Africa", "17-09-25-04-58-AFRICA.png", "https://gtecafrica.com/"],
+    ["Africa", "17-09-25-04-58-AFRICA.png", "/ouroffices"],
     ["Australia", "17-09-25-04-11-australian-flag.jpg"],
     ["Bahrain", "bh.png"],
-    ["Egypt", "17-09-25-04-35-27140.jpg", "https://www.gtecegypt.com/"],
+    ["Egypt", "17-09-25-04-35-27140.jpg", "/ouroffices"],
     ["Ghana", "17-09-25-04-05-GHANA.png"],
     ["India", "in.png"],
     ["Iran", "ir.png"],
     ["Kenya", "17-09-25-04-26-KENYA.png"],
-    ["Kuwait", "kw.png", "https://www.gteckuwait.com/"],
+    ["Kuwait", "kw.png", "/ouroffices"],
     ["Malawi", "17-09-25-04-43-MALAWI.png"],
-    ["Malaysia", "my.png", "https://www.gteceducation.com.my/"],
+    ["Malaysia", "my.png", "/ouroffices"],
     ["Mexico", "mx.png"],
     ["Oman", "17-09-25-04-46-OMAN-FLAG.png"],
     ["Philippines", "ph.png"],
     ["Qatar", "qa.png", "https://www.gtecqatar.com/"],
     ["Saudi Arabia", "sa.png"],
-    ["Singapore", "sg.png", "https://gteceducation.com.sg/"],
+    ["Singapore", "sg.png", "/ouroffices"],
     ["Sri Lanka", "lk.png"],
     ["Tanzania", "17-09-25-04-45-TANZANIA.png"],
     ["UAE", "ae.png", "https://gtecqusais.com/"],
@@ -134,6 +135,9 @@ export const COUNTRIES = (
     ["Zambia", "17-09-25-04-42-ZAMBIA.png"],
   ] as [string, string, string?][]
 ).map(([name, flag, url]) => ({ name, flag: FLAG + flag, url: url ?? `${SITE}/centres`, coords: COORDS[name] }));
+
+/** The original logo from `img`, cropped to its edges and otherwise untouched. Has a white background, so use it on white. */
+const croppedLogo = (name: string) => `/logos/${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`;
 
 const AFF = `${SITE}/storage/app/public/affliation/`;
 export const AFFILIATIONS = [
@@ -155,7 +159,7 @@ export const AFFILIATIONS = [
   ["IT Specialist", "13-09-25-11-24-10.jpg", "https://certiport.pearsonvue.com/"],
   ["Cisco", "13-09-25-12-26-15.jpg", "https://www.cisco.com/"],
   ["Certiport", "13-09-25-12-29-16.jpg", "https://certiport.pearsonvue.com/"],
-].map(([name, img, url]) => ({ name, img: AFF + img, url }));
+].map(([name, img, url]) => ({ name, img: AFF + img, logo: croppedLogo(name), url }));
 
 export const TESTIMONIALS = [
   { name: "Lakshmi Suresh", kind: "YouTube story", url: "https://www.youtube.com/watch?v=kxxyws9GHqk", tone: "blue", thumb: "/thumbs/kxxyws9GHqk.jpg" },
@@ -182,11 +186,11 @@ export const FLASH = [
 
 const SUB = `${SITE}/storage/app/public/subsidiary/`;
 export const SUBSIDIARIES = [
-  { name: "G-TEC College", img: SUB + "17-06-25-04-36-01.webp", url: "https://gteccollege.com/" },
-  { name: "Gensmart Academy", img: SUB + "17-06-25-04-39-02.webp", url: "http://gensmartacademy.com/" },
-  { name: "GOBS Bank", img: SUB + "17-06-25-04-39-03.webp", url: "https://www.gobsbank.com/" },
-  { name: "G-TEC Online Learning", img: SUB + "17-06-25-04-45-05.webp", url: "https://gteconlinelearning.com" },
-  { name: "G-TEC Global Campus", img: SUB + "17-06-25-04-35-06.webp", url: "https://gtecglobalcampus.com/" },
+  { name: "G-TEC College", logo: croppedLogo("G-TEC College"), img: SUB + "17-06-25-04-36-01.webp", url: "https://gteccollege.com/" },
+  { name: "Gensmart Academy", logo: croppedLogo("Gensmart Academy"), img: SUB + "17-06-25-04-39-02.webp", url: "http://gensmartacademy.com/" },
+  { name: "GOBS Bank", logo: croppedLogo("GOBS Bank"), img: SUB + "17-06-25-04-39-03.webp", url: "https://www.gobsbank.com/" },
+  { name: "G-TEC Online Learning", logo: croppedLogo("G-TEC Online Learning"), img: SUB + "17-06-25-04-45-05.webp", url: "https://gteconlinelearning.com" },
+  { name: "G-TEC Global Campus", logo: croppedLogo("G-TEC Global Campus"), img: SUB + "17-06-25-04-35-06.webp", url: "https://gtecglobalcampus.com/" },
 ];
 
 export const CONTACT = {
@@ -239,6 +243,7 @@ export const FOOTER_LINKS = [
   {
     title: "Careers & Partners",
     links: [
+      { label: "Careers at G-TEC", url: "/careers" },
       { label: "Our Placements", url: "/placements" },
       { label: "View Vacancies", url: "/vacancies" },
       { label: "Post a Vacancy", url: "/postvacancy" },
@@ -249,56 +254,79 @@ export const FOOTER_LINKS = [
   },
 ];
 
-export type NavLink = { href: string; label: string };
+export type NavLink = { href: string; label: string; desc?: string };
 export type NavItem = NavLink | { label: string; children: NavLink[] };
 
-/** Mirrors the live site's menu. `MORE_NAV` sits behind the "More" button on desktop. */
+/** The filled "Courses" pill beside the logo. */
+export const COURSES_NAV = {
+  label: "Courses",
+  children: [
+    { href: "/courses", label: "All Courses", desc: "Browse every G-TEC programme" },
+    ...COURSES.map((c) => ({ href: `/courses/${c.slug}`, label: c.title, desc: c.tags.slice(0, 2).join(" · ") })),
+    { href: "/trainingandcertifications", label: "Training & Certifications", desc: "Global certification tracks" },
+  ],
+};
+
 export const NAV: NavItem[] = [
+  { href: "/", label: "Home" },
   { label: "Company", children: [
-    { href: "/about", label: "About G-TEC" },
-    { href: "/profile", label: "Profile" },
-    { href: "/leadership", label: "Leadership" },
-    { href: "/managementteam", label: "Management Team" },
-    { href: "/gtecinternational", label: "G-TEC International" },
-  ] },
-  { href: "/courses", label: "Courses" },
-  { href: "/trainingandcertifications", label: "Training & Certifications" },
-  { label: "Affiliations & Awards", children: [
-    { href: "/affiliations", label: "Affiliations" },
-    { href: "/associations", label: "Associations" },
-    { href: "/awardsrecognitions", label: "Awards & Recognition" },
+    { href: "/about", label: "About G-TEC", desc: "Who we are and what we do" },
+    { href: "/profile", label: "Profile", desc: "The G-TEC group at a glance" },
+    { href: "/leadership", label: "Leadership", desc: "The people leading G-TEC" },
+    { href: "/managementteam", label: "Management Team", desc: "Meet the team behind the network" },
+    { href: "/gtecinternational", label: "G-TEC International", desc: "Our presence around the world" },
+    { href: "/affiliations", label: "Affiliations", desc: "Our certification partners" },
+    { href: "/associations", label: "Associations", desc: "Industry and academic ties" },
+    { href: "/awardsrecognitions", label: "Awards & Recognition", desc: "Milestones and honours" },
   ] },
   { label: "Students", children: [
-    { href: "/students", label: "Student Corner" },
-    { href: "/feedback", label: "Feedback" },
-    { href: "/resultsonline", label: "Results Online" },
-    { href: "/testimonials", label: "Testimonials" },
-    { href: "https://www.gtecadmin.com/validation/index.aspx", label: "Verify Certificate (before Apr 2026)" },
-    { href: "https://gems.gtec.education/StudentApplicationForm/certificate_validation", label: "Verify Certificate (from Apr 2026)" },
+    { href: "/students", label: "Student Corner", desc: "Resources for G-TEC students" },
+    { href: "/resultsonline", label: "Results Online", desc: "Check your exam results" },
+    { href: "/feedback", label: "Feedback", desc: "Tell us how we're doing" },
+    { href: "/testimonials", label: "Testimonials", desc: "Stories from our students" },
+    { href: "https://www.gtecadmin.com/validation/index.aspx", label: "Verify Certificate", desc: "Issued before April 2026" },
+    { href: "https://gems.gtec.education/StudentApplicationForm/certificate_validation", label: "Verify Certificate", desc: "Issued from April 2026" },
   ] },
   { href: "/centres", label: "Centres" },
   { label: "Placement", children: [
-    { href: "/placements", label: "Our Placements" },
-    { href: "/vacancies", label: "View Vacancies" },
-    { href: "/postvacancy", label: "Post A Vacancy" },
-    { href: "/jobfair", label: "G-TEC Job Fair" },
+    { href: "/placements", label: "Our Placements", desc: "Where our students work" },
+    { href: "/vacancies", label: "View Vacancies", desc: "Openings shared by employers" },
+    { href: "/postvacancy", label: "Post A Vacancy", desc: "Hire trained G-TEC students" },
+    { href: "/jobfair", label: "G-TEC Job Fair", desc: "Meet employers in person" },
   ] },
+  { href: "/careers", label: "Careers" },
+  { label: "More", children: [
+    { href: "/blog", label: "Blog", desc: "Insights on skills and careers" },
+    { href: "/newsandevent", label: "News and Events", desc: "What's happening at G-TEC" },
+    { href: "/photogallery", label: "Photo Gallery", desc: "Moments from our centres" },
+    { href: "/videogallery", label: "Video Gallery", desc: "Watch G-TEC in action" },
+    { href: "/supportdesk", label: "Support Desk", desc: "Get help from our team" },
+    { href: "/postamessage", label: "Post A Message", desc: "Write to us directly" },
+    { href: "/becomeapartner", label: "Become a Partner", desc: "Open a G-TEC centre" },
+    { href: "/onlinepayment", label: "Pay Online", desc: "Pay your fees securely" },
+  ] },
+  { href: "/ouroffices", label: "Contact us" },
 ];
 
-export const MORE_NAV: { label: string; children: NavLink[] }[] = [
-  { label: "Read", children: [
-    { href: "/blog", label: "Blog" },
-    { href: "/newsandevent", label: "News and Events" },
-  ] },
-  { label: "Gallery", children: [
-    { href: "/photogallery", label: "Photo Gallery" },
-    { href: "/videogallery", label: "Video Gallery" },
-  ] },
-  { label: "Contact Us", children: [
-    { href: "/ouroffices", label: "Our Offices" },
-    { href: "/supportdesk", label: "Support Desk" },
-    { href: "/postamessage", label: "Post A Message" },
-    { href: "/becomeapartner", label: "Become a Partner" },
-    { href: "/onlinepayment", label: "Pay Online" },
-  ] },
+export type Job = {
+  id: number;
+  title: string;
+  posted: string;
+  location: string;
+  workspace: string;
+  type: string;
+  nature: string;
+  experience: string;
+  skills: string[];
+  description: string;
+};
+
+/** Listed on /careers. The entries below are SAMPLES for previewing the layout: replace them with real openings. Production builds list none until then. */
+export const JOBS: Job[] = process.env.NODE_ENV === "production" ? [] : [
+  { id: 1001, title: "Faculty - Software & Web Development", posted: "2 Nov 2026", location: "Calicut, Kerala", workspace: "Work From Office", type: "Permanent", nature: "Full Time", experience: "2 to 4 years", skills: ["Python", "Java", "Web Development"], description: "Sample listing. Teach programming and web development courses and guide students through hands-on projects." },
+  { id: 1002, title: "Centre Manager", posted: "30 Oct 2026", location: "Kochi, Kerala", workspace: "Work From Office", type: "Permanent", nature: "Full Time", experience: "5 to 8 years", skills: ["Team Management", "Sales", "Operations"], description: "Sample listing. Run day-to-day centre operations, lead the team and grow student admissions." },
+  { id: 1003, title: "Academic Counsellor", posted: "28 Oct 2026", location: "Bengaluru, Karnataka", workspace: "Work From Office", type: "Contract", nature: "Full Time", experience: "1 to 3 years", skills: ["Counselling", "Communication", "Sales"], description: "Sample listing. Help students and parents choose the right course and guide them through admission." },
+  { id: 1004, title: "Digital Marketing Executive", posted: "26 Oct 2026", location: "Calicut, Kerala", workspace: "Hybrid", type: "Permanent", nature: "Full Time", experience: "2 to 5 years", skills: ["SEO", "Social Media", "Google Ads"], description: "Sample listing. Plan and run digital campaigns across search and social channels." },
+  { id: 1005, title: "Robotics Trainer", posted: "22 Oct 2026", location: "Thrissur, Kerala", workspace: "Work From Office", type: "Contract", nature: "Part Time", experience: "1 to 3 years", skills: ["Arduino", "Raspberry Pi", "Embedded C"], description: "Sample listing. Lead hands-on robotics labs and support learners building their own projects." },
+  { id: 1006, title: "Content Writer", posted: "20 Oct 2026", location: "Anywhere in India", workspace: "Remote", type: "Gig", nature: "Intern", experience: "0 to 1 years", skills: ["Copywriting", "SEO", "Research"], description: "Sample listing. Write course pages, blog posts and social content for G-TEC." },
 ];

@@ -40,7 +40,7 @@ export default async function CourseDetailPage({ params }: Props) {
 
       <section className="bg-mist py-16 text-ink">
         <div className={`${wrap} grid items-start gap-10 lg:grid-cols-[1fr_360px]`}>
-          <article className="rounded-[28px] bg-white p-[clamp(24px,4vw,48px)] ring-1 ring-ink/6">
+          <article className="rounded-[28px] bg-white p-[clamp(24px,4vw,48px)] ring-1 ring-ink/[.07] shadow-card">
             {c.body ? <div className="prose-gtec" dangerouslySetInnerHTML={{ __html: c.body }} /> : <p className="text-ink-2">Full course details are available from your nearest centre.</p>}
           </article>
 

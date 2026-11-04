@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, ChevronRight, Clock } from "lucide-react";
 import { type Category, type CourseItem, titleCase } from "@/lib/content";
 import { cn } from "@/lib/utils";
+import { HeroBackdrop } from "@/components/sections";
 
 export const wrap = "mx-auto w-[min(1240px,100%)] px-6";
 
@@ -21,11 +22,11 @@ export function Breadcrumbs({ items }: { items: { label: string; href?: string }
 /** Dark page header shared by course listing and detail pages. */
 export function CourseHero({ crumbs, title, intro, children }: { crumbs: { label: string; href?: string }[]; title: string; intro?: string; children?: React.ReactNode }) {
   return (
-    <section className="relative overflow-hidden bg-navy pt-36 pb-16">
-      <div className="pointer-events-none absolute top-[-200px] left-1/2 h-[500px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(0,66,130,.45),transparent_65%)] blur-[40px]" />
+    <section className="relative overflow-hidden bg-navy pt-[clamp(132px,15vw,172px)] pb-[clamp(48px,6vw,80px)]">
+      <HeroBackdrop />
       <div className={cn(wrap, "relative")}>
         <Breadcrumbs items={crumbs} />
-        <h1 data-reveal="0.1" className="font-display mt-8 max-w-[20ch] text-[clamp(36px,5vw,68px)] leading-[1.04] font-extrabold tracking-[-.03em] text-balance">{title}</h1>
+        <h1 data-reveal="0.1" className="font-display mt-8 max-w-[22ch] text-[clamp(36px,4.8vw,66px)] leading-[1.04] font-bold tracking-[-.04em] text-balance">{title}</h1>
         {intro && <p data-reveal="0.2" className="mt-5 max-w-[620px] text-[17px] leading-relaxed text-pretty text-white/70">{intro}</p>}
         {children}
       </div>
@@ -35,7 +36,7 @@ export function CourseHero({ crumbs, title, intro, children }: { crumbs: { label
 
 export function CourseTile({ href, course }: { href: string; course: CourseItem }) {
   return (
-    <Link href={href} className="group flex flex-col overflow-hidden rounded-3xl bg-white ring-1 ring-ink/6 transition duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(0,66,130,.14)]">
+    <Link href={href} className="group flex flex-col overflow-hidden rounded-3xl bg-white ring-1 ring-ink/[.07] shadow-card transition duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(0,66,130,.14)]">
       <div className="relative aspect-[16/10] overflow-hidden bg-ice">
         {course.image && <img src={course.image} alt="" loading="lazy" className="size-full object-cover transition duration-700 ease-out-expo group-hover:scale-105" />}
         <span className="absolute top-3 right-3 flex size-9 items-center justify-center rounded-full bg-white/90 text-ink opacity-0 transition group-hover:opacity-100">

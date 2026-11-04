@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils";
 export { wrap };
 // Old payment/results system. Set NEXT_PUBLIC_PORTAL_URL (e.g. https://portal.gteceducation.com) once it moves to its subdomain.
 export const LIVE = process.env.NEXT_PUBLIC_PORTAL_URL ?? "https://www.gteceducation.com";
-export const h2 = "font-display text-[clamp(28px,3.4vw,42px)] font-bold leading-[1.08] tracking-[-.025em] text-balance";
-export const card = "rounded-[28px] bg-white ring-1 ring-ink/6";
+export const h2 = "font-display text-[clamp(30px,3.6vw,46px)] font-bold leading-[1.05] tracking-[-.035em] text-balance";
+export const card = "rounded-[28px] bg-white ring-1 ring-ink/[.07] shadow-card";
 
 /** Labelled form control. `wide` spans both columns of a `FieldGrid`. */
 export function Field({ label, required, wide, children }: { label: string; required?: boolean; wide?: boolean; children: React.ReactNode }) {
@@ -43,9 +43,9 @@ export function EmailNote({ what }: { what: string }) {
 /** Light section with copy on the left and a form (or anything) on the right. */
 export function Split({ eyebrow, title, intro, aside, children }: { eyebrow?: string; title: string; intro?: React.ReactNode; aside?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <section className="bg-mist py-[clamp(64px,8vw,112px)] text-ink">
+    <section className="bg-mist py-[clamp(72px,9vw,128px)] text-ink">
       <div className={cn(wrap, "grid items-start gap-[clamp(32px,5vw,64px)] lg:grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)]")}>
-        <div className="grid gap-6">
+        <div className="grid gap-6 lg:sticky lg:top-28">
           {eyebrow && <p className="flex items-center gap-3 text-xs font-bold tracking-[.18em] text-red uppercase"><span className="h-0.5 w-7 bg-red" />{eyebrow}</p>}
           <h2 className={h2}>{title}</h2>
           {intro && <div className="grid gap-4 text-[16px] leading-[1.75] text-pretty text-ink-2">{intro}</div>}
@@ -122,7 +122,7 @@ export function HandOff({
   image?: string;
 }) {
   return (
-    <section className="bg-mist py-[clamp(64px,8vw,112px)] text-ink">
+    <section className="bg-mist py-[clamp(72px,9vw,128px)] text-ink">
       <div className={cn(wrap, "grid items-start gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,.8fr)]")}>
         <div className="grid gap-6">
           <div className={cn(card, "p-[clamp(24px,4vw,44px)]")}>
@@ -141,7 +141,7 @@ export function HandOff({
               <h3 className="font-display mb-4 text-lg font-bold">{d.label}</h3>
               <ul className="flex flex-wrap gap-2">
                 {d.items.map((x) => (
-                  <li key={x} className="rounded-full bg-mist px-3.5 py-1.5 text-sm font-medium text-ink-2 ring-1 ring-ink/6">{x}</li>
+                  <li key={x} className="rounded-full bg-mist px-3.5 py-1.5 text-sm font-medium text-ink-2 ring-1 ring-ink/[.07] shadow-card">{x}</li>
                 ))}
               </ul>
             </div>

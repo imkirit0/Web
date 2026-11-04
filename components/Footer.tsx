@@ -8,7 +8,7 @@ export function Footer() {
     <footer className="border-t border-white/6 bg-abyss pt-18 pb-8">
       <div className="mx-auto grid w-[min(1240px,100%)] grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-x-8 gap-y-10 px-6">
         <div>
-          <img src="/logo.png" alt="G-TEC Education" className="mb-4.5 block h-14 rounded-xl" />
+          <img src="/logo-mark.png" alt="G-TEC Education" className="mb-5 block h-16 w-auto" />
           <p className="mb-5 max-w-[280px] text-sm leading-relaxed text-white/60">
             World&apos;s largest IT education network. A global leader in training and skilling since 2000.
           </p>

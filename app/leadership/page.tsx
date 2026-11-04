@@ -13,7 +13,7 @@ export default function LeadershipPage() {
 
       <Band>
         <div className="grid items-start gap-12 lg:grid-cols-[400px_1fr]">
-          <figure className="overflow-hidden rounded-[28px] bg-white ring-1 ring-ink/6 lg:sticky lg:top-28">
+          <figure className="overflow-hidden rounded-[28px] bg-white ring-1 ring-ink/[.07] shadow-card lg:sticky lg:top-28">
             {portrait && <img src={portrait} alt="Mr. Mehroof I Manalody" className="aspect-[4/5] w-full object-cover object-top" />}
             <figcaption className="p-6">
               <p className="font-display text-xl font-bold tracking-tight">Mr. Mehroof I Manalody</p>
@@ -25,7 +25,7 @@ export default function LeadershipPage() {
             <p>He began his journey in the world of education by setting up computer institutes across the Malabar region. With passion and persistence, he expanded operations to other districts in Kerala, then to different states across India, and eventually took G-TEC to the global stage.</p>
             <div className="my-3 grid gap-3 sm:grid-cols-3">
               {[["2001", "G-TEC founded"], ["800+", "learning centres worldwide"], ["1,50,000", "students trained every year"]].map(([n, l]) => (
-                <div key={l} className="rounded-[22px] bg-white p-5 ring-1 ring-ink/6">
+                <div key={l} className="rounded-[22px] bg-white p-5 ring-1 ring-ink/[.07] shadow-card">
                   <p className="font-display text-3xl font-extrabold tracking-tight text-blue">{n}</p>
                   <p className="mt-1 text-sm font-semibold">{l}</p>
                 </div>

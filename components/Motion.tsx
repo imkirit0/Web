@@ -10,6 +10,9 @@ export function Motion() {
   useEffect(() => {
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    // SVG animations ignore the CSS reduced-motion rule, so hold them still here.
+    if (reduce) document.querySelectorAll<SVGSVGElement>("[data-wave]").forEach((svg) => svg.pauseAnimations());
+
     // [data-stagger] children become reveals with stepped delays.
     document.querySelectorAll<HTMLElement>("[data-stagger]").forEach((g) => {
       const kids = Array.from(g.children) as HTMLElement[];

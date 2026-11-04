@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope, Sora } from "next/font/google";
+import { Arimo, Bricolage_Grotesque, Manrope } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Motion } from "@/components/Motion";
@@ -7,8 +7,10 @@ import { Enquire } from "@/components/sections";
 import { EnquireDialog } from "@/components/EnquireDialog";
 import "./globals.css";
 
-const sora = Sora({ subsets: ["latin"], variable: "--font-display", weight: ["400", "600", "700", "800"] });
+const display = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-display-face", weight: ["500", "600", "700", "800"] });
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-sans", weight: ["400", "500", "600", "700"] });
+// Free Helvetica-proportioned stand-in for the look of Nike's nav (Helvetica Now is licensed to Nike).
+const arimo = Arimo({ subsets: ["latin"], variable: "--font-nav-face", weight: ["400", "500"] });
 
 export const metadata: Metadata = {
   title: { default: "G-TEC EDUCATION | Global Leader in Training & Skilling", template: "%s | G-TEC Education" },
@@ -22,7 +24,7 @@ const motionFlag = `if(!matchMedia('(prefers-reduced-motion: reduce)').matches)d
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sora.variable} ${manrope.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${display.variable} ${manrope.variable} ${arimo.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: motionFlag }} />
       </head>

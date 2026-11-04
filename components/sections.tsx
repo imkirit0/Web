@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Award, Briefcase, Check, FlaskConical, Globe2, Landmark, Mail, MessageCircle, Phone } from "lucide-react";
+import { ArrowRight, Award, Briefcase, Check, ChevronDown, FlaskConical, Globe2, Landmark, Mail, MessageCircle, Phone } from "lucide-react";
 import { EnquiryForm } from "@/components/EnquiryForm";
 import { Stories } from "@/components/Stories";
 import { GlobeNetwork } from "@/components/GlobeNetwork";
@@ -38,60 +38,97 @@ function Arrow({ className }: { className?: string }) {
 
 /* ── Hero (home) ───────────────────────────────────────────── */
 
-export function Hero() {
-  return (
-    <section data-hero className="relative flex min-h-svh flex-col justify-end overflow-hidden bg-navy">
-      <div data-hero-media className="absolute inset-0 will-change-transform">
-        <video
-          src={`${SITE}/storage/app/public/video/19-12-25-01-24-03-12-25-04-20-web%20banner%20out.mp4`}
-          poster={`${SITE}/assets/img/og-image/preview.jpg`}
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="block size-full object-cover"
-        />
-      </div>
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,12,31,.6)_0%,rgba(5,12,31,.25)_40%,rgba(5,12,31,.7)_75%,#050C1F_100%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,12,31,.85)_0%,rgba(5,12,31,.35)_50%,rgba(5,12,31,0)_100%)]" />
-      <Blobs />
+/** Rough paper edge: a CSS polygon that wobbles along the outline through `corners` (percentages). Seeded, so server and client always match. */
+function tornEdge(corners: [number, number][], seed: number, rough = 0.5) {
+  let n = seed;
+  let step = 0;
+  // Slow drift plus fine grain, so the edge wanders like torn paper instead of a regular zigzag.
+  const wobble = () => Math.sin(++step * 0.37 + seed) * rough * 1.6 + ((n = (n * 16807) % 2147483647) / 2147483647 - 0.5) * rough;
+  const points = corners.flatMap(([x, y], i) => {
+    const [nx, ny] = corners[(i + 1) % corners.length];
+    const steps = Math.max(2, Math.round(Math.hypot(nx - x, ny - y) / 1.6));
+    return Array.from({ length: steps }, (_, s) => `${(x + ((nx - x) * s) / steps + wobble()).toFixed(1)}% ${(y + ((ny - y) * s) / steps + wobble()).toFixed(1)}%`);
+  });
+  return `polygon(${points.join(",")})`;
+}
 
-      <div data-hero-copy className={cn(wrap, "relative pt-[clamp(150px,20vh,220px)] pb-[clamp(56px,9vh,96px)]")}>
-        <h1 className="font-display mb-6.5 max-w-[13ch] text-[clamp(46px,7.4vw,108px)] leading-[.98] font-extrabold tracking-[-.035em]">
-          {["Making", "Professionals", "Globally."].map((w, i) => (
-            <span key={w} className="-mb-[.1em] inline-block overflow-hidden pb-[.1em] align-bottom">
-              <span
-                className={cn("hero-word", i === 2 && "bg-linear-to-r from-red to-[#FF6B5E] bg-clip-text pr-[.05em] text-transparent")}
-                style={{ "--i": i } as React.CSSProperties}
-              >
-                {w}
-              </span>{" "}
-            </span>
-          ))}
-        </h1>
-        <p data-reveal="0.55" className="mb-9 max-w-[560px] text-[clamp(16px,1.4vw,19px)] leading-relaxed text-pretty text-white/80">
-          For 25 years we&apos;ve helped students learn IT, pick up real skills and land jobs they&apos;re proud of. Today
-          that&apos;s 800+ centres in 23 countries, and employers know our name.
-        </p>
-        <div data-reveal="0.7" className="flex flex-wrap items-center gap-3">
-          <a href="#enquire" className="inline-flex items-center gap-2.5 rounded-full bg-red px-7 py-4 text-[15px] font-bold shadow-[0_12px_32px_rgba(255,1,0,.38)] transition duration-300 ease-out-expo hover:-translate-y-[3px] hover:bg-red-dark hover:shadow-[0_18px_44px_rgba(255,1,0,.5)]">
-            Enquire Now <Arrow />
-          </a>
-          <Link href="/courses" className="inline-flex items-center rounded-full border border-white/22 bg-white/6 px-7 py-4 text-[15px] font-semibold backdrop-blur-md transition duration-300 ease-out-expo hover:-translate-y-[3px] hover:border-white/45 hover:bg-white/14">
-            Explore Courses
-          </Link>
-        </div>
-      </div>
-    </section>
+const HERO_TOP_TEAR: [number, number][] = [[1, 3], [99, 1], [100, 98], [80, 98], [66, 84], [42, 78], [18, 72], [3, 42]];
+const HERO_LOW_TEAR: [number, number][] = [[4, 5], [97, 1], [100, 91], [7, 99], [1, 58]];
+
+function TornPhoto({ src, alt, tear, seed, focus, className }: { src: string; alt: string; tear: [number, number][]; seed: number; focus: string; className: string }) {
+  return (
+    <div className={cn("absolute drop-shadow-[0_6px_10px_rgba(0,31,66,.16)]", className)}>
+      <div aria-hidden className="absolute -inset-1.5 bg-white" style={{ clipPath: tornEdge(tear, seed + 7, 0.8) }} />
+      <img src={src} alt={alt} fetchPriority="high" className="relative size-full object-cover" style={{ clipPath: tornEdge(tear, seed), objectPosition: focus }} />
+    </div>
   );
 }
 
-function Blobs() {
+function HeroChip({ icon: Icon, className, children }: { icon: typeof Award; className: string; children: React.ReactNode }) {
   return (
-    <>
-      <div className={cn(blob, "top-[10%] -left-[10%] size-[46vw] bg-[radial-gradient(circle,rgba(0,102,204,.35),transparent_65%)] blur-[40px] [animation:float-a_14s_ease-in-out_infinite]")} />
-      <div className={cn(blob, "-right-[5%] bottom-[5%] size-[36vw] bg-[radial-gradient(circle,rgba(255,1,0,.22),transparent_65%)] blur-[50px] [animation:float-b_18s_ease-in-out_infinite]")} />
-    </>
+    <div className={cn("absolute flex items-center gap-2 rounded-md bg-white px-3 py-2 text-[13px] font-semibold whitespace-nowrap text-ink shadow-[0_8px_24px_rgba(0,31,66,.2)] sm:text-sm", className)}>
+      <Icon className="size-4 flex-none text-blue" />
+      {children}
+    </div>
+  );
+}
+
+export function Hero() {
+  return (
+    <section data-hero className="relative overflow-hidden bg-white pt-18 text-blue">
+      <div aria-hidden className="absolute inset-x-0 bottom-0 isolate h-[clamp(96px,14vh,140px)] bg-blue">
+        <WaveDivider fill="fill-white" begin="-11s" height="h-[clamp(36px,4.5vw,70px)]" />
+      </div>
+
+      <div className={cn(wrap, "relative grid gap-8 lg:min-h-[max(620px,calc(100svh-4.5rem))] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]")}>
+        <div data-hero-copy className="flex flex-col justify-center pt-[clamp(36px,6vh,64px)] lg:pb-[calc(clamp(96px,14vh,140px)+32px)]">
+          <h1 className="font-display mb-6 text-[clamp(42px,5.2vw,76px)] leading-[1.02] font-bold tracking-[-.035em]">
+            {["Making", "Professionals", "Globally."].map((w, i) => (
+              <span key={w} className="-mb-[.1em] block overflow-hidden pb-[.1em]">
+                <span className="hero-word" style={{ "--i": i } as React.CSSProperties}>{w}</span>
+              </span>
+            ))}
+          </h1>
+          <p className="hero-fade mb-7 max-w-[520px] text-[clamp(16px,1.3vw,18px)] leading-relaxed text-pretty text-ink-2" style={{ "--d": ".55s" } as React.CSSProperties}>
+            For 25 years we&apos;ve helped students learn IT, pick up real skills and land jobs they&apos;re proud of. Today
+            that&apos;s 800+ centres in 23 countries, and employers know our name.
+          </p>
+          <div className="hero-fade flex flex-wrap items-center gap-3" style={{ "--d": ".7s" } as React.CSSProperties}>
+            <a href="#enquire" className="inline-flex items-center rounded-lg bg-blue px-6 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-dark">
+              Enquire Now
+            </a>
+            <Link href="/courses" className="inline-flex items-center rounded-lg border border-blue/30 bg-white px-6 py-3.5 text-[15px] font-semibold text-blue transition-colors hover:border-blue hover:bg-ice">
+              Explore Courses
+            </Link>
+          </div>
+          <dl className="hero-fade mt-9 flex flex-wrap gap-x-9 gap-y-4 border-t border-blue/15 pt-6" style={{ "--d": ".85s" } as React.CSSProperties}>
+            {STATS.slice(1, 4).map((s) => (
+              <div key={s.label}>
+                <dd className="font-display text-[clamp(26px,2.4vw,34px)] leading-none font-bold tracking-tight">{s.value}{s.suffix}</dd>
+                <dt className="mt-1.5 text-[13px] font-semibold text-ink-2">{s.label}</dt>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        <div className="relative h-[clamp(440px,100vw,600px)] lg:h-auto">
+          <div aria-hidden className="absolute top-[1%] right-0 h-[5%] w-[52%] bg-sky" style={{ clipPath: tornEdge([[0, 45], [100, 0], [100, 100], [0, 100]], 11, 8) }} />
+          <TornPhoto src={unsplash("1522202176988-66273c2fd55f")} alt="Students laughing together around their laptops" tear={HERO_TOP_TEAR} seed={23} focus="62% 40%" className="top-[3%] -right-[6%] h-[60%] w-full" />
+          <TornPhoto src="/hero/graduates.jpg" alt="Graduates in gowns cheering as their caps fly into the air" tear={HERO_LOW_TEAR} seed={41} focus="50% 80%" className="bottom-[5%] left-0 h-[44%] w-[58%]" />
+
+          <HeroChip icon={Award} className="top-[9%] right-[2%]">ISO-certified</HeroChip>
+          <HeroChip icon={Landmark} className="top-[7%] left-[10%]">Government partner</HeroChip>
+
+          <svg aria-hidden viewBox="0 0 400 420" className="absolute right-[3%] bottom-[5%] h-[32%] w-auto overflow-visible">
+            <filter id="hero-brush" x="-10%" y="-10%" width="120%" height="120%">
+              <feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="4" />
+              <feDisplacementMap in="SourceGraphic" scale="7" />
+            </filter>
+            <path d="M20 215 300 25 95 345 345 215 372 400" filter="url(#hero-brush)" className="fill-none stroke-sky" strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -113,16 +150,41 @@ export function Stats() {
 
 /* ── Page hero (inner pages) ───────────────────────────────── */
 
+/** Layered navy backdrop shared by every inner-page header: fine grid, brand glows, fade at the bottom. */
+export function HeroBackdrop() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.045)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.045)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_80%_70%_at_70%_20%,#000_20%,transparent_75%)] bg-[size:56px_56px]" />
+      <div className="absolute -top-40 right-[-10%] size-[640px] rounded-full bg-[radial-gradient(circle,rgba(0,102,204,.42),transparent_62%)] blur-[30px]" />
+      <div className="absolute top-[30%] left-[-12%] size-[420px] rounded-full bg-[radial-gradient(circle,rgba(255,1,0,.16),transparent_65%)] blur-[40px]" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+    </div>
+  );
+}
+
 export function PageHero({ eyebrow, title, intro, children }: { eyebrow: string; title: string; intro?: string; children?: React.ReactNode }) {
   return (
-    <section className="relative overflow-hidden bg-navy pt-40 pb-20">
-      <div className="pointer-events-none absolute top-[-200px] left-1/2 h-[500px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(0,66,130,.45),transparent_65%)] blur-[40px]" />
+    <section className="relative overflow-hidden bg-navy pt-[clamp(140px,16vw,184px)] pb-[clamp(56px,7vw,96px)]">
+      <HeroBackdrop />
       <div className={cn(wrap, "relative")}>
-        <Eyebrow>{eyebrow}</Eyebrow>
-        <h1 data-reveal="0.1" className="font-display max-w-[16ch] text-[clamp(40px,5.6vw,80px)] leading-[1.02] font-extrabold tracking-[-.03em] text-balance">
-          {title}
-        </h1>
-        {intro && <p data-reveal="0.2" className="mt-6 max-w-[600px] text-[17px] leading-relaxed text-pretty text-white/70">{intro}</p>}
+        <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-[13px] font-medium text-white/50">
+          <Link href="/" className="-my-2 py-2 transition hover:text-white">Home</Link>
+          <span className="size-1 rounded-full bg-white/25" />
+          <span className="text-white/80">{eyebrow}</span>
+        </nav>
+        <div className="grid items-end gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+          <div>
+            <Eyebrow>{eyebrow}</Eyebrow>
+            <h1 data-reveal="0.1" className="font-display text-[clamp(40px,5.4vw,76px)] leading-[1.02] font-bold tracking-[-.04em] text-balance">
+              {title}
+            </h1>
+          </div>
+          {intro && (
+            <p data-reveal="0.2" className="border-l border-white/15 pl-6 text-[17px] leading-relaxed text-pretty text-white/72 lg:mb-2">
+              {intro}
+            </p>
+          )}
+        </div>
         {children}
       </div>
     </section>
@@ -159,13 +221,7 @@ export function Ticker() {
 
 export function Affiliations() {
   return (
-    <section className="bg-navy pt-16 pb-18">
-      <div className={cn(wrap, "mb-7 flex flex-wrap items-center justify-between gap-4")}>
-        <p data-reveal="0" className="text-xs font-bold tracking-[.18em] text-white/50 uppercase">Affiliated with 100+ global certification bodies</p>
-        <a href="/affiliations" className="inline-flex items-center gap-1.5 text-sm font-semibold text-white/70 hover:text-coral">
-          View all affiliations <Arrow className="size-3.5" />
-        </a>
-      </div>
+    <section aria-label="Affiliations" className="-mb-10 bg-white pt-8 pb-14">
       <div className="overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
         <div className="marquee flex w-max" style={{ "--dur": "48s" } as React.CSSProperties}>
           {[...AFFILIATIONS, ...AFFILIATIONS].map((a, i) => (
@@ -175,9 +231,9 @@ export function Affiliations() {
               title={a.name}
               aria-hidden={i >= AFFILIATIONS.length}
               tabIndex={i >= AFFILIATIONS.length ? -1 : undefined}
-              className="mr-3.5 flex h-22 w-43 flex-none items-center justify-center rounded-[18px] bg-white p-4 transition duration-300 ease-out-expo hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(0,66,130,.35)]"
+              className="flex h-20 flex-none items-center px-8 transition duration-300 ease-out-expo hover:-translate-y-1"
             >
-              <img src={a.img} alt={a.name} loading="lazy" className="block max-h-full max-w-full object-contain" />
+              <img src={a.logo} alt={a.name} className="block max-h-14 max-w-40 object-contain" />
             </a>
           ))}
         </div>
@@ -194,6 +250,12 @@ const PILLARS = [
   { icon: Landmark, title: "Government partner", text: "Governments trust us to run their skilling projects. That says a lot about how we teach." },
 ];
 
+const accordionItem = "group rounded-[20px] border border-ink/15 bg-white transition-colors open:border-blue";
+const accordionHead = "font-display flex cursor-pointer list-none items-center justify-between gap-4 rounded-[20px] p-6 text-lg font-bold [&::-webkit-details-marker]:hidden";
+const accordionChevron = "size-5 flex-none text-ink-2 transition-transform group-open:rotate-180";
+/** Where each floating number sits around the About photo, in `STATS` order. */
+const STAT_SPOTS = ["sm:bottom-3 sm:left-0", "sm:top-2 sm:left-[34%]", "sm:right-0 sm:bottom-[14%]", "sm:top-[16%] sm:right-0"];
+
 function InlinePhoto({ src, alt }: { src: string; alt: string }) {
   return (
     <img
@@ -207,7 +269,7 @@ function InlinePhoto({ src, alt }: { src: string; alt: string }) {
 
 export function About({ cta = true }: { cta?: boolean }) {
   return (
-    <section id="about" className={cn(section, "rounded-t-[40px] bg-mist text-ink")}>
+    <section id="about" className={cn(section, "rounded-t-[40px] bg-white pt-[clamp(32px,3.5vw,48px)] text-ink")}>
       <div className={wrap}>
         {/* Statement headline with inline photos */}
         <div className="mx-auto mb-[clamp(56px,7vw,104px)] max-w-[1080px] text-center">
@@ -223,69 +285,105 @@ export function About({ cta = true }: { cta?: boolean }) {
           </h2>
         </div>
 
-        {/* Photo · story · numbers */}
-        <div className="grid items-stretch gap-[clamp(28px,4vw,56px)] lg:grid-cols-[1fr_1.1fr_.8fr]">
-          <figure data-reveal="0.1" className="relative min-h-[420px] overflow-hidden rounded-[32px]">
-            <img src={`${SITE}/assets/img/home/intro-tmb-lg.webp`} alt="G-TEC students" className="absolute inset-0 size-full object-cover" />
-            <div className="absolute inset-x-4 bottom-4 flex items-center gap-3 rounded-2xl bg-white/85 p-3 pr-5 backdrop-blur-lg">
-              <img src={`${SITE}/assets/img/home/intro-tmb-sm.webp`} alt="" className="size-12 flex-none rounded-xl object-cover" />
-              <div>
-                <div className="text-sm font-bold">Learning by doing</div>
-                <div className="text-xs text-ink-2">You build things from day one</div>
+        {/* Accordion · photo with floating numbers */}
+        <div className="grid items-center gap-[clamp(40px,6vw,88px)] lg:grid-cols-[minmax(0,.85fr)_minmax(0,1fr)]">
+          {/* Sharing a `name` makes the browser keep one item open at a time. */}
+          <div data-reveal="0.1" className="grid gap-3">
+            <details name="about-g-tec" open className={accordionItem}>
+              <summary className={accordionHead}>
+                Our story
+                <ChevronDown className={accordionChevron} />
+              </summary>
+              <div className="px-6 pb-6 text-[15px] leading-[1.7] text-pretty text-ink-2">
+                <p className="mb-3 font-semibold text-ink">We started with one small centre and one simple idea: teach skills people can actually use.</p>
+                <p className="mb-3">
+                  Twenty-five years later, that idea has grown into 800+ centres across 23 countries. We teach IT, design, finance
+                  and trades, and we work with governments to bring training to people who need it most.
+                </p>
+                <p>
+                  But the numbers aren&apos;t really the point. What matters is the student who walks in unsure and walks out with
+                  a job, and the teachers who make that happen every day.
+                </p>
+                {cta && (
+                  <div className="mt-6 flex flex-wrap items-center gap-5">
+                    <Link href="/about" className="inline-flex items-center gap-2.5 rounded-full bg-ink px-6 py-3.5 text-[15px] font-bold text-white transition duration-300 ease-out-expo hover:-translate-y-0.5 hover:bg-blue">
+                      Read our story <Arrow />
+                    </Link>
+                    <a href="/leadership" className="group inline-flex items-center gap-2 text-[15px] font-semibold text-blue">
+                      Meet the leadership <Arrow className="transition-transform group-hover:translate-x-1" />
+                    </a>
+                  </div>
+                )}
               </div>
-            </div>
-          </figure>
-
-          <div data-reveal="0.2" className="flex flex-col justify-center">
-            <p className="font-display mb-5 text-[clamp(20px,1.8vw,24px)] leading-snug font-semibold text-pretty">
-              We started with one small centre and one simple idea: teach skills people can actually use.
-            </p>
-            <p className="mb-4 text-base leading-[1.75] text-pretty text-ink-2">
-              Twenty-five years later, that idea has grown into 800+ centres across 23 countries. We teach IT, design, finance
-              and trades, and we work with governments to bring training to people who need it most.
-            </p>
-            <p className="mb-8 text-base leading-[1.75] text-pretty text-ink-2">
-              But the numbers aren&apos;t really the point. What matters is the student who walks in unsure and walks out with
-              a job, and the teachers who make that happen every day.
-            </p>
-            {cta && (
-              <div className="flex flex-wrap items-center gap-5">
-                <Link href="/about" className="inline-flex items-center gap-2.5 rounded-full bg-ink px-6.5 py-4 text-[15px] font-bold text-white transition duration-300 ease-out-expo hover:-translate-y-0.5 hover:bg-blue">
-                  Read our story <Arrow />
-                </Link>
-                <a href="/leadership" className="group inline-flex items-center gap-2 text-[15px] font-semibold text-blue">
-                  Meet the leadership <Arrow className="transition-transform group-hover:translate-x-1" />
-                </a>
-              </div>
-            )}
+            </details>
+            {PILLARS.map(({ icon: Icon, title, text }) => (
+              <details key={title} name="about-g-tec" className={accordionItem}>
+                <summary className={accordionHead}>
+                  <span className="flex items-center gap-3">
+                    <Icon className="size-5 flex-none text-red" strokeWidth={1.8} />
+                    {title}
+                  </span>
+                  <ChevronDown className={accordionChevron} />
+                </summary>
+                <p className="px-6 pb-6 text-[15px] leading-[1.7] text-pretty text-ink-2">{text}</p>
+              </details>
+            ))}
           </div>
 
-          <dl data-stagger className="flex flex-col self-center divide-y divide-ink/10 border-y border-ink/10">
-            {STATS.slice(0, 4).map((s) => (
-              <div key={s.label} className="flex items-baseline justify-between gap-4 py-5">
-                <dt className="text-sm font-semibold text-ink-2">{s.label}</dt>
-                <dd className="font-display text-[clamp(32px,3vw,44px)] leading-none font-extrabold tracking-tight">
-                  {s.value}
-                  <span className="text-red">{s.suffix}</span>
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-
-        {/* Pillars */}
-        <div data-stagger className="mt-[clamp(48px,6vw,88px)] grid gap-4 md:grid-cols-3">
-          {PILLARS.map(({ icon: Icon, title, text }, i) => (
-            <div key={title} className="group relative overflow-hidden rounded-[28px] bg-white p-8 ring-1 ring-ink/6 transition duration-500 ease-out-expo hover:-translate-y-1 hover:bg-blue hover:text-white">
-              <span className="font-display absolute top-6 right-7 text-sm font-bold text-ink/20 group-hover:text-white/40">0{i + 1}</span>
-              <Icon className="mb-10 size-8 text-red" strokeWidth={1.8} />
-              <h3 className="font-display mb-2 text-xl font-bold tracking-tight">{title}</h3>
-              <p className="text-[15px] leading-relaxed text-ink-2 transition group-hover:text-white/75">{text}</p>
+          <figure data-reveal="0.2" className="relative sm:px-12 sm:py-16">
+            <div aria-hidden className="pointer-events-none absolute inset-0 hidden sm:block">
+              <div className="absolute inset-[4%_0_0_8%] [mask-image:radial-gradient(closest-side,#000_60%,transparent)] bg-[radial-gradient(rgba(0,66,130,.28)_1px,transparent_1.5px)] bg-[size:10px_10px]" />
+              <div className="absolute inset-[2%_3%_2%_6%] rounded-[58%_42%_46%_54%/44%_56%_44%_56%] bg-sky/35" />
+              <div className="absolute inset-[-1%_0_0_3%] rotate-6 rounded-[58%_42%_46%_54%/44%_56%_44%_56%] border border-ink/12" />
             </div>
-          ))}
+            <img src={`${SITE}/assets/img/home/intro-tmb-lg.webp`} alt="G-TEC students" className="relative aspect-[4/3] w-full rounded-[24px] object-cover shadow-[0_24px_60px_rgba(11,26,51,.2)]" />
+            <dl className="mt-3 grid grid-cols-2 gap-3 sm:contents">
+              {STATS.slice(0, 4).map((s, i) => (
+                <div key={s.label} className={cn("rounded-2xl bg-white px-5 py-4 shadow-[0_14px_36px_rgba(11,26,51,.14)] ring-1 ring-ink/[.05] sm:absolute", STAT_SPOTS[i])}>
+                  <dd className="font-display text-[clamp(26px,2.4vw,34px)] leading-none font-extrabold tracking-tight">
+                    {s.value}
+                    <span className="text-red">{s.suffix}</span>
+                  </dd>
+                  <dt className="mt-1.5 text-[13px] font-semibold text-ink-2">{s.label}</dt>
+                </div>
+              ))}
+            </dl>
+          </figure>
         </div>
       </div>
     </section>
+  );
+}
+
+/** Height of the wave at `x` (0-1) and loop time `t` (0-1). Two curves travelling in opposite directions roll and swell without ever going flat. */
+const waveY = (x: number, t: number) => 135 + 42 * Math.sin(2 * Math.PI * (x * 1.3 + t)) + 20 * Math.sin(2 * Math.PI * (x * 2.2 - 2 * t));
+
+/** One frame of the wave: smooth curves through 9 points, filled up past the top of the viewBox. Every frame has the same commands so the browser can morph between them. */
+function wavePath(t: number) {
+  const STEPS = 8;
+  const slope = (x: number) => (waveY(x + 0.001, t) - waveY(x - 0.001, t)) / 0.002 / STEPS / 3;
+  let d = `M0 ${waveY(0, t).toFixed(1)}`;
+  for (let i = 0; i < STEPS; i++) {
+    const [a, b] = [i / STEPS, (i + 1) / STEPS];
+    const [xa, xb] = [a * 1900, b * 1900];
+    const third = (xb - xa) / 3;
+    d += `C${(xa + third).toFixed(1)} ${(waveY(a, t) + slope(a)).toFixed(1)} ${(xb - third).toFixed(1)} ${(waveY(b, t) - slope(b)).toFixed(1)} ${xb.toFixed(1)} ${waveY(b, t).toFixed(1)}`;
+  }
+  return `${d}V59H0Z`;
+}
+
+const WAVE_FRAMES = Array.from({ length: 9 }, (_, i) => wavePath(i / 8));
+
+/** Slowly rolling edge between two sections. Sits over the top of the lower section, so its glow carries on underneath; `fill` is the upper section's colour. */
+export function WaveDivider({ fill = "fill-white", begin = "0s", height = "h-[clamp(52px,8vw,128px)]" }: { fill?: string; begin?: string; height?: string }) {
+  return (
+    <div aria-hidden className="pointer-events-none relative z-10 h-0">
+      <svg data-wave viewBox="0 60 1900 155" preserveAspectRatio="none" className={cn("absolute top-0 block w-full overflow-visible", height)}>
+        <path className={fill} d={WAVE_FRAMES[0]}>
+          <animate attributeName="d" values={WAVE_FRAMES.join(";")} dur="18s" begin={begin} repeatCount="indefinite" />
+        </path>
+      </svg>
+    </div>
   );
 }
 
@@ -587,16 +685,16 @@ export function News({ heading = true }: { heading?: boolean }) {
 
 export function Subsidiaries() {
   return (
-    <section className="rounded-t-[40px] bg-navy py-16">
+    <section className="bg-white py-16 text-ink">
       <div className={cn(wrap, "flex flex-wrap items-center gap-8")}>
         <div data-reveal="0" className="flex-none">
-          <div className="mb-2 text-xs font-bold tracking-[.18em] text-white/50 uppercase">Group of institutions</div>
+          <div className="mb-2 text-xs font-bold tracking-[.18em] text-ink-2 uppercase">Group of institutions</div>
           <div className="font-display text-[22px] font-bold tracking-tight">Our subsidiaries</div>
         </div>
         <div data-stagger className="flex flex-1 flex-wrap justify-end gap-3">
           {SUBSIDIARIES.map((s) => (
-            <a key={s.name} href={s.url} className="flex h-18 w-37.5 items-center justify-center rounded-2xl bg-white p-3 transition duration-300 ease-out-expo hover:-translate-y-1">
-              <img src={s.img} alt={s.name} loading="lazy" className="max-h-full max-w-full object-contain" />
+            <a key={s.name} href={s.url} className="flex h-18 w-37.5 items-center justify-center p-3 transition duration-300 ease-out-expo hover:-translate-y-1">
+              <img src={s.logo} alt={s.name} loading="lazy" className="max-h-full max-w-full object-contain" />
             </a>
           ))}
         </div>

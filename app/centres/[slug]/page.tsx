@@ -30,7 +30,7 @@ export default async function CentrePage({ params }: Props) {
       <MistSection className="grid items-start gap-10 lg:grid-cols-[1fr_360px]">
         <div className="grid min-w-0 gap-10">
           {c.banner && <img src={c.banner} alt={c.name} className="aspect-[16/8] w-full rounded-[28px] object-cover" />}
-          <div className="rounded-[28px] bg-white p-[clamp(24px,4vw,48px)] ring-1 ring-ink/6">
+          <div className="rounded-[28px] bg-white p-[clamp(24px,4vw,48px)] ring-1 ring-ink/[.07] shadow-card">
             <h2 className={h2}>About the centre</h2>
             <p className="leading-relaxed text-ink-2">{c.about}</p>
           </div>
@@ -41,11 +41,11 @@ export default async function CentrePage({ params }: Props) {
                 {c.courses.map((x) => (
                   <li key={x.title}>
                     {x.href ? (
-                      <Link href={x.href} className="flex h-full items-center justify-between gap-3 rounded-[20px] bg-white px-5 py-4 text-[15px] font-semibold ring-1 ring-ink/6 transition hover:ring-blue/40">
+                      <Link href={x.href} className="flex h-full items-center justify-between gap-3 rounded-[20px] bg-white px-5 py-4 text-[15px] font-semibold ring-1 ring-ink/[.07] shadow-card transition hover:ring-blue/40">
                         {x.title} <ArrowUpRight className="size-4 flex-none text-blue" />
                       </Link>
                     ) : (
-                      <span className="flex h-full items-center rounded-[20px] bg-white px-5 py-4 text-[15px] font-semibold ring-1 ring-ink/6">{x.title}</span>
+                      <span className="flex h-full items-center rounded-[20px] bg-white px-5 py-4 text-[15px] font-semibold ring-1 ring-ink/[.07] shadow-card">{x.title}</span>
                     )}
                   </li>
                 ))}
@@ -66,7 +66,7 @@ export default async function CentrePage({ params }: Props) {
             {c.phones.map((p) => (
               <a key={p} href={`tel:+91${p.replace(/\D/g, "")}`} className="flex items-center gap-3 text-[15px] font-semibold hover:text-coral"><Phone className="size-4 text-coral" /> {p}</a>
             ))}
-            {c.email && <a href={`mailto:${c.email}`} className="flex items-center gap-3 text-[15px] font-semibold break-all hover:text-coral"><Mail className="size-4 flex-none text-coral" /> {c.email}</a>}
+            {c.email && <a href={`mailto:${c.email}`} className="flex items-center gap-3 text-[14px] font-semibold [overflow-wrap:anywhere] hover:text-coral"><Mail className="size-4 flex-none text-coral" /> {c.email}</a>}
           </div>
           <div id="enquire" className="scroll-mt-28">
             <SiteForm form="centre-enquiry" submit="Send enquiry">

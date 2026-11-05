@@ -23,7 +23,8 @@ function MenuLink({ link, className }: { link: NavLink; className?: string }) {
 }
 
 const topLink = "flex h-10 items-center gap-1 rounded-full px-2.5 text-base font-medium whitespace-nowrap transition-colors hover:text-blue 2xl:px-3.5";
-const panel = "invisible absolute top-full left-0 z-10 pt-3 opacity-0 transition duration-200 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100";
+// Mouse users open on hover only, so a clicked trigger can't hold its menu open over the next one. Keyboard users open on focus. Closing turns transparent at once, so two menus never overlap; visibility lags slightly so Tab can still land on a link inside.
+const panel = "invisible absolute top-full left-0 z-10 pt-3 opacity-0 [transition:visibility_0s_linear_60ms] group-hover:visible group-hover:opacity-100 group-hover:[transition:opacity_200ms] group-has-[:focus-visible]:visible group-has-[:focus-visible]:opacity-100";
 const panelInner = "max-h-[calc(100svh-6rem)] w-72 overflow-y-auto rounded-2xl bg-white p-2 shadow-[0_16px_48px_rgba(11,26,51,.16)] ring-1 ring-ink/[.06]";
 const panelLink = "block rounded-xl px-3.5 py-2.5 text-base font-medium text-ink transition hover:bg-mist";
 
@@ -49,7 +50,7 @@ function DesktopItem({ item, pathname }: { item: NavItem; pathname: string }) {
     return <Link href={item.href} aria-current={on ? "page" : undefined} className={cn(topLink, on && "text-blue")}>{item.label}</Link>;
   }
   const on = item.children.some((c) => isActive(pathname, c.href));
-  return <Dropdown item={item} pathname={pathname} trigger={cn(topLink, "group-focus-within:text-blue group-hover:text-blue", on && "text-blue")} />;
+  return <Dropdown item={item} pathname={pathname} trigger={cn(topLink, "group-hover:text-blue group-has-[:focus-visible]:text-blue", on && "text-blue")} />;
 }
 
 export function Header() {

@@ -20,6 +20,22 @@ const CYCLE_MS = 3200;
 const IDLE_TOSS_MS = 9000;
 // Picker labels, in COURSES order. Each is contained in the full course title, so the accessible name still matches.
 const SHORT = ["Robotics", "Software", "Multimedia", "Networking", "Finance", "CAD", "Non-IT"];
+// What the picker offers: every programme, plus SAP, which G-TEC runs as its own certification track under Finance.
+const PICKS: { label: string; title: string; note: string; href: string; img: number | { src: string; alt: string } }[] = COURSES.flatMap((c, i) => {
+  const pick = { label: SHORT[i], title: c.title, note: c.note, href: `/courses/${c.slug}`, img: i };
+  return c.slug !== "finance-and-business-management"
+    ? [pick]
+    : [
+        pick,
+        {
+          label: "SAP",
+          title: "SAP Global Certification",
+          note: "10 certificate courses",
+          href: `/courses/${c.slug}/sap-global-certification`,
+          img: { src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1000&q=75", alt: "Laptop showing a business dashboard" },
+        },
+      ];
+});
 const CONFETTI = ["#8ec5ff", "#e60000", "#004282", "#ffffff"];
 
 const Ctx = createContext<{
@@ -79,7 +95,7 @@ export function HeroProvider({ images, children }: { images: Img[]; children: Re
   useEffect(() => {
     if (reduced || paused) return;
     const cycle = setInterval(() => {
-      if (!held.current && canPlay()) setActive((a) => (a >= COURSES.length - 1 ? -1 : a + 1));
+      if (!held.current && canPlay()) setActive((a) => (a >= PICKS.length - 1 ? -1 : a + 1));
     }, CYCLE_MS);
     const caps = setInterval(() => {
       if (canPlay()) toss(6);
@@ -128,19 +144,19 @@ export function CoursePicker({ className, style }: { className?: string; style?:
         )}
       </div>
       <div className="flex flex-wrap items-center gap-1" onPointerEnter={() => hold(true)} onPointerLeave={() => hold(false)} onFocus={() => hold(true)} onBlur={() => hold(false)}>
-        {COURSES.map((c, i) => {
+        {PICKS.map((c, i) => {
           const on = i === active;
           return (
             <Link
-              key={c.slug}
-              href={`/courses/${c.slug}`}
+              key={c.label}
+              href={c.href}
               aria-label={c.title}
               onPointerEnter={(e) => e.pointerType === "mouse" && select(i)}
               onFocus={() => select(i)}
-              className={cn("relative rounded-full border px-2.5 py-1.5 text-[12.5px] font-semibold transition-colors duration-300 active:scale-[.96]", on ? "border-blue text-white" : "border-blue/25 text-blue hover:border-blue")}
+              className={cn("relative rounded-full border px-2 py-1.5 text-[12.5px] font-semibold transition-colors duration-300 active:scale-[.96]", on ? "border-blue text-white" : "border-blue/25 text-blue hover:border-blue")}
             >
               {on && <motion.span layoutId="hero-pick" transition={{ type: "spring", stiffness: 420, damping: 34 }} className="absolute -inset-px rounded-full bg-blue" />}
-              <span className="relative">{SHORT[i]}</span>
+              <span className="relative">{c.label}</span>
             </Link>
           );
         })}
@@ -215,13 +231,13 @@ export function PhotoDeck({ src, alt, clip, backing, focus }: { src: string; alt
     return () => clearTimeout(t);
   }, []);
 
-  const sheets = [{ src, alt, focus }, ...images.slice(0, COURSES.length).map((i) => ({ ...i, focus: undefined }))];
+  const sheets = [{ src, alt, focus }, ...PICKS.map((p) => ({ ...(typeof p.img === "number" ? images[p.img] : p.img), focus: undefined }))];
   const N = sheets.length;
   const top = active + 1;
   const last = useRef({ top, thrown: -1 });
   const throwDir = useRef(1);
   if (last.current.top !== top) last.current = { top, thrown: last.current.top };
-  const course = COURSES[active];
+  const course = PICKS[active];
 
   return (
     <motion.div
@@ -264,7 +280,7 @@ export function PhotoDeck({ src, alt, clip, backing, focus }: { src: string; alt
               if (Math.abs(info.offset.x) < 70 && Math.abs(info.velocity.x) < 500) return;
               throwDir.current = info.offset.x < 0 ? -1 : 1;
               setTimeout(() => (throwDir.current = 1), 900);
-              select(active >= COURSES.length - 1 ? -1 : active + 1);
+              select(active >= PICKS.length - 1 ? -1 : active + 1);
             }}
             initial={false}
             animate={pose}
@@ -284,7 +300,7 @@ export function PhotoDeck({ src, alt, clip, backing, focus }: { src: string; alt
       })}
       <AnimatePresence>
         {course && (
-          <motion.div key={course.slug} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8, transition: { duration: 0.18 } }} transition={{ duration: 0.5, delay: 0.15, ease: EASE }} className="pointer-events-none absolute right-[5%] bottom-[12%] z-50 max-w-[62%] rounded-lg bg-white px-3.5 py-2.5 text-ink shadow-[0_10px_28px_rgba(0,31,66,.28)]">
+          <motion.div key={course.label} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8, transition: { duration: 0.18 } }} transition={{ duration: 0.5, delay: 0.15, ease: EASE }} className="pointer-events-none absolute right-[5%] bottom-[12%] z-50 max-w-[62%] rounded-lg bg-white px-3.5 py-2.5 text-ink shadow-[0_10px_28px_rgba(0,31,66,.28)]">
             <p className="font-display text-[15px] leading-tight font-bold tracking-tight sm:text-lg">{course.title}</p>
             <p className="mt-0.5 text-[12px] font-medium text-ink-2 sm:text-[13px]">{course.note}</p>
           </motion.div>

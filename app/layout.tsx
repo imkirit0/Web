@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${display.variable} ${manrope.variable} ${arimo.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: motionFlag }} />
-        <noscript><style>{`[data-accordion-panel]{height:auto!important;opacity:1!important}`}</style></noscript>
+        <noscript><style>{`[data-accordion-panel]{height:auto!important;opacity:1!important}#site-loader{display:none!important}.hero-word,.hero-fade,.hero-tear,.hero-brush,.hero-chip{animation-play-state:running!important}`}</style></noscript>
       </head>
       <body className="font-sans">
         <a href="#main" className="fixed top-2 left-2 z-[100] -translate-y-20 rounded-lg bg-blue px-4 py-3 font-bold text-white transition-transform focus-visible:translate-y-0">Skip to content</a>

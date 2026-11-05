@@ -43,7 +43,7 @@ export function Hero() {
         <WaveDivider fill="fill-white" begin="-11s" height="h-[clamp(36px,4.5vw,70px)]" />
       </div>
 
-      <div className={cn(wrap, "relative grid gap-8 lg:min-h-[max(620px,calc(100svh-4.5rem))] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]")}>
+      <div className={cn(wrap, "relative grid gap-8 lg:min-h-[max(620px,calc(100svh-4.5rem))] lg:grid-cols-[minmax(0,1.06fr)_minmax(0,1.1fr)]")}>
         <HeroProvider images={COURSE_IMAGES}>
         <div data-hero-copy className="flex flex-col justify-center pt-[clamp(36px,6vh,64px)] lg:pb-[calc(clamp(96px,14vh,140px)+32px)]">
           <h1 className="font-display mb-5 text-[clamp(42px,min(5.2vw,8.8svh),76px)] leading-[1.02] font-bold tracking-[-.035em]">

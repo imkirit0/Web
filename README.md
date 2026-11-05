@@ -14,4 +14,4 @@ Built from the `G-TEC Landing.dc.html` design.
 - Sections are in `components/sections.tsx`; scroll reveals, counters, hero parallax and card spotlight in `components/Motion.tsx`.
 - Home-page concept, rules and Framer Motion primitives: see `DESIGN.md` and `components/motion-kit.tsx`.
 - Enquiries are validated server-side (`app/actions.ts`) and appended to `data/enquiries.jsonl`.
-- Loader video: put the clip at `public/video/loading.mp4`.
+- Loader: `components/Loader.tsx` animates the logo from layers in `public/loader/`, cut from `public/logo.png`. They stack back into the exact logo, so replace them together if the logo changes.

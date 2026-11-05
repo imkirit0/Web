@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Quote } from "lucide-react";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { Band, pageImages } from "@/components/about-pages";
 
 export const metadata: Metadata = { title: "Leadership", description: "Mr. Mehroof I Manalody, Founder, Chairman and Managing Director of G-TEC Education." };

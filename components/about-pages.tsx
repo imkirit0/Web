@@ -1,4 +1,4 @@
-import { Eyebrow } from "@/components/sections";
+import { Eyebrow } from "@/components/page-hero";
 import { wrap } from "@/components/courses";
 import { PAGES } from "@/lib/content";
 import { cn } from "@/lib/utils";

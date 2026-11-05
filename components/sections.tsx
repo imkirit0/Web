@@ -1,6 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, Award, Briefcase, Check, ChevronDown, FlaskConical, Globe2, Landmark, Mail, MessageCircle, Phone } from "lucide-react";
-import { EnquiryForm } from "@/components/EnquiryForm";
+import { ArrowRight, Award, Briefcase, FlaskConical, Globe2, Landmark, Mail, MessageCircle, Phone } from "lucide-react";
+import { AboutAccordion } from "@/components/AboutAccordion";
+import { CourseExplorer } from "@/components/CourseExplorer";
+import { NewsRows } from "@/components/NewsRows";
+import { CapLayer, CoursePicker, FactChip, HeroBrush, HeroProvider, LoosePhoto, PhotoDeck } from "@/components/hero/HeroInteractive";
+import { BrushStroke, DepthLayer, HeroDepth, Magnetic, Parallax, RiseWords, ScrollWords } from "@/components/motion-kit";
 import { Stories } from "@/components/Stories";
 import { GlobeNetwork } from "@/components/GlobeNetwork";
 import { TiltedGridHero } from "@/components/ui/tilted-grid-hero";
@@ -15,7 +19,7 @@ import {
   SUBSIDIARIES,
   type Course,
 } from "@/lib/data";
-import { cn } from "@/lib/utils";
+import { cn, tornEdge } from "@/lib/utils";
 
 const SITE = "https://www.gteceducation.com";
 const wrap = "mx-auto w-[min(1240px,100%)] px-6";
@@ -23,110 +27,86 @@ const h2 = "font-display text-[clamp(32px,4.2vw,54px)] font-bold leading-[1.06] 
 const section = "py-[clamp(80px,9vw,136px)]";
 const blob = "animate-float pointer-events-none absolute rounded-full";
 
-export function Eyebrow({ children, light }: { children: React.ReactNode; light?: boolean }) {
-  return (
-    <div data-reveal="0" className={cn("mb-5 flex items-center gap-3 text-xs font-bold tracking-[.18em] uppercase", light ? "text-red" : "text-coral")}>
-      <span className="h-0.5 w-7 bg-red" />
-      {children}
-    </div>
-  );
-}
-
 function Arrow({ className }: { className?: string }) {
   return <ArrowRight className={cn("size-4", className)} strokeWidth={2.4} />;
 }
 
 /* ── Hero (home) ───────────────────────────────────────────── */
 
-/** Rough paper edge: a CSS polygon that wobbles along the outline through `corners` (percentages). Seeded, so server and client always match. */
-function tornEdge(corners: [number, number][], seed: number, rough = 0.5) {
-  let n = seed;
-  let step = 0;
-  // Slow drift plus fine grain, so the edge wanders like torn paper instead of a regular zigzag.
-  const wobble = () => Math.sin(++step * 0.37 + seed) * rough * 1.6 + ((n = (n * 16807) % 2147483647) / 2147483647 - 0.5) * rough;
-  const points = corners.flatMap(([x, y], i) => {
-    const [nx, ny] = corners[(i + 1) % corners.length];
-    const steps = Math.max(2, Math.round(Math.hypot(nx - x, ny - y) / 1.6));
-    return Array.from({ length: steps }, (_, s) => `${(x + ((nx - x) * s) / steps + wobble()).toFixed(1)}% ${(y + ((ny - y) * s) / steps + wobble()).toFixed(1)}%`);
-  });
-  return `polygon(${points.join(",")})`;
-}
-
 const HERO_TOP_TEAR: [number, number][] = [[1, 3], [99, 1], [100, 98], [80, 98], [66, 84], [42, 78], [18, 72], [3, 42]];
 const HERO_LOW_TEAR: [number, number][] = [[4, 5], [97, 1], [100, 91], [7, 99], [1, 58]];
 
-function TornPhoto({ src, alt, tear, seed, focus, className }: { src: string; alt: string; tear: [number, number][]; seed: number; focus: string; className: string }) {
-  return (
-    <div className={cn("absolute drop-shadow-[0_6px_10px_rgba(0,31,66,.16)]", className)}>
-      <div aria-hidden className="absolute -inset-1.5 bg-white" style={{ clipPath: tornEdge(tear, seed + 7, 0.8) }} />
-      <img src={src} alt={alt} fetchPriority="high" className="relative size-full object-cover" style={{ clipPath: tornEdge(tear, seed), objectPosition: focus }} />
-    </div>
-  );
-}
-
-function HeroChip({ icon: Icon, className, children }: { icon: typeof Award; className: string; children: React.ReactNode }) {
-  return (
-    <div className={cn("absolute flex items-center gap-2 rounded-md bg-white px-3 py-2 text-[13px] font-semibold whitespace-nowrap text-ink shadow-[0_8px_24px_rgba(0,31,66,.2)] sm:text-sm", className)}>
-      <Icon className="size-4 flex-none text-blue" />
-      {children}
-    </div>
-  );
-}
-
 export function Hero() {
   return (
-    <section data-hero className="relative overflow-hidden bg-white pt-18 text-blue">
+    <section data-hero data-pause-offscreen className="relative overflow-hidden bg-white pt-18 text-blue">
       <div aria-hidden className="absolute inset-x-0 bottom-0 isolate h-[clamp(96px,14vh,140px)] bg-blue">
         <WaveDivider fill="fill-white" begin="-11s" height="h-[clamp(36px,4.5vw,70px)]" />
       </div>
 
       <div className={cn(wrap, "relative grid gap-8 lg:min-h-[max(620px,calc(100svh-4.5rem))] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]")}>
+        <HeroProvider images={COURSE_IMAGES}>
         <div data-hero-copy className="flex flex-col justify-center pt-[clamp(36px,6vh,64px)] lg:pb-[calc(clamp(96px,14vh,140px)+32px)]">
-          <h1 className="font-display mb-6 text-[clamp(42px,5.2vw,76px)] leading-[1.02] font-bold tracking-[-.035em]">
+          <h1 className="font-display mb-5 text-[clamp(42px,min(5.2vw,8.8svh),76px)] leading-[1.02] font-bold tracking-[-.035em]">
             {["Making", "Professionals", "Globally."].map((w, i) => (
-              <span key={w} className="-mb-[.1em] block overflow-hidden pb-[.1em]">
-                <span className="hero-word" style={{ "--i": i } as React.CSSProperties}>{w}</span>
+              <span key={w} className="-mt-[.12em] -mb-[.1em] block overflow-hidden pt-[.12em] pb-[.1em]">
+                <span className="hero-word" style={{ "--i": i } as React.CSSProperties}>
+                  <span className="sr-only">{w}</span>
+                  {/* Letters lift under the cursor; screen readers get the whole word above. */}
+                  <span aria-hidden>
+                    {w.replace(".", "").split("").map((l, j) => <span key={j} className="hero-letter">{l}</span>)}
+                    {w.endsWith(".") && <span className="hero-dot text-red">.</span>}
+                  </span>
+                </span>
               </span>
             ))}
           </h1>
-          <p className="hero-fade mb-7 max-w-[520px] text-[clamp(16px,1.3vw,18px)] leading-relaxed text-pretty text-ink-2" style={{ "--d": ".55s" } as React.CSSProperties}>
+          <p className="hero-fade mb-6 max-w-[520px] text-[clamp(16px,1.3vw,18px)] leading-relaxed text-pretty text-ink-2" style={{ "--d": ".55s" } as React.CSSProperties}>
             For 25 years we&apos;ve helped students learn IT, pick up real skills and land jobs they&apos;re proud of. Today
             that&apos;s 800+ centres in 23 countries, and employers know our name.
           </p>
           <div className="hero-fade flex flex-wrap items-center gap-3" style={{ "--d": ".7s" } as React.CSSProperties}>
-            <a href="#enquire" className="inline-flex items-center rounded-lg bg-blue px-6 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-dark">
-              Enquire Now
-            </a>
-            <Link href="/courses" className="inline-flex items-center rounded-lg border border-blue/30 bg-white px-6 py-3.5 text-[15px] font-semibold text-blue transition-colors hover:border-blue hover:bg-ice">
-              Explore Courses
-            </Link>
+            <Magnetic>
+              <a href="#enquire" className="group inline-flex items-center gap-2 rounded-full bg-blue px-6 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-dark active:scale-[.97]">
+                Enquire now <Arrow className="transition-transform duration-300 ease-out-expo group-hover:translate-x-1" />
+              </a>
+            </Magnetic>
+            <Magnetic strength={0.18}>
+              <Link href="/courses" className="inline-flex items-center rounded-full border border-blue/30 bg-white px-6 py-3.5 text-[15px] font-semibold text-blue transition-colors hover:border-blue hover:bg-ice active:scale-[.97]">
+                Explore Courses
+              </Link>
+            </Magnetic>
           </div>
-          <dl className="hero-fade mt-9 flex flex-wrap gap-x-9 gap-y-4 border-t border-blue/15 pt-6" style={{ "--d": ".85s" } as React.CSSProperties}>
+          <CoursePicker className="hero-fade mt-7" style={{ "--d": ".8s" } as React.CSSProperties} />
+          <dl className="hero-fade mt-6 flex flex-wrap gap-x-9 gap-y-4 border-t border-blue/15 pt-5" style={{ "--d": ".95s" } as React.CSSProperties}>
             {STATS.slice(1, 4).map((s) => (
-              <div key={s.label}>
-                <dd className="font-display text-[clamp(26px,2.4vw,34px)] leading-none font-bold tracking-tight">{s.value}{s.suffix}</dd>
+              <div key={s.label} className="transition-transform duration-300 ease-out-expo hover:-translate-y-1">
+                <dd className="font-display text-[clamp(26px,2.4vw,34px)] leading-none font-bold tracking-tight tabular-nums"><span data-count={s.value}>{s.value}</span>{s.suffix}</dd>
                 <dt className="mt-1.5 text-[13px] font-semibold text-ink-2">{s.label}</dt>
               </div>
             ))}
           </dl>
         </div>
 
-        <div className="relative h-[clamp(440px,100vw,600px)] lg:h-auto">
-          <div aria-hidden className="absolute top-[1%] right-0 h-[5%] w-[52%] bg-sky" style={{ clipPath: tornEdge([[0, 45], [100, 0], [100, 100], [0, 100]], 11, 8) }} />
-          <TornPhoto src={unsplash("1522202176988-66273c2fd55f")} alt="Students laughing together around their laptops" tear={HERO_TOP_TEAR} seed={23} focus="62% 40%" className="top-[3%] -right-[6%] h-[60%] w-full" />
-          <TornPhoto src="/hero/graduates.jpg" alt="Graduates in gowns cheering as their caps fly into the air" tear={HERO_LOW_TEAR} seed={41} focus="50% 80%" className="bottom-[5%] left-0 h-[44%] w-[58%]" />
-
-          <HeroChip icon={Award} className="top-[9%] right-[2%]">ISO-certified</HeroChip>
-          <HeroChip icon={Landmark} className="top-[7%] left-[10%]">Government partner</HeroChip>
-
-          <svg aria-hidden viewBox="0 0 400 420" className="absolute right-[3%] bottom-[5%] h-[32%] w-auto overflow-visible">
-            <filter id="hero-brush" x="-10%" y="-10%" width="120%" height="120%">
-              <feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="4" />
-              <feDisplacementMap in="SourceGraphic" scale="7" />
-            </filter>
-            <path d="M20 215 300 25 95 345 345 215 372 400" filter="url(#hero-brush)" className="fill-none stroke-sky" strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
+        {/* Paper collage: each layer enters on its own beat (CSS), then drifts with the cursor and scroll at its own depth. */}
+        <HeroDepth className="relative h-[clamp(440px,100vw,600px)] lg:h-auto">
+          <DepthLayer depth={38} scroll={-70} tilt={5}>
+            <div className="hero-tear absolute top-[3%] -right-[6%] h-[60%] w-full" style={{ "--d": ".2s", "--r": "4deg" } as React.CSSProperties}>
+              <PhotoDeck src={unsplash("1522202176988-66273c2fd55f")} alt="Students laughing together around their laptops" clip={tornEdge(HERO_TOP_TEAR, 23)} backing={tornEdge(HERO_TOP_TEAR, 30, 0.8)} focus="62% 40%" />
+            </div>
+          </DepthLayer>
+          <DepthLayer depth={-56} scroll={-130} tilt={-7}>
+            <LoosePhoto src="/hero/graduates.jpg" alt="Graduates in gowns cheering as their caps fly into the air" clip={tornEdge(HERO_LOW_TEAR, 41)} backing={tornEdge(HERO_LOW_TEAR, 48, 0.8)} focus="50% 80%" className="bottom-[5%] left-0 h-[44%] w-[58%]" delay=".42s" tilt="-5deg" />
+          </DepthLayer>
+          <DepthLayer depth={-90} scroll={-190} tilt={4}>
+            <HeroBrush />
+          </DepthLayer>
+          <DepthLayer depth={70} scroll={-100} tilt={3}>
+            <FactChip label="ISO-certified" fact="Every centre is held to the same audited standard, so you get the same quality wherever you study." icon={<Award className="size-4 flex-none text-blue" />} className="top-[20%] right-[2%] sm:top-[9%]" delay=".95s" />
+            <FactChip label="Government partner" fact="Governments trust us to run their skilling projects. That says a lot about how we teach." icon={<Landmark className="size-4 flex-none text-blue" />} className="top-[7%] left-0 sm:left-[10%]" delay="1.1s" />
+          </DepthLayer>
+          <CapLayer />
+        </HeroDepth>
+        </HeroProvider>
       </div>
     </section>
   );
@@ -148,48 +128,6 @@ export function Stats() {
   );
 }
 
-/* ── Page hero (inner pages) ───────────────────────────────── */
-
-/** Layered navy backdrop shared by every inner-page header: fine grid, brand glows, fade at the bottom. */
-export function HeroBackdrop() {
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.045)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.045)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_80%_70%_at_70%_20%,#000_20%,transparent_75%)] bg-[size:56px_56px]" />
-      <div className="absolute -top-40 right-[-10%] size-[640px] rounded-full bg-[radial-gradient(circle,rgba(0,102,204,.42),transparent_62%)] blur-[30px]" />
-      <div className="absolute top-[30%] left-[-12%] size-[420px] rounded-full bg-[radial-gradient(circle,rgba(255,1,0,.16),transparent_65%)] blur-[40px]" />
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
-    </div>
-  );
-}
-
-export function PageHero({ eyebrow, title, intro, children }: { eyebrow: string; title: string; intro?: string; children?: React.ReactNode }) {
-  return (
-    <section className="relative overflow-hidden bg-navy pt-[clamp(140px,16vw,184px)] pb-[clamp(56px,7vw,96px)]">
-      <HeroBackdrop />
-      <div className={cn(wrap, "relative")}>
-        <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-[13px] font-medium text-white/50">
-          <Link href="/" className="-my-2 py-2 transition hover:text-white">Home</Link>
-          <span className="size-1 rounded-full bg-white/25" />
-          <span className="text-white/80">{eyebrow}</span>
-        </nav>
-        <div className="grid items-end gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
-          <div>
-            <Eyebrow>{eyebrow}</Eyebrow>
-            <h1 data-reveal="0.1" className="font-display text-[clamp(40px,5.4vw,76px)] leading-[1.02] font-bold tracking-[-.04em] text-balance">
-              {title}
-            </h1>
-          </div>
-          {intro && (
-            <p data-reveal="0.2" className="border-l border-white/15 pl-6 text-[17px] leading-relaxed text-pretty text-white/72 lg:mb-2">
-              {intro}
-            </p>
-          )}
-        </div>
-        {children}
-      </div>
-    </section>
-  );
-}
 
 /* ── Flash news ticker ─────────────────────────────────────── */
 
@@ -202,7 +140,7 @@ export function Ticker() {
     </div>
   );
   return (
-    <div className="flex items-stretch overflow-hidden bg-red">
+    <div data-pause-offscreen className="flex items-stretch overflow-hidden bg-red-dark">
       <div className="font-display flex flex-none items-center gap-2.5 bg-[#C40000] px-5.5 py-3.5 text-xs font-bold tracking-[.16em] uppercase">
         <span className="size-[7px] rounded-full bg-white" />
         Flash News
@@ -221,7 +159,7 @@ export function Ticker() {
 
 export function Affiliations() {
   return (
-    <section aria-label="Affiliations" className="-mb-10 bg-white pt-8 pb-14">
+    <section data-pause-offscreen aria-label="Affiliations" className="-mb-10 bg-white pt-8 pb-14">
       <div className="overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
         <div className="marquee flex w-max" style={{ "--dur": "48s" } as React.CSSProperties}>
           {[...AFFILIATIONS, ...AFFILIATIONS].map((a, i) => (
@@ -250,11 +188,11 @@ const PILLARS = [
   { icon: Landmark, title: "Government partner", text: "Governments trust us to run their skilling projects. That says a lot about how we teach." },
 ];
 
-const accordionItem = "group rounded-[20px] border border-ink/15 bg-white transition-colors open:border-blue";
-const accordionHead = "font-display flex cursor-pointer list-none items-center justify-between gap-4 rounded-[20px] p-6 text-lg font-bold [&::-webkit-details-marker]:hidden";
-const accordionChevron = "size-5 flex-none text-ink-2 transition-transform group-open:rotate-180";
 /** Where each floating number sits around the About photo, in `STATS` order. */
 const STAT_SPOTS = ["sm:bottom-3 sm:left-0", "sm:top-2 sm:left-[34%]", "sm:right-0 sm:bottom-[14%]", "sm:top-[16%] sm:right-0"];
+/** Each number drifts at its own speed, so they read as floating in front of the photo. */
+const STAT_DRIFT: [number, number][] = [[70, -70], [40, -50], [90, -60], [50, -90]];
+const words = (text: string) => text.split(" ").map((t) => ({ text: t }));
 
 function InlinePhoto({ src, alt }: { src: string; alt: string }) {
   return (
@@ -269,83 +207,82 @@ function InlinePhoto({ src, alt }: { src: string; alt: string }) {
 
 export function About({ cta = true }: { cta?: boolean }) {
   return (
-    <section id="about" className={cn(section, "rounded-t-[40px] bg-white pt-[clamp(32px,3.5vw,48px)] text-ink")}>
+    <section id="about" className={cn(section, "overflow-x-clip rounded-t-[40px] bg-white pt-[clamp(32px,3.5vw,48px)] text-ink")}>
       <div className={wrap}>
         {/* Statement headline with inline photos */}
         <div className="mx-auto mb-[clamp(56px,7vw,104px)] max-w-[1080px] text-center">
-          <div className="flex justify-center">
-            <Eyebrow light>About G-TEC</Eyebrow>
-          </div>
-          <h2 data-reveal="0.1" className="font-display text-[clamp(36px,5.6vw,80px)] leading-[1.08] font-bold tracking-[-.03em] text-balance">
-            Where people
-            <InlinePhoto src={unsplash("1523240795612-9a054b0db644")} alt="Students studying together" />
-            come to <span className="text-blue">learn,</span>
-            <InlinePhoto src={unsplash("1581092160562-40aa08e78837")} alt="Engineer working in a lab" />
-            grow and <span className="text-red">get hired.</span>
-          </h2>
+          <ScrollWords
+            className="font-display text-[clamp(36px,5.6vw,80px)] leading-[1.08] font-bold tracking-[-.03em] text-balance"
+            parts={[
+              ...words("Where people"),
+              { node: <InlinePhoto src={unsplash("1523240795612-9a054b0db644")} alt="Students studying together" /> },
+              ...words("come to"),
+              { text: "learn,", className: "text-blue" },
+              { node: <InlinePhoto src={unsplash("1581092160562-40aa08e78837")} alt="Engineer working in a lab" /> },
+              ...words("grow and"),
+              { text: "get", className: "text-red" },
+              { text: "hired.", className: "text-red" },
+            ]}
+          />
         </div>
 
         {/* Accordion · photo with floating numbers */}
         <div className="grid items-center gap-[clamp(40px,6vw,88px)] lg:grid-cols-[minmax(0,.85fr)_minmax(0,1fr)]">
-          {/* Sharing a `name` makes the browser keep one item open at a time. */}
-          <div data-reveal="0.1" className="grid gap-3">
-            <details name="about-g-tec" open className={accordionItem}>
-              <summary className={accordionHead}>
-                Our story
-                <ChevronDown className={accordionChevron} />
-              </summary>
-              <div className="px-6 pb-6 text-[15px] leading-[1.7] text-pretty text-ink-2">
-                <p className="mb-3 font-semibold text-ink">We started with one small centre and one simple idea: teach skills people can actually use.</p>
-                <p className="mb-3">
-                  Twenty-five years later, that idea has grown into 800+ centres across 23 countries. We teach IT, design, finance
-                  and trades, and we work with governments to bring training to people who need it most.
-                </p>
-                <p>
-                  But the numbers aren&apos;t really the point. What matters is the student who walks in unsure and walks out with
-                  a job, and the teachers who make that happen every day.
-                </p>
-                {cta && (
-                  <div className="mt-6 flex flex-wrap items-center gap-5">
-                    <Link href="/about" className="inline-flex items-center gap-2.5 rounded-full bg-ink px-6 py-3.5 text-[15px] font-bold text-white transition duration-300 ease-out-expo hover:-translate-y-0.5 hover:bg-blue">
-                      Read our story <Arrow />
-                    </Link>
-                    <a href="/leadership" className="group inline-flex items-center gap-2 text-[15px] font-semibold text-blue">
-                      Meet the leadership <Arrow className="transition-transform group-hover:translate-x-1" />
-                    </a>
-                  </div>
-                )}
-              </div>
-            </details>
-            {PILLARS.map(({ icon: Icon, title, text }) => (
-              <details key={title} name="about-g-tec" className={accordionItem}>
-                <summary className={accordionHead}>
-                  <span className="flex items-center gap-3">
-                    <Icon className="size-5 flex-none text-red" strokeWidth={1.8} />
-                    {title}
-                  </span>
-                  <ChevronDown className={accordionChevron} />
-                </summary>
-                <p className="px-6 pb-6 text-[15px] leading-[1.7] text-pretty text-ink-2">{text}</p>
-              </details>
-            ))}
+          <div data-reveal="0.1">
+            <AboutAccordion
+              items={[
+                {
+                  head: "Our story",
+                  body: (
+                    <>
+                      <p className="mb-3 font-semibold text-ink">We started with one small centre and one simple idea: teach skills people can actually use.</p>
+                      <p className="mb-3">
+                        Twenty-five years later, that idea has grown into 800+ centres across 23 countries. We teach IT, design, finance
+                        and trades, and we work with governments to bring training to people who need it most.
+                      </p>
+                      <p>
+                        But the numbers aren&apos;t really the point. What matters is the student who walks in unsure and walks out with
+                        a job, and the teachers who make that happen every day.
+                      </p>
+                      {cta && (
+                        <div className="mt-6 flex flex-wrap items-center gap-5">
+                          <Link href="/about" className="group inline-flex items-center gap-2.5 rounded-full bg-ink px-6 py-3.5 text-[15px] font-bold text-white transition duration-300 ease-out-expo hover:bg-blue active:scale-[.97]">
+                            Read our story <Arrow className="transition-transform group-hover:translate-x-1" />
+                          </Link>
+                          <a href="/leadership" className="group inline-flex items-center gap-2 text-[15px] font-semibold text-blue">
+                            Meet the leadership <Arrow className="transition-transform group-hover:translate-x-1" />
+                          </a>
+                        </div>
+                      )}
+                    </>
+                  ),
+                },
+                ...PILLARS.map(({ icon: Icon, title, text }) => ({
+                  head: (
+                    <span className="flex items-center gap-3">
+                      <Icon className="size-5 flex-none text-red" strokeWidth={1.8} />
+                      {title}
+                    </span>
+                  ),
+                  body: <p>{text}</p>,
+                })),
+              ]}
+            />
           </div>
 
           <figure data-reveal="0.2" className="relative sm:px-12 sm:py-16">
-            <div aria-hidden className="pointer-events-none absolute inset-0 hidden sm:block">
-              <div className="absolute inset-[4%_0_0_8%] [mask-image:radial-gradient(closest-side,#000_60%,transparent)] bg-[radial-gradient(rgba(0,66,130,.28)_1px,transparent_1.5px)] bg-[size:10px_10px]" />
-              <div className="absolute inset-[2%_3%_2%_6%] rounded-[58%_42%_46%_54%/44%_56%_44%_56%] bg-sky/35" />
-              <div className="absolute inset-[-1%_0_0_3%] rotate-6 rounded-[58%_42%_46%_54%/44%_56%_44%_56%] border border-ink/12" />
-            </div>
-            <img src={`${SITE}/assets/img/home/intro-tmb-lg.webp`} alt="G-TEC students" className="relative aspect-[4/3] w-full rounded-[24px] object-cover shadow-[0_24px_60px_rgba(11,26,51,.2)]" />
+            <Parallax y={[24, -24]} className="relative">
+              <img src={`${SITE}/assets/img/home/intro-tmb-lg.webp`} alt="G-TEC students" loading="lazy" className="aspect-[4/3] w-full rounded-[24px] object-cover shadow-[0_24px_60px_rgba(11,26,51,.2)]" />
+            </Parallax>
             <dl className="mt-3 grid grid-cols-2 gap-3 sm:contents">
               {STATS.slice(0, 4).map((s, i) => (
-                <div key={s.label} className={cn("rounded-2xl bg-white px-5 py-4 shadow-[0_14px_36px_rgba(11,26,51,.14)] ring-1 ring-ink/[.05] sm:absolute", STAT_SPOTS[i])}>
-                  <dd className="font-display text-[clamp(26px,2.4vw,34px)] leading-none font-extrabold tracking-tight">
-                    {s.value}
+                <Parallax key={s.label} y={STAT_DRIFT[i]} className={cn("rounded-2xl bg-white px-5 py-4 shadow-[0_14px_36px_rgba(11,26,51,.14)] ring-1 ring-ink/[.05] sm:absolute", STAT_SPOTS[i])}>
+                  <dd className="font-display text-[clamp(26px,2.4vw,34px)] leading-none font-extrabold tracking-tight tabular-nums">
+                    <span data-count={s.value}>{s.value}</span>
                     <span className="text-red">{s.suffix}</span>
                   </dd>
                   <dt className="mt-1.5 text-[13px] font-semibold text-ink-2">{s.label}</dt>
-                </div>
+                </Parallax>
               ))}
             </dl>
           </figure>
@@ -398,11 +335,10 @@ const COURSE_IMAGES = [
   { src: unsplash("1558494949-ef010cbdcc31"), alt: "Network server rack" },
   { src: unsplash("1554224155-6726b3ff858f"), alt: "Accounting with a calculator" },
   { src: unsplash("1503387762-592deb58ef4e"), alt: "Architectural drawings" },
-  { src: unsplash("1522202176988-66273c2fd55f"), alt: "Students working on laptops" },
+  { src: unsplash("1523240795612-9a054b0db644"), alt: "Students studying together" },
   { src: unsplash("1518770660439-4636190af475"), alt: "Circuit board" },
   { src: unsplash("1555066931-4365d14bab8c"), alt: "Laptop with code editor" },
   { src: unsplash("1581092160562-40aa08e78837"), alt: "Engineer working in a lab" },
-  { src: unsplash("1523240795612-9a054b0db644"), alt: "Students studying together" },
   { src: unsplash("1517694712202-14dd9538aa97"), alt: "Developer at a laptop" },
 ];
 
@@ -410,22 +346,23 @@ const FOLDER_ART: ArtPreset[] = ["ember", "aurora", "dusk", "verdant", "glacier"
 
 export function CoursesSection({ heading = true }: { heading?: boolean }) {
   return (
-    <section id="courses" className={cn(section, "relative overflow-hidden bg-navy", !heading && "pt-0")}>
+    // overflow-clip, not hidden: hidden would make this a scroll container and unpin the explorer's sticky stage.
+    <section id="courses" className={cn(section, "relative overflow-clip bg-navy", heading ? "lg:pb-0" : "pt-0")}>
       {heading && <div className="pointer-events-none absolute top-[-200px] left-1/2 h-[500px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(0,66,130,.45),transparent_65%)] blur-[40px]" />}
       {heading && (
         // Full-bleed so the curved band runs edge to edge; the heading sits above the band's axis.
+        <div data-pause-offscreen>
         <TiltedGridHero
-          images={COURSE_IMAGES}
+          images={[...COURSE_IMAGES].reverse()}
           speed={4.5}
           tileHeight={26}
           axis={72}
           curve={72}
           fade={14}
-          className="mb-12 h-[860px] w-full md:h-[clamp(640px,78vh,760px)]"
+          className="mb-12 h-[800px] w-full md:h-[clamp(540px,66vh,640px)] lg:mb-0"
         >
           <div className={cn(wrap, "relative z-10 grid grid-cols-[repeat(auto-fit,minmax(min(100%,400px),1fr))] items-end gap-x-16 gap-y-6")}>
             <div>
-              <Eyebrow>Courses</Eyebrow>
               <h2 data-reveal="0.1" className={h2}>Learn the skills that get you hired.</h2>
             </div>
             <div data-reveal="0.2">
@@ -439,7 +376,10 @@ export function CoursesSection({ heading = true }: { heading?: boolean }) {
             </div>
           </div>
         </TiltedGridHero>
+        </div>
       )}
+      {heading && <CourseExplorer images={COURSE_IMAGES} />}
+      {!heading && <>
       {/* backdrop for the folders: a dotted desk with soft brand glows, so the glass has something to frost */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[min(100%,2200px)]">
         <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_45%,#000_30%,transparent_80%)] bg-[radial-gradient(rgba(255,255,255,.13)_1.1px,transparent_1.4px)] [background-size:24px_24px]" />
@@ -496,6 +436,7 @@ export function CoursesSection({ heading = true }: { heading?: boolean }) {
           })}
         </div>
       </div>
+      </>}
     </section>
   );
 }
@@ -575,28 +516,29 @@ export function Global({ cta = true }: { cta?: boolean }) {
         <GlobeNetwork
           intro={
             <>
-              <Eyebrow>Our presence around the world</Eyebrow>
-              <h2 data-reveal="0.1" className={cn(h2, "mb-5")}>Proud to deliver excellence worldwide.</h2>
+              <h2 data-reveal="0.1" className={cn(h2, "mb-5")}>One certificate, recognised in 23 countries.</h2>
               <p className="mb-8 max-w-[480px] text-[17px] leading-[1.7] text-pretty text-white/70">
-                World-class training that gives learners modern skills and opportunities to build careers anywhere in the world. Hover a
-                country to find it on the globe.
+                World-class training that gives learners modern skills and opportunities to build careers anywhere in the world.
+                <span className="[@media(hover:none)]:hidden"> Hover a country to find it on the globe.</span>
               </p>
             </>
           }
           footer={
             <div className="flex flex-wrap items-end gap-x-10 gap-y-6">
               <div>
-                <div className="font-display text-[clamp(44px,5vw,64px)] leading-[.9] font-extrabold tracking-[-.04em]">23</div>
+                <div className="font-display text-[clamp(44px,5vw,64px)] leading-[.9] font-extrabold tracking-[-.04em] tabular-nums"><span data-count="23">23</span></div>
                 <div className="mt-2 text-sm font-semibold text-white/60">Countries</div>
               </div>
               <div>
-                <div className="font-display text-[clamp(44px,5vw,64px)] leading-[.9] font-extrabold tracking-[-.04em]">800<span className="text-coral">+</span></div>
+                <div className="font-display text-[clamp(44px,5vw,64px)] leading-[.9] font-extrabold tracking-[-.04em] tabular-nums"><span data-count="800">800</span><span className="text-coral">+</span></div>
                 <div className="mt-2 text-sm font-semibold text-white/60">Centres across the globe</div>
               </div>
               {cta && (
-                <Link href="/centres" className="inline-flex items-center gap-2.5 rounded-full border border-white/22 bg-white/6 px-6.5 py-4 text-[15px] font-semibold backdrop-blur-md transition hover:border-white/45 hover:bg-white/14">
-                  Locate a centre <Arrow />
-                </Link>
+                <Magnetic>
+                  <Link href="/centres" className="group inline-flex items-center gap-2.5 rounded-full border border-white/22 bg-white/6 px-6.5 py-4 text-[15px] font-semibold transition-colors hover:border-white/45 hover:bg-white/14 active:scale-[.97]">
+                    Locate a centre <Arrow className="transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Magnetic>
               )}
             </div>
           }
@@ -616,7 +558,6 @@ export function Testimonials({ heading = true, grid }: { heading?: boolean; grid
         <Stories>
           {heading && (
             <>
-              <Eyebrow light>Testimonials</Eyebrow>
               <h2 className={h2}>Here&apos;s what our students have to say.</h2>
               <p className="mt-4 text-[15px] text-ink-2">Tap a card to watch their story.</p>
               <Link href="/students" className="mt-5 inline-flex items-center gap-2 text-[15px] font-bold text-blue hover:text-red">
@@ -632,7 +573,6 @@ export function Testimonials({ heading = true, grid }: { heading?: boolean; grid
       {heading && (
         <div className={cn(wrap, "mb-11 grid grid-cols-[repeat(auto-fit,minmax(min(100%,400px),1fr))] items-end gap-x-16 gap-y-6")}>
           <div>
-            <Eyebrow light>Testimonials</Eyebrow>
             <h2 data-reveal="0.1" className={h2}>Here&apos;s what our students have to say.</h2>
           </div>
           <div data-reveal="0.2">
@@ -651,12 +591,11 @@ export function Testimonials({ heading = true, grid }: { heading?: boolean; grid
 
 export function News({ heading = true }: { heading?: boolean }) {
   return (
-    <section id="news" className={cn(section, "bg-white text-ink")}>
+    <section id="news" className={cn(section, "relative z-10 bg-white text-ink", heading && "-mt-10 rounded-t-[40px]")}>
       <div className={wrap}>
         {heading && (
           <div className="mb-11 flex flex-wrap items-end justify-between gap-6">
             <div>
-              <Eyebrow light>News &amp; events</Eyebrow>
               <h2 data-reveal="0.1" className={cn(h2, "max-w-[14ch]")}>Latest happenings at G-TEC.</h2>
             </div>
             <Link data-reveal="0.2" href="/news" className="inline-flex items-center gap-2 text-[15px] font-bold text-blue hover:text-red">
@@ -664,18 +603,7 @@ export function News({ heading = true }: { heading?: boolean }) {
             </Link>
           </div>
         )}
-        <div data-stagger className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-5">
-          {NEWS.map((n) => (
-            <a key={n.url} href={n.url} className="grid grid-cols-[minmax(120px,38%)_1fr] overflow-hidden rounded-3xl border border-ink/6 bg-mist transition duration-450 ease-out-expo hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(11,26,51,.12)]">
-              <img src={`${SITE}/assets/img/news-events/news-tmb.webp`} alt="" loading="lazy" className="block size-full min-h-50 object-cover" />
-              <div className="flex flex-col px-7 py-6.5">
-                <span className="self-start rounded-full border border-ink/8 bg-white px-3 py-1.5 text-xs font-bold text-blue">{n.date}</span>
-                <h3 className="font-display mt-4 mb-2.5 text-xl leading-[1.3] font-bold tracking-tight">{n.title}</h3>
-                <span className="mt-auto inline-flex items-center gap-2 text-sm font-bold text-red">Read more <Arrow className="size-3.5" /></span>
-              </div>
-            </a>
-          ))}
-        </div>
+        <NewsRows items={NEWS} />
       </div>
     </section>
   );
@@ -685,16 +613,16 @@ export function News({ heading = true }: { heading?: boolean }) {
 
 export function Subsidiaries() {
   return (
-    <section className="bg-white py-16 text-ink">
-      <div className={cn(wrap, "flex flex-wrap items-center gap-8")}>
-        <div data-reveal="0" className="flex-none">
-          <div className="mb-2 text-xs font-bold tracking-[.18em] text-ink-2 uppercase">Group of institutions</div>
+    <section className="bg-white pb-[clamp(72px,8vw,120px)] text-ink">
+      <div className={wrap}>
+        <div data-reveal="0" className="mb-6 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
           <div className="font-display text-[22px] font-bold tracking-tight">Our subsidiaries</div>
+          <div className="text-sm font-semibold text-ink-2">Group of institutions</div>
         </div>
-        <div data-stagger className="flex flex-1 flex-wrap justify-end gap-3">
+        <div data-reveal="0.1" className="flex flex-wrap gap-px overflow-hidden rounded-2xl border border-ink/10 bg-ink/10">
           {SUBSIDIARIES.map((s) => (
-            <a key={s.name} href={s.url} className="flex h-18 w-37.5 items-center justify-center p-3 transition duration-300 ease-out-expo hover:-translate-y-1">
-              <img src={s.logo} alt={s.name} loading="lazy" className="max-h-full max-w-full object-contain" />
+            <a key={s.name} href={s.url} aria-label={s.name} className="group flex h-28 grow basis-[45%] items-center justify-center bg-white p-6 transition-colors duration-300 hover:bg-mist sm:basis-[30%] lg:h-32 lg:basis-[18%]">
+              <img src={s.logo} alt="" loading="lazy" className="max-h-full max-w-full object-contain transition-transform duration-500 ease-out-expo group-hover:scale-110" />
             </a>
           ))}
         </div>
@@ -703,49 +631,51 @@ export function Subsidiaries() {
   );
 }
 
-/* ── Enquiry (rendered by the root layout on every page) ───── */
+/* ── Closing call to action (home) ─────────────────────────── */
 
-export function Enquire() {
+export function ClosingCta() {
   const channels = [
-    { icon: Phone, label: "Call us", value: CONTACT.phone.label, href: CONTACT.phone.href, tint: "bg-[rgba(0,102,204,.25)] text-sky" },
-    { icon: MessageCircle, label: "WhatsApp", value: CONTACT.whatsapp.label, href: CONTACT.whatsapp.href, tint: "bg-[rgba(37,211,102,.2)] text-[#7EE2A3]" },
-    { icon: Mail, label: "Email", value: CONTACT.email.label, href: CONTACT.email.href, tint: "bg-red/20 text-[#FF8A80]" },
+    { icon: Phone, label: "Call us", value: CONTACT.phone.label, href: CONTACT.phone.href },
+    { icon: MessageCircle, label: "WhatsApp", value: CONTACT.whatsapp.label, href: CONTACT.whatsapp.href },
+    { icon: Mail, label: "Email", value: CONTACT.email.label, href: CONTACT.email.href },
   ];
   return (
-    // Rendered inside EnquireDialog, so no reveal animations: they'd wait on an observer that never sees a closed dialog.
-    <section className="relative overflow-hidden p-[clamp(24px,4vw,56px)]">
-      <div className={cn(blob, "top-0 left-[10%] size-[40vw] bg-[radial-gradient(circle,rgba(0,102,204,.35),transparent_65%)] blur-[50px] [animation:float-a_16s_ease-in-out_infinite]")} />
-      <div className={cn(blob, "right-[5%] bottom-0 size-[32vw] bg-[radial-gradient(circle,rgba(255,1,0,.22),transparent_65%)] blur-[50px] [animation:float-b_20s_ease-in-out_infinite]")} />
-      <div className="relative grid grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] items-center gap-[clamp(28px,4vw,56px)]">
-        <div>
-          <div className="mb-5 flex items-center gap-3 text-xs font-bold tracking-[.18em] text-coral uppercase">
-            <span className="h-0.5 w-7 bg-red" />
-            Admissions open
+    <>
+      <WaveDivider fill="fill-white" begin="-3s" />
+      <section className="relative overflow-hidden bg-blue pt-[clamp(120px,14vw,200px)] pb-[clamp(72px,8vw,120px)] text-white">
+        <BrushStroke d="M20 215 300 25 95 345 345 215 372 400" viewBox="0 0 400 420" className="pointer-events-none absolute top-[8%] right-[4%] h-[38%] w-auto overflow-visible opacity-30 max-lg:hidden" />
+        <div className={cn(wrap, "relative grid items-end gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,.8fr)]")}>
+          <div>
+            <RiseWords text="Start your journey with G-TEC." className="font-display mb-6 text-[clamp(40px,6.4vw,92px)] leading-[1.02] font-bold tracking-[-.035em]" />
+            <p data-reveal="0.2" className="mb-9 max-w-[520px] text-[17px] leading-[1.7] text-pretty text-white/85">
+              Admissions are open. Tell us what you want to learn and our counsellors will call you back with course options, fees and the nearest centre.
+            </p>
+            <div data-reveal="0.3" className="flex flex-wrap items-center gap-3">
+              <Magnetic>
+                <a href="#enquire" className="group inline-flex items-center gap-2.5 rounded-full bg-white px-8 py-4.5 text-base font-bold text-blue transition-colors hover:bg-sky active:scale-[.97]">
+                  Enquire now <Arrow className="transition-transform duration-300 ease-out-expo group-hover:translate-x-1" />
+                </a>
+              </Magnetic>
+              <Link href="/courses" className="rounded-full border border-white/40 px-7 py-4.5 text-base font-semibold transition-colors hover:border-white hover:bg-white/10 active:scale-[.97]">
+                Explore Courses
+              </Link>
+            </div>
           </div>
-          <h2 className="font-display mb-5 text-[clamp(32px,4vw,52px)] leading-[1.02] font-extrabold tracking-[-.03em] text-balance">
-            Start your journey with G-TEC.
-          </h2>
-          <p data-reveal="0.2" className="mb-9 max-w-[480px] text-[17px] leading-[1.7] text-pretty text-white/70">
-            Tell us what you want to learn and our counsellors will call you back with course options, fees and the nearest centre.
-          </p>
-          <div className="grid max-w-[420px] gap-3.5">
-            {channels.map(({ icon: Icon, label, value, href, tint }) => (
-              <a key={label} href={href} className="flex items-center gap-4 rounded-[18px] border border-white/10 bg-white/5 px-4.5 py-4 transition hover:border-white/30 hover:bg-white/8">
-                <span className={cn("flex size-10.5 flex-none items-center justify-center rounded-xl", tint)}>
-                  <Icon className="size-4.5" />
+          <div data-stagger className="relative grid border-t border-white/25">
+            {channels.map(({ icon: Icon, label, value, href }) => (
+              <a key={label} href={href} className="group flex items-center gap-4 border-b border-white/25 py-4.5 transition-[padding] duration-300 ease-out-expo hover:pl-2">
+                <Icon className="size-5 flex-none text-sky" />
+                <span className="min-w-0">
+                  <span className="block text-xs font-semibold text-white/75">{label}</span>
+                  <span className="block font-bold break-words">{value}</span>
                 </span>
-                <span>
-                  <span className="block text-xs font-semibold text-white/55">{label}</span>
-                  <span className="block font-bold">{value}</span>
-                </span>
+                <Arrow className="ml-auto flex-none opacity-60 transition-[opacity,transform] duration-300 group-hover:translate-x-1 group-hover:opacity-100" />
               </a>
             ))}
           </div>
         </div>
-        <div className="rounded-[28px] border border-white/12 bg-white/5 p-[clamp(24px,3vw,36px)] shadow-[0_40px_100px_rgba(0,0,0,.35)] backdrop-blur-2xl">
-          <EnquiryForm />
-        </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
+

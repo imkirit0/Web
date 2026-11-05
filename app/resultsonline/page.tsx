@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { HandOff, LIVE } from "@/components/student-pages";
 
 export const metadata: Metadata = { title: "Results Online", description: "Check your G-TEC evaluation results online with your 7 digit roll number." };

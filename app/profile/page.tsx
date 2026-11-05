@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Check } from "lucide-react";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { Band, card, pageImages } from "@/components/about-pages";
 
 export const metadata: Metadata = { title: "Profile", description: "G-TEC Education: an ISO-certified global institution with 800+ training centres across 23+ countries." };

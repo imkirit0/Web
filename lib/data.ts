@@ -167,12 +167,12 @@ export const TESTIMONIALS = [
   { name: "Gowri Sunil", kind: "Instagram reel", url: "https://www.instagram.com/reel/DM-XVqqzH7C/", tone: "red", thumb: "/thumbs/DM-XVqqzH7C.jpg" },
   { name: "Dilsana", kind: "Instagram reel", url: "https://www.instagram.com/reel/CvpE3KMolt2/", tone: "light", thumb: "/thumbs/CvpE3KMolt2.jpg" },
   { name: "Fathima Shakeela", kind: "YouTube story", url: "https://www.youtube.com/watch?v=n8gT_TGFKhE", tone: "blue", thumb: "/thumbs/n8gT_TGFKhE.jpg" },
-  { name: "Rishana", kind: "Instagram reel", url: "https://www.instagram.com/reel/Czqw7zYviSl/", tone: "light" },
+  { name: "Rishana", kind: "Instagram reel", url: "https://www.instagram.com/reel/Czqw7zYviSl/", tone: "blue" },
 ] as const;
 
 export const NEWS = [
-  { date: "09 Oct 2026", title: "Job Fair 2026 in association with G-TEC Perinthalmanna", url: "/newsandevent/44" },
-  { date: "28 Sep 2026", title: "G-TEC Balussery organises Job Fair 2026", url: "/newsandevent/53" },
+  { date: "09 Oct 2026", title: "Job Fair 2026 in association with G-TEC Perinthalmanna", url: "/newsandevent/44", image: `${SITE}/storage/app/public/news/09-10-26-03-24-WhatsApp-Image-2026-10-06-at-4.39.19-PM.jpeg` },
+  { date: "28 Sep 2026", title: "G-TEC Balussery organises Job Fair 2026", url: "/newsandevent/53", image: `${SITE}/storage/app/public/news/28-09-26-05-13-JOBBFAIR.jpeg` },
 ];
 
 export const FLASH = [

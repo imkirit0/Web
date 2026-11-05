@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Quote } from "lucide-react";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { Stories } from "@/components/Stories";
 import { SiteForm, fieldClass } from "@/components/SiteForm";
 import { Band, card } from "@/components/about-pages";

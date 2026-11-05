@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Award } from "lucide-react";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { Band, pageImages } from "@/components/about-pages";
 
 export const metadata: Metadata = { title: "Awards & Recognition", description: "Awards and recognition earned by G-TEC Education and its Chairman & Managing Director." };

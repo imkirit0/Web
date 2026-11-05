@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, MapPin, Phone } from "lucide-react";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { LIVE, card, wrap } from "@/components/student-pages";
 
 export const metadata: Metadata = { title: "Our Offices", description: "G-TEC Education offices in Singapore, India and Dubai." };

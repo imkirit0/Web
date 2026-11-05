@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BriefcaseBusiness } from "lucide-react";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { SiteForm, fieldClass } from "@/components/SiteForm";
 import { EmailNote, Field, FieldGrid, Split, card } from "@/components/student-pages";
 

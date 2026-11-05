@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { BookOpen, ClipboardList, FlaskConical, Monitor, NotebookPen, Wrench } from "lucide-react";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { Band, LogoGrid, card, pageImages } from "@/components/about-pages";
 
 export const metadata: Metadata = { title: "Training & Certifications", description: "Quality training and internationally recognised certifications at G-TEC Education." };

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { Band, pageImages } from "@/components/about-pages";
 
 export const metadata: Metadata = { title: "Management Team", description: "The people behind G-TEC Education." };

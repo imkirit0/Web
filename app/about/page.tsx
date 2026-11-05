@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { About, Affiliations, PageHero, Stats, Subsidiaries } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
+import { About, Affiliations, Stats, Subsidiaries } from "@/components/sections";
 
 export const metadata: Metadata = { title: "About" };
 

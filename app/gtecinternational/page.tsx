@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { Band, card, pageImages } from "@/components/about-pages";
 
 export const metadata: Metadata = { title: "G-TEC International", description: "G-TEC Education centres worldwide, from India to the Middle East, Africa, Asia, Europe and the Americas." };

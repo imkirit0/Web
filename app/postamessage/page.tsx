@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { SiteForm, fieldClass } from "@/components/SiteForm";
 import { Field, FieldGrid, LIVE, Split } from "@/components/student-pages";
 import { CONTACT } from "@/lib/data";

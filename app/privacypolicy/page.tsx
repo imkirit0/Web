@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { PAGES } from "@/lib/content";
 
 export const metadata: Metadata = { title: "Privacy Policy" };

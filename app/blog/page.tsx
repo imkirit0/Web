@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { MistSection, PostGrid } from "@/components/media-pages";
 import { POSTS } from "@/lib/pages-data";
 

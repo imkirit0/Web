@@ -3,6 +3,7 @@
 import { useId, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { PerspectiveTunnel } from "@/components/ui/perspective-tunnel";
+import { useReduced } from "@/components/motion-kit";
 import { TESTIMONIALS } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +12,7 @@ type Story = (typeof TESTIMONIALS)[number];
 const tones = {
   blue: { card: "bg-linear-160 from-blue to-[#061A3C] text-white", kind: "text-white/55", sub: "text-white/60" },
   red: { card: "bg-linear-160 from-red to-[#A30000] text-white", kind: "text-white/65", sub: "text-white/70" },
-  light: { card: "border border-ink/8 bg-white text-ink", kind: "text-red", sub: "text-ink-2" },
+  light: { card: "border border-ink/8 bg-white text-ink", kind: "text-red-dark", sub: "text-ink-2" },
 };
 
 /** YouTube and Instagram links to their embeddable player. */
@@ -65,10 +66,10 @@ function Card({ t, className }: { t: Story; className?: string }) {
         </>
       )}
       <span className={cn("relative text-[11px] font-bold tracking-[.16em] uppercase", s.kind)}>{t.kind}</span>
-      <span className="relative mt-auto block size-16 drop-shadow-[0_8px_18px_rgba(0,0,0,.25)]">
+      <span className="absolute top-5 right-5 block size-8 drop-shadow-[0_4px_10px_rgba(0,0,0,.3)]">
         {t.url.includes("youtube") ? <YouTubeLogo /> : <InstagramLogo />}
       </span>
-      <span className="font-display relative mt-7 text-[22px] font-bold tracking-tight">{t.name}</span>
+      <span className="font-display relative mt-auto text-[22px] font-bold tracking-tight">{t.name}</span>
       <span className={cn("relative mt-1.5 text-[13px]", s.sub)}>G-TEC student</span>
     </span>
   );
@@ -77,6 +78,7 @@ function Card({ t, className }: { t: Story; className?: string }) {
 /** Student stories: a scroll-driven 3D tunnel (or a plain grid); each card plays its video in a dialog. */
 export function Stories({ grid, children }: { grid?: boolean; children?: React.ReactNode }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const reduce = useReduced();
   const [playing, setPlaying] = useState<Story | null>(null);
   const play = (t: Story) => {
     setPlaying(t);
@@ -85,23 +87,26 @@ export function Stories({ grid, children }: { grid?: boolean; children?: React.R
 
   return (
     <>
-      {grid ? (
+      {grid || reduce ? (
+        <div className={cn(!grid && "pt-20 pb-24")}>
+        {!grid && <div className="mx-auto mb-11 flex max-w-xl flex-col items-center px-6 text-center">{children}</div>}
         <div data-stagger className="mx-auto flex w-[min(1240px,100%)] flex-wrap justify-center gap-4.5 px-6">
           {TESTIMONIALS.map((t) => (
-            <button key={t.name} type="button" onClick={() => play(t)} aria-label={`Play ${t.name}'s story`} className="transition duration-450 ease-out-expo hover:-translate-y-1.5">
+            <button key={t.name} type="button" onClick={() => play(t)} className="transition duration-450 ease-out-expo hover:-translate-y-1.5">
+              <span className="sr-only">Play </span>
               <Card t={t} className="h-90 w-75" />
             </button>
           ))}
         </div>
+        </div>
       ) : (
         <PerspectiveTunnel
-          // Six stories go round twice so the corridor never runs thin.
-          items={[...TESTIMONIALS, ...TESTIMONIALS].map((t, i) => ({
-            key: `${t.name}-${i}`,
+          items={TESTIMONIALS.map((t) => ({
+            key: t.name,
             label: `Play ${t.name}'s story`,
             node: <Card t={t} className="size-full" />,
           }))}
-          onSelect={(i) => play(TESTIMONIALS[i % TESTIMONIALS.length])}
+          onSelect={(i) => play(TESTIMONIALS[i])}
         >
           {children}
         </PerspectiveTunnel>

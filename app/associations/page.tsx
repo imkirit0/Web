@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { MapPin } from "lucide-react";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { Band, card } from "@/components/about-pages";
 import { PAGES } from "@/lib/content";
 

@@ -3,7 +3,7 @@ import { Arimo, Bricolage_Grotesque, Manrope } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Motion } from "@/components/Motion";
-import { Enquire } from "@/components/sections";
+import { Enquire } from "@/components/Enquire";
 import { EnquireDialog } from "@/components/EnquireDialog";
 import "./globals.css";
 
@@ -27,10 +27,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${display.variable} ${manrope.variable} ${arimo.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: motionFlag }} />
+        <noscript><style>{`[data-accordion-panel]{height:auto!important;opacity:1!important}`}</style></noscript>
       </head>
       <body className="font-sans">
+        <a href="#main" className="fixed top-2 left-2 z-[100] -translate-y-20 rounded-lg bg-blue px-4 py-3 font-bold text-white transition-transform focus-visible:translate-y-0">Skip to content</a>
         <Header />
-        <main>{children}</main>
+        <main id="main" tabIndex={-1} className="outline-none">{children}</main>
         <EnquireDialog>
           <Enquire />
         </EnquireDialog>

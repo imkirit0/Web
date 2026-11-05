@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { MistSection, VideoGrid } from "@/components/media-pages";
 import { SOCIAL } from "@/lib/data";
 import { getVideos } from "@/lib/pages-data";

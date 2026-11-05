@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { HandOff, LIVE, PaymentTabs } from "@/components/student-pages";
 
 export const metadata: Metadata = { title: "Payment for Centres", description: "Online fee payment for G-TEC centres and franchisees." };

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Enquire, PageHero } from "@/components/sections";
+import { Enquire } from "@/components/Enquire";
+import { PageHero } from "@/components/page-hero";
 import { wrap } from "@/components/student-pages";
 
 export const metadata: Metadata = { title: "Enquire About a Course", description: "Ask G-TEC Education about any course or certification." };

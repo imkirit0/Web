@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, ChevronRight, Clock } from "lucide-react";
 import { type Category, type CourseItem, titleCase } from "@/lib/content";
 import { cn } from "@/lib/utils";
-import { HeroBackdrop } from "@/components/sections";
+import { HeroBackdrop } from "@/components/page-hero";
 
 export const wrap = "mx-auto w-[min(1240px,100%)] px-6";
 

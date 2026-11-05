@@ -12,5 +12,6 @@ Built from the `G-TEC Landing.dc.html` design.
 - Every page ends with the enquiry section (`#enquire`); on a course page the form preselects that course.
 - Content (courses, countries, affiliations, testimonials, news, contact, footer links) lives in `lib/data.ts`.
 - Sections are in `components/sections.tsx`; scroll reveals, counters, hero parallax and card spotlight in `components/Motion.tsx`.
+- Home-page concept, rules and Framer Motion primitives: see `DESIGN.md` and `components/motion-kit.tsx`.
 - Enquiries are validated server-side (`app/actions.ts`) and appended to `data/enquiries.jsonl`.
 - Loader video: put the clip at `public/video/loading.mp4`.

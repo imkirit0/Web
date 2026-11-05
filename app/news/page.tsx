@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { News, PageHero, Ticker } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
+import { News, Ticker } from "@/components/sections";
 
 export const metadata: Metadata = { title: "News & events" };
 

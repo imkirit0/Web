@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Headset, Mail, Phone } from "lucide-react";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { SiteForm, fieldClass } from "@/components/SiteForm";
 import { Field, FieldGrid, Split, card } from "@/components/student-pages";
 import { CONTACT } from "@/lib/data";

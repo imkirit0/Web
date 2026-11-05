@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ArrowUpRight } from "lucide-react";
-import { PageHero, Testimonials } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
+import { Testimonials } from "@/components/sections";
 import { STUDENT_LINKS } from "@/lib/data";
 
 export const metadata: Metadata = { title: "Students" };

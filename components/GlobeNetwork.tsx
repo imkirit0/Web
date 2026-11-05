@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { COUNTRIES, HQ } from "@/lib/data";
 
-const IDLE = "Drag to rotate · hover a country";
+const IDLE = "Drag to rotate the globe";
 
 /**
  * Interactive three.js Earth (ported from the G-TEC UK site): day map with city lights on the
@@ -15,6 +16,10 @@ export function GlobeNetwork({ intro, footer }: { intro: React.ReactNode; footer
   const host = useRef<HTMLDivElement>(null);
   const hover = useRef("");
   const [label, setLabel] = useState(IDLE);
+  // The Earth swells into place as its section arrives.
+  const { scrollYProgress } = useScroll({ target: host, offset: ["start end", "center center"] });
+  const scale = useTransform(scrollYProgress, [0, 1], [0.8, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.55], [0.35, 1]);
 
   useEffect(() => {
     const el = host.current;
@@ -22,7 +27,7 @@ export function GlobeNetwork({ intro, footer }: { intro: React.ReactNode; footer
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let dead = false;
     let cleanup = () => {};
-    (async () => {
+    const start = async () => {
       const THREE = await import("three");
       if (dead) return;
       const W = el.clientWidth || 480;
@@ -184,8 +189,6 @@ export function GlobeNetwork({ intro, footer }: { intro: React.ReactNode; footer
       let raf = 0;
       const loop = () => {
         raf = requestAnimationFrame(loop);
-        const r = el.getBoundingClientRect();
-        if (r.bottom < 0 || r.top > innerHeight) return; // off-screen: skip the render
         const tgt = hover.current ? markers[hover.current] : undefined;
         if (tgt && !drag) {
           let d = tgt.ry - g.rotation.y;
@@ -206,9 +209,15 @@ export function GlobeNetwork({ intro, footer }: { intro: React.ReactNode; footer
         ring.scale.setScalar(1 + 0.25 * Math.sin(performance.now() / 400));
         renderer.render(scene, cam);
       };
-      loop();
+      // Off-screen: no frame loop at all.
+      const visible = new IntersectionObserver(([e]) => {
+        cancelAnimationFrame(raf);
+        if (e.isIntersecting) loop();
+      });
+      visible.observe(el);
       cleanup = () => {
         cancelAnimationFrame(raf);
+        visible.disconnect();
         ro.disconnect();
         el.removeEventListener("pointerdown", down);
         removeEventListener("pointerup", up);
@@ -217,9 +226,20 @@ export function GlobeNetwork({ intro, footer }: { intro: React.ReactNode; footer
         renderer.dispose();
         renderer.domElement.remove();
       };
-    })();
+    };
+    // Three.js and the 2K textures only download once the globe is about to be seen.
+    const near = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        near.disconnect();
+        start();
+      },
+      { rootMargin: "800px 0px" },
+    );
+    near.observe(el);
     return () => {
       dead = true;
+      near.disconnect();
       cleanup();
     };
   }, []);
@@ -229,6 +249,7 @@ export function GlobeNetwork({ intro, footer }: { intro: React.ReactNode; footer
       <div>
         {intro}
         <div
+          data-stagger
           className="mb-10 flex flex-wrap gap-2"
           onMouseLeave={() => {
             hover.current = "";
@@ -256,12 +277,12 @@ export function GlobeNetwork({ intro, footer }: { intro: React.ReactNode; footer
         </div>
         {footer}
       </div>
-      <div ref={host} role="img" aria-label="Interactive globe of G-TEC countries" className="relative mx-auto aspect-square w-full max-w-[580px] cursor-grab touch-pan-y">
+      <motion.div ref={host} data-mo style={{ scale, opacity }} role="img" aria-label="Interactive globe of G-TEC countries" className="relative mx-auto aspect-square w-full max-w-[580px] cursor-grab touch-pan-y">
         <div className="pointer-events-none absolute inset-[12%] rounded-full bg-[radial-gradient(circle,rgba(72,120,255,.35),transparent_70%)] blur-[30px]" />
-        <div aria-live="polite" className="pointer-events-none absolute -bottom-1.5 left-1/2 -translate-x-1/2 text-xs whitespace-nowrap text-white/55">
+        <div aria-live="polite" className="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 text-xs whitespace-nowrap text-white/70">
           {label}
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Eyebrow, Global, PageHero } from "@/components/sections";
+import { Eyebrow, PageHero } from "@/components/page-hero";
+import { Global } from "@/components/sections";
 import { CentreGrid, MistSection } from "@/components/media-pages";
 import { CENTRES } from "@/lib/pages-data";
 

@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 
 const KEY = 'gtec-loaded';
 const MIN_MS = 1200; // never flash by too fast to read
-const MAX_MS = 12000; // never trap the visitor on a slow or broken asset
+const MAX_MS = 3000; // never trap the visitor on a slow or broken asset
 
 // Survives client-side navigation (e.g. pressing Back to the home page).
 let shownThisVisit = false;
 
 // Runs before hydration: hides the server-rendered loader on a reload / bfcache return within the same session.
-const HIDE_IF_SEEN = `try{if(sessionStorage.getItem('${KEY}')){var s=document.createElement('style');s.textContent='#site-loader{display:none!important}';document.head.appendChild(s)}}catch(e){}`;
+const HIDE_IF_SEEN = `try{if(sessionStorage.getItem('${KEY}')){var s=document.createElement('style');s.textContent='#site-loader{display:none!important}';document.head.appendChild(s);document.documentElement.classList.add('loader-seen')}}catch(e){}`;
 
 function waitFor(el: HTMLImageElement | HTMLVideoElement) {
   if (el instanceof HTMLImageElement ? el.complete : el.readyState >= 3) return Promise.resolve();

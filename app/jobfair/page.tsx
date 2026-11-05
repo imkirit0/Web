@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Building2, CalendarDays, DoorOpen, MapPin } from "lucide-react";
-import { PageHero } from "@/components/sections";
+import { PageHero } from "@/components/page-hero";
 import { SiteForm, fieldClass } from "@/components/SiteForm";
 import { Field, FieldGrid, LIVE, Split, card, h2, wrap } from "@/components/student-pages";
 

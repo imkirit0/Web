@@ -59,6 +59,16 @@ export function Motion() {
     };
     if (!reduce && hero) addEventListener("scroll", onScroll, { passive: true });
 
+    // Waves and marquees run forever; don't spend frames on them while they're out of sight.
+    const idle = new IntersectionObserver((entries) =>
+      entries.forEach(({ target, isIntersecting }) => {
+        if (target instanceof SVGSVGElement) {
+          if (!reduce) isIntersecting ? target.unpauseAnimations() : target.pauseAnimations();
+        } else target.classList.toggle("offscreen", !isIntersecting);
+      }),
+    );
+    document.querySelectorAll("[data-wave], [data-pause-offscreen]").forEach((el) => idle.observe(el));
+
     const onMove = (e: PointerEvent) => {
       const card = (e.target as Element).closest?.<HTMLElement>("[data-spot]");
       if (!card) return;
@@ -70,6 +80,7 @@ export function Motion() {
 
     return () => {
       io.disconnect();
+      idle.disconnect();
       removeEventListener("scroll", onScroll);
       document.removeEventListener("pointermove", onMove);
       cancelAnimationFrame(raf);

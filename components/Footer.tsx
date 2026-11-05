@@ -48,7 +48,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto mt-14 flex w-[min(1240px,100%)] flex-wrap items-center justify-between gap-4 border-t border-white/8 px-6 pt-6 text-[13px] text-white/45">
+      <div className="mx-auto mt-14 flex w-[min(1240px,100%)] flex-wrap items-center justify-between gap-4 border-t border-white/8 px-6 pt-6 text-[13px] text-white/60">
         <span>© {new Date().getFullYear()} G-TEC EDUCATION. All rights reserved. ISO-certified institution.</span>
         <div className="flex gap-5">
           <a href="/privacypolicy" className="hover:text-white">Privacy Policy</a>

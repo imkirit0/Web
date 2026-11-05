@@ -20,22 +20,17 @@ const CYCLE_MS = 3200;
 const IDLE_TOSS_MS = 9000;
 // Picker labels, in COURSES order. Each is contained in the full course title, so the accessible name still matches.
 const SHORT = ["Robotics", "Software", "Multimedia", "Networking", "Finance", "CAD", "Non-IT"];
-// What the picker offers: every programme, plus SAP, which G-TEC runs as its own certification track under Finance.
-const PICKS: { label: string; title: string; note: string; href: string; img: number | { src: string; alt: string } }[] = COURSES.flatMap((c, i) => {
-  const pick = { label: SHORT[i], title: c.title, note: c.note, href: `/courses/${c.slug}`, img: i };
-  return c.slug !== "finance-and-business-management"
-    ? [pick]
-    : [
-        pick,
-        {
-          label: "SAP",
-          title: "SAP Global Certification",
-          note: "10 certificate courses",
-          href: `/courses/${c.slug}/sap-global-certification`,
-          img: { src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1000&q=75", alt: "Laptop showing a business dashboard" },
-        },
-      ];
-});
+// What the picker offers: SAP first (G-TEC runs it as its own certification track under Finance), then every programme.
+const PICKS: { label: string; title: string; note: string; href: string; img: number | { src: string; alt: string } }[] = [
+  {
+    label: "SAP",
+    title: "SAP Global Certification",
+    note: "10 certificate courses",
+    href: "/courses/finance-and-business-management/sap-global-certification",
+    img: { src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1000&q=75", alt: "Laptop showing a business dashboard" },
+  },
+  ...COURSES.map((c, i) => ({ label: SHORT[i], title: c.title, note: c.note, href: `/courses/${c.slug}`, img: i })),
+];
 const CONFETTI = ["#8ec5ff", "#e60000", "#004282", "#ffffff"];
 
 const Ctx = createContext<{

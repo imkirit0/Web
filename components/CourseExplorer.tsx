@@ -6,11 +6,12 @@ import { AnimatePresence, motion, MotionConfig, useMotionValueEvent, useScroll }
 import { ArrowRight } from "lucide-react";
 import { EASE, Magnetic, rise, stagger, useReduced } from "@/components/motion-kit";
 import { COURSES, type Course } from "@/lib/data";
-import { cn } from "@/lib/utils";
+import { cn, tornEdge } from "@/lib/utils";
 
 type Img = { src: string; alt: string };
 
 const N = COURSES.length;
+const TEAR = tornEdge([[0.5, 2], [99.5, 0.5], [100, 98], [62, 99.5], [1, 97]], 17, 0.35);
 const ROW = 60; // px per programme row; the sliding highlight moves in whole rows
 
 function Tags({ tags }: { tags: string[] }) {
@@ -112,7 +113,7 @@ function Pinned({ images }: { images: Img[] }) {
           <div id="course-panel" role="tabpanel" aria-labelledby={`course-tab-${active}`} className="flex min-h-0 flex-col">
             <div className="relative min-h-0 flex-1">
               {/* Every photo stays mounted, so switching never waits on the network. */}
-              <div className="absolute inset-0 overflow-hidden rounded-2xl bg-deep">
+              <div className="absolute inset-0 overflow-hidden bg-deep" style={{ clipPath: TEAR }}>
                 {images.slice(0, N).map((img, i) => (
                   <motion.img
                     key={img.src}

@@ -126,13 +126,13 @@ export function CoursePicker({ className, style }: { className?: string; style?:
   return (
     <div className={className} style={style}>
       <div className="mb-2 flex items-center gap-1.5">
-        <p className="text-sm font-semibold text-ink-2">What do you want to learn?</p>
+        <p className="text-sm font-semibold text-white/90">What do you want to learn?</p>
         {!reduced && (
           <button
             type="button"
             onClick={() => setPaused(!paused)}
             aria-label={paused ? "Play the hero's automatic motion" : "Pause the hero's automatic motion"}
-            className="flex size-7 items-center justify-center rounded-full text-ink-2 transition-colors hover:bg-ice hover:text-blue"
+            className="flex size-7 items-center justify-center rounded-full text-white/90 transition-colors hover:bg-white hover:text-blue"
           >
             {paused ? <Play className="size-3.5" /> : <Pause className="size-3.5" />}
           </button>
@@ -146,11 +146,12 @@ export function CoursePicker({ className, style }: { className?: string; style?:
               key={c.label}
               href={c.href}
               aria-label={c.title}
+              style={{ "--d": `${0.85 + i * 0.05}s` } as React.CSSProperties}
               onPointerEnter={(e) => e.pointerType === "mouse" && select(i)}
               onFocus={() => select(i)}
-              className={cn("relative rounded-full border px-2 py-1.5 text-[12.5px] font-semibold transition-colors duration-300 active:scale-[.96]", on ? "border-blue text-white" : "border-blue/25 text-blue hover:border-blue")}
+              className={cn("hero-fade relative rounded-full border px-2 py-1.5 text-[12.5px] font-semibold transition-colors duration-300 active:scale-[.96]", on ? "border-white text-blue" : "border-white/35 text-white hover:border-white hover:bg-white/10")}
             >
-              {on && <motion.span layoutId="hero-pick" transition={{ type: "spring", stiffness: 420, damping: 34 }} className="absolute -inset-px rounded-full bg-blue" />}
+              {on && <motion.span layoutId="hero-pick" transition={{ type: "spring", stiffness: 420, damping: 34 }} className="absolute -inset-px rounded-full bg-white" />}
               <span className="relative">{c.label}</span>
             </Link>
           );

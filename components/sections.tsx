@@ -38,9 +38,10 @@ const HERO_LOW_TEAR: [number, number][] = [[4, 5], [97, 1], [100, 91], [7, 99], 
 
 export function Hero() {
   return (
-    <section data-hero data-pause-offscreen className="relative overflow-hidden bg-white pt-18 text-blue">
-      <div aria-hidden className="absolute inset-x-0 bottom-0 isolate h-[clamp(96px,14vh,140px)] bg-blue">
-        <WaveDivider fill="fill-white" begin="-11s" height="h-[clamp(36px,4.5vw,70px)]" />
+    <section data-hero data-pause-offscreen className="relative overflow-hidden bg-blue pt-18 text-white">
+      {/* White wave rolling along the foot of the blue hero. `fill` is the colour above the wave's edge. */}
+      <div aria-hidden className="absolute inset-x-0 bottom-0 isolate h-[clamp(96px,14vh,140px)] bg-white">
+        <WaveDivider fill="fill-blue" begin="-11s" height="h-[clamp(36px,4.5vw,70px)]" />
       </div>
 
       <div className={cn(wrap, "relative grid gap-8 lg:min-h-[max(620px,calc(100svh-4.5rem))] lg:grid-cols-[minmax(0,1.06fr)_minmax(0,1.1fr)]")}>
@@ -60,28 +61,28 @@ export function Hero() {
               </span>
             ))}
           </h1>
-          <p className="hero-fade mb-6 max-w-[520px] text-[clamp(16px,1.3vw,18px)] leading-relaxed text-pretty text-ink-2" style={{ "--d": ".55s" } as React.CSSProperties}>
+          <p className="hero-fade mb-6 max-w-[520px] text-[clamp(16px,1.3vw,18px)] leading-relaxed text-pretty text-white/90" style={{ "--d": ".55s" } as React.CSSProperties}>
             For 25 years we&apos;ve helped students learn IT, pick up real skills and land jobs they&apos;re proud of. Today
             that&apos;s 800+ centres in 23 countries, and employers know our name.
           </p>
           <div className="hero-fade flex flex-wrap items-center gap-3" style={{ "--d": ".7s" } as React.CSSProperties}>
             <Magnetic>
-              <a href="#enquire" className="group inline-flex items-center gap-2 rounded-full bg-blue px-6 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-dark active:scale-[.97]">
+              <a href="#enquire" className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-[15px] font-bold text-blue transition-colors hover:bg-sky active:scale-[.97]">
                 Enquire now <Arrow className="transition-transform duration-300 ease-out-expo group-hover:translate-x-1" />
               </a>
             </Magnetic>
             <Magnetic strength={0.18}>
-              <Link href="/courses" className="inline-flex items-center rounded-full border border-blue/30 bg-white px-6 py-3.5 text-[15px] font-semibold text-blue transition-colors hover:border-blue hover:bg-ice active:scale-[.97]">
+              <Link href="/courses" className="inline-flex items-center rounded-full border border-white/55 px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:border-white hover:bg-white hover:text-blue active:scale-[.97]">
                 Explore Courses
               </Link>
             </Magnetic>
           </div>
           <CoursePicker className="hero-fade mt-7" style={{ "--d": ".8s" } as React.CSSProperties} />
-          <dl className="hero-fade mt-6 flex flex-wrap gap-x-9 gap-y-4 border-t border-blue/15 pt-5" style={{ "--d": ".95s" } as React.CSSProperties}>
+          <dl className="hero-fade mt-5 flex w-fit max-w-full flex-wrap gap-x-9 gap-y-3 rounded-2xl border border-white/30 px-6 py-4" style={{ "--d": ".95s" } as React.CSSProperties}>
             {STATS.slice(1, 4).map((s) => (
               <div key={s.label} className="transition-transform duration-300 ease-out-expo hover:-translate-y-1">
                 <dd className="font-display text-[clamp(26px,2.4vw,34px)] leading-none font-bold tracking-tight tabular-nums"><span data-count={s.value}>{s.value}</span>{s.suffix}</dd>
-                <dt className="mt-1.5 text-[13px] font-semibold text-ink-2">{s.label}</dt>
+                <dt className="mt-1.5 text-[13px] font-semibold text-white/90">{s.label}</dt>
               </div>
             ))}
           </dl>
@@ -272,7 +273,7 @@ export function About({ cta = true }: { cta?: boolean }) {
 
           <figure data-reveal="0.2" className="relative sm:px-12 sm:py-16">
             <Parallax y={[24, -24]} className="relative">
-              <img src={`${SITE}/assets/img/home/intro-tmb-lg.webp`} alt="G-TEC students" loading="lazy" className="aspect-[4/3] w-full rounded-[24px] object-cover shadow-[0_24px_60px_rgba(11,26,51,.2)]" />
+              <img src={`${SITE}/assets/img/home/intro-tmb-lg.webp`} alt="G-TEC students" loading="lazy" className="aspect-[4/3] w-full object-cover" style={{ clipPath: tornEdge([[1, 2], [99, 0.6], [99.4, 98], [0.6, 99.4]], 67, 0.5) }} />
             </Parallax>
             <dl className="mt-3 grid grid-cols-2 gap-3 sm:contents">
               {STATS.slice(0, 4).map((s, i) => (

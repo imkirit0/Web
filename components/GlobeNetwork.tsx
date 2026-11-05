@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { Search } from "lucide-react";
 import { COUNTRIES, HQ } from "@/lib/data";
 
 const IDLE = "Drag to rotate the globe";
@@ -16,6 +17,13 @@ export function GlobeNetwork({ intro, footer }: { intro: React.ReactNode; footer
   const host = useRef<HTMLDivElement>(null);
   const hover = useRef("");
   const [label, setLabel] = useState(IDLE);
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
+  const shown = q ? COUNTRIES.filter((c) => c.name.toLowerCase().includes(q)) : COUNTRIES;
+  const point = (name: string) => {
+    hover.current = name;
+    setLabel(name === "India" ? "Head office · Calicut, India" : `Calicut → ${name}`);
+  };
   // The Earth swells into place as its section arrives.
   const { scrollYProgress } = useScroll({ target: host, offset: ["start end", "center center"] });
   const scale = useTransform(scrollYProgress, [0, 1], [0.8, 1]);
@@ -248,6 +256,28 @@ export function GlobeNetwork({ intro, footer }: { intro: React.ReactNode; footer
     <>
       <div>
         {intro}
+        <label className="mb-4 flex max-w-[360px] items-center gap-2.5 rounded-full border border-white/25 bg-white/8 px-4 transition-colors focus-within:border-white">
+          <Search aria-hidden className="size-4 flex-none text-white/70" />
+          <span className="sr-only">Find a country</span>
+          <input
+            type="search"
+            name="country"
+            autoComplete="off"
+            value={query}
+            placeholder="Find your country…"
+            onChange={(e) => {
+              const v = e.target.value;
+              setQuery(v);
+              const first = COUNTRIES.find((c) => v.trim() && c.name.toLowerCase().includes(v.trim().toLowerCase()));
+              if (first) point(first.name);
+              else {
+                hover.current = "";
+                setLabel(IDLE);
+              }
+            }}
+            className="min-w-0 flex-1 bg-transparent py-2.5 text-[15px] text-white outline-none"
+          />
+        </label>
         <div
           data-stagger
           className="mb-10 flex flex-wrap gap-2"
@@ -256,7 +286,12 @@ export function GlobeNetwork({ intro, footer }: { intro: React.ReactNode; footer
             setLabel(IDLE);
           }}
         >
-          {COUNTRIES.map((c) => (
+          {shown.length === 0 && (
+            <p role="status" className="py-1.5 text-sm text-white/80">
+              No centre listed for that. <a href="#enquire" className="font-semibold text-white underline underline-offset-3">Ask us</a> and we&apos;ll connect you.
+            </p>
+          )}
+          {shown.map((c) => (
             <a
               key={c.name}
               href={c.url}

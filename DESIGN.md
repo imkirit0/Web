@@ -28,7 +28,7 @@ Rejected: a globe-led story (the globe is impressive but says nothing about gett
 | About | Who are they? | Their story, ISO certification, government work |
 | Course explorer | What can I learn? | Real modules for each programme |
 | Journey line | Does it lead to a job? | Placement poster, job fairs, certificates |
-| Globe | Does it count elsewhere? | All 23 countries |
+| Globe | Does it count elsewhere? | All 23 countries, with a finder |
 | Stories | Do people like me say so? | Named student videos |
 | News, subsidiaries | Is this alive and substantial? | Dated job fairs, group institutions |
 | Closing | What now? | Three ways to reach a person |
@@ -42,7 +42,8 @@ Rejected: a globe-led story (the globe is impressive but says nothing about gett
 - **Motion:** paper settles with `--ease-out-expo` and a small rotation. At rest, only the waves and the hero move (collage drift, floating chips, field cycle, occasional caps). All of it stops off-screen and under reduced motion, and the hero has a pause button.
 - **Hero:** responds before it performs. The field picker, cap toss and fact chips all answer the visitor; the automatic versions just show that they are there.
 - **Pinning:** three scroll-driven scenes at most (explorer, journey line, stories gathering around their heading). Scroll is never captured, only read.
-- **Torn paper is reserved** for the hero collage and the journey line. Everything else gets clean edges, so the tear keeps its meaning.
+- **Torn paper is the signature:** the hero prints, the journey stops, the course photos and the About photo. Keep it on things that read as paper, not on buttons or logos.
+- **Backdrops:** the brand guidelines allow solid blue or white only. No pale tints behind the logo.
 - **Phones get their own composition,** not a shrunk one: course carousel, vertical journey line, no cursor effects.
 - **Reduced motion and no JavaScript are designed states.** Anything Framer starts hidden carries `data-mo`, which globals.css forces visible.
 

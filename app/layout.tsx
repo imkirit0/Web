@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Arimo, Bricolage_Grotesque, Manrope } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -18,6 +18,8 @@ export const metadata: Metadata = {
     "World's largest IT education network: 800+ centres across 23 countries, 25 years of IT education, skilling and vocational training.",
   icons: { icon: "/logo.png" },
 };
+
+export const viewport: Viewport = { themeColor: "#004282" };
 
 // Runs before paint so scroll-reveal elements start hidden only when JS + motion are available.
 const motionFlag = `if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('motion')`;

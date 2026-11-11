@@ -7,15 +7,32 @@ import html
 import http.cookiejar
 import json
 import re
+import sys
+import time
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))  # -I drops the script dir
+from scrape import clean_html, get, imgs, main_region  # noqa: E402
 
 SITE = "https://www.gteceducation.com"
 OUT = Path(__file__).resolve().parent.parent / "content" / "centres.json"
+DETAIL = OUT.with_name("centre-pages.json")  # server-only; kept out of the listing bundle
 
 opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
 opener.addheaders = [("User-Agent", "Mozilla/5.0 (gtec-migration)")]
+
+
+def fetch(req):
+    for i in range(4):  # the live server resets connections now and then
+        try:
+            return opener.open(req, timeout=40).read().decode("utf-8", "ignore")
+        except OSError:
+            if i == 3:
+                raise
+            time.sleep(2 * (i + 1))
 
 
 def text(s):
@@ -42,7 +59,7 @@ def cards(page_html):
 
 
 def main():
-    s = opener.open(SITE + "/centres", timeout=40).read().decode("utf-8", "ignore")
+    s = fetch(SITE + "/centres")
     csrf = re.search(r'csrf-token" content="([^"]+)', s).group(1)
     sel = re.search(r'<select[^>]+name="country".*?</select>', s, re.S).group(0)
     countries = [(v, text(n)) for v, n in re.findall(r'<option value="(\d+)"[^>]*>(.*?)</option>', sel)]
@@ -52,7 +69,7 @@ def main():
         for page in range(1, 200):
             data = urllib.parse.urlencode({"country": cid, "page": page}).encode()
             req = urllib.request.Request(SITE + "/centres", data, {"X-CSRF-TOKEN": csrf, "X-Requested-With": "XMLHttpRequest"})
-            chunk = opener.open(req, timeout=40).read().decode("utf-8", "ignore")
+            chunk = fetch(req)
             got = list(cards(chunk))
             if not got:
                 break
@@ -64,6 +81,23 @@ def main():
     OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     print("total", len(out))
     assert len(out) > 300, "expected ~323 centres; live markup may have changed"
+
+    with ThreadPoolExecutor(4) as ex:
+        details = dict(zip([c["slug"] for c in out], ex.map(detail, [c["slug"] for c in out])))
+    DETAIL.write_text(json.dumps(details, ensure_ascii=False, indent=1), encoding="utf-8")
+    print("details", sum(1 for d in details.values() if d["html"]))
+
+
+def detail(slug):
+    """Same cleaned shape as scrape.page(), plus the live Google Maps search query."""
+    raw = get(f"/centres/{slug}")
+    m = main_region(raw)
+    q = re.search(r'google\.com/maps/embed/v1/\w+\?q=([^&"]+)', raw)
+    return {
+        "html": clean_html(m[m.find("</ul>") :] if "breadcrumb" in m else m),
+        "images": imgs(m),
+        "map": urllib.parse.unquote(html.unescape(q.group(1))) if q else "",
+    }
 
 
 if __name__ == "__main__":

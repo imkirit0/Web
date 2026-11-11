@@ -1,4 +1,6 @@
-import { PAGES, getCourse, titleCase } from "@/lib/content";
+import { PAGES, getCourse } from "@/lib/content";
+import centreList from "@/content/centres.json";
+import centrePages from "@/content/centre-pages.json";
 
 // Parsers for scraped live-site pages (centres, blog, news, galleries). Patterns match the live markup as scraped.
 
@@ -11,26 +13,27 @@ const img = (u?: string) => (u ? encodeURI(decodeURI(u)) : undefined);
 
 /* ── Centres ── */
 
-export const CENTRE_SLUGS = ["gceperinthalmanna", "gtecperavoor", "gtecmullakkal", "gteckuthuparamba", "gteckunnumpuram", "gtecernakulamsouth", "gtecnedumudy", "gtecmannancherry"];
+// Listing data (every centre) + per-centre page detail, both from scripts/scrape_centres.py.
+const LIST = new Map(centreList.map((c) => [c.slug, c]));
+const DETAIL = centrePages as Record<string, { html: string; images: string[]; map: string }>;
+export const CENTRE_SLUGS = [...LIST.keys()];
 
 export function getCentre(slug: string) {
-  const p = CENTRE_SLUGS.includes(slug) ? PAGES[`/centres/${slug}`] : undefined;
-  if (!p?.html) return undefined;
-  const h = p.html;
+  const c = LIST.get(slug);
+  if (!c) return undefined;
+  const d = DETAIL[slug] ?? { html: "", images: [], map: "" };
+  const h = d.html;
   const courses = [...h.matchAll(/(?:<a href="([^"]*)">\s*)?<h4>([\s\S]*?)<\/h4>/g)].map(([, href = "", t]) => {
     const [cat, level, course] = href.replace(`/centres/${slug}/`, "").split("/");
     return { title: decode(t), href: cat && level && course && getCourse(cat, level, course) ? `/courses/${cat}/${level}/${course}` : undefined };
   });
   return {
-    slug,
-    name: titleCase(decode(pick(h, /&larr; Back<\/a>([^<]+)</))).replace(/G-Tec/g, "G-TEC").replace(/Gce/g, "GCE"),
-    phones: pick(h, /Phone\s*<p>([^<]*)<\/p>/).split(",").map((x) => x.trim()).filter(Boolean),
-    email: pick(h, /Email\s*<p>([^<]*)<\/p>/).trim(),
+    ...c,
     about: strip(pick(h, /Gallery\s*<\/li>\s*<\/ul>\s*<p>([\s\S]*?)<\/p>/)),
-    address: decode(pick(h, /<\/a>\s*([^<>]+?)\s*<\/p>\s*<h2>Are You Interested/)),
     courses,
-    banner: img(p.images.find((u) => u.includes("/public/location/"))),
-    photos: p.images.filter((u) => u.includes("/locationimage/")).map((u) => img(u)!),
+    banner: img(d.images.find((u) => u.includes("/public/location/")) ?? c.image ?? undefined),
+    photos: d.images.filter((u) => u.includes("/locationimage/")).map((u) => img(u)!),
+    map: d.map || c.address,
   };
 }
 export type Centre = NonNullable<ReturnType<typeof getCentre>>;

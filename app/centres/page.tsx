@@ -3,7 +3,6 @@ import { Eyebrow, PageHero } from "@/components/page-hero";
 import { Global } from "@/components/sections";
 import { MistSection } from "@/components/media-pages";
 import { CentreDirectory } from "@/components/CentreDirectory";
-import { CENTRE_SLUGS } from "@/lib/pages-data";
 import centres from "@/content/centres.json";
 
 export const metadata: Metadata = { title: "Global presence" };
@@ -29,7 +28,7 @@ export default function CentresPage() {
         <MistSection>
           <Eyebrow>Centre directory</Eyebrow>
           <h2 className="font-display mb-10 text-[clamp(28px,3.4vw,44px)] leading-[1.06] font-bold tracking-[-.025em]">Find a centre near you</h2>
-          <CentreDirectory centres={centres} detail={CENTRE_SLUGS} />
+          <CentreDirectory centres={centres} />
         </MistSection>
       </div>
     </>

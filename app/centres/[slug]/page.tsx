@@ -6,6 +6,7 @@ import { CourseHero } from "@/components/courses";
 import { MistSection, PhotoGrid } from "@/components/media-pages";
 import { SiteForm, fieldClass } from "@/components/SiteForm";
 import { CENTRE_SLUGS, getCentre } from "@/lib/pages-data";
+import { tel } from "@/lib/tel";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -30,10 +31,12 @@ export default async function CentrePage({ params }: Props) {
       <MistSection className="grid items-start gap-10 lg:grid-cols-[1fr_360px]">
         <div className="grid min-w-0 gap-10">
           {c.banner && <img src={c.banner} alt={c.name} className="aspect-[16/8] w-full rounded-[28px] object-cover" />}
-          <div className="rounded-[28px] bg-white p-[clamp(24px,4vw,48px)] ring-1 ring-ink/[.07] shadow-card">
-            <h2 className={h2}>About the centre</h2>
-            <p className="leading-relaxed text-ink-2">{c.about}</p>
-          </div>
+          {c.about && (
+            <div className="rounded-[28px] bg-white p-[clamp(24px,4vw,48px)] ring-1 ring-ink/[.07] shadow-card">
+              <h2 className={h2}>About the centre</h2>
+              <p className="leading-relaxed text-ink-2">{c.about}</p>
+            </div>
+          )}
           {c.courses.length > 0 && (
             <div>
               <h2 className={h2}>Courses offered</h2>
@@ -52,6 +55,24 @@ export default async function CentrePage({ params }: Props) {
               </ul>
             </div>
           )}
+          <div>
+            <h2 className={h2}>Location</h2>
+            <iframe
+              title={`Map of ${c.name}`}
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(c.map)}&output=embed`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="aspect-[16/9] w-full rounded-[28px] border-0 bg-ice ring-1 ring-ink/[.07]"
+            />
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.map)}`}
+              target="_blank"
+              rel="noopener"
+              className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-blue"
+            >
+              Get directions <ArrowUpRight className="size-4" />
+            </a>
+          </div>
           {c.photos.length > 0 && (
             <div>
               <h2 className={h2}>Gallery</h2>
@@ -64,7 +85,7 @@ export default async function CentrePage({ params }: Props) {
           <div className="grid gap-4 rounded-[28px] bg-navy p-7 text-white">
             <p className="font-display text-xl font-bold tracking-tight">Contact the centre</p>
             {c.phones.map((p) => (
-              <a key={p} href={`tel:+91${p.replace(/\D/g, "")}`} className="flex items-center gap-3 text-[15px] font-semibold hover:text-coral"><Phone className="size-4 text-coral" /> {p}</a>
+              <a key={p} href={tel(p, c.country)} className="flex items-center gap-3 text-[15px] font-semibold hover:text-coral"><Phone className="size-4 text-coral" /> {p}</a>
             ))}
             {c.email && <a href={`mailto:${c.email}`} className="flex items-center gap-3 text-[14px] font-semibold [overflow-wrap:anywhere] hover:text-coral"><Mail className="size-4 flex-none text-coral" /> {c.email}</a>}
           </div>

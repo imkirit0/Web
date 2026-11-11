@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, MapPin, Play } from "lucide-react";
+import { ArrowUpRight, CalendarDays, Play } from "lucide-react";
 import { wrap } from "@/components/courses";
-import type { Centre, NewsItem, Post } from "@/lib/pages-data";
+import type { NewsItem, Post } from "@/lib/pages-data";
 
 const card = "group flex flex-col overflow-hidden rounded-[28px] bg-white ring-1 ring-ink/[.07] shadow-card transition duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(0,66,130,.14)]";
 const grid = "grid grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))] gap-5";
@@ -19,23 +19,6 @@ function Cover({ src, alt = "" }: { src?: string; alt?: string }) {
   return (
     <div className="relative aspect-[16/10] overflow-hidden bg-ice">
       {src && <img src={src} alt={alt} loading="lazy" className="size-full object-cover transition duration-700 ease-out-expo group-hover:scale-105" />}
-    </div>
-  );
-}
-
-export function CentreGrid({ centres }: { centres: Centre[] }) {
-  return (
-    <div className={grid}>
-      {centres.map((c) => (
-        <Link key={c.slug} href={`/centres/${c.slug}`} className={card}>
-          <Cover src={c.banner} />
-          <div className="flex flex-1 flex-col p-6">
-            <h3 className="font-display text-lg font-bold tracking-tight">{c.name}</h3>
-            <p className="mt-2 flex gap-2 text-sm leading-relaxed text-ink-2"><MapPin className="mt-0.5 size-4 flex-none text-red" /> {c.address}</p>
-            <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-bold text-blue">View centre <ArrowUpRight className="size-4" /></span>
-          </div>
-        </Link>
-      ))}
     </div>
   );
 }

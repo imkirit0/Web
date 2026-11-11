@@ -34,7 +34,6 @@ export function getCentre(slug: string) {
   };
 }
 export type Centre = NonNullable<ReturnType<typeof getCentre>>;
-export const CENTRES = CENTRE_SLUGS.map(getCentre).filter((c): c is Centre => !!c);
 
 /* ── Blog ── */
 

@@ -38,7 +38,7 @@ const HERO_LOW_TEAR: [number, number][] = [[4, 5], [97, 1], [100, 91], [7, 99], 
 
 export function Hero() {
   return (
-    <section data-hero data-pause-offscreen className="relative overflow-hidden bg-blue pt-18 text-white">
+    <section data-hero data-hero-pin data-pause-offscreen className="relative overflow-hidden bg-blue pt-18 text-white">
       {/* White wave rolling along the foot of the blue hero. `fill` is the colour above the wave's edge. */}
       <div aria-hidden className="absolute inset-x-0 bottom-0 isolate h-[clamp(96px,14vh,140px)] bg-white">
         <WaveDivider fill="fill-blue" begin="-11s" height="h-[clamp(36px,4.5vw,70px)]" />
@@ -297,7 +297,7 @@ export function About({ cta = true }: { cta?: boolean }) {
 const waveY = (x: number, t: number) => 135 + 42 * Math.sin(2 * Math.PI * (x * 1.3 + t)) + 20 * Math.sin(2 * Math.PI * (x * 2.2 - 2 * t));
 
 /** One frame of the wave: smooth curves through 9 points, filled up past the top of the viewBox. Every frame has the same commands so the browser can morph between them. */
-function wavePath(t: number) {
+function wavePath(t: number, close = "V59H0Z") {
   const STEPS = 8;
   const slope = (x: number) => (waveY(x + 0.001, t) - waveY(x - 0.001, t)) / 0.002 / STEPS / 3;
   let d = `M0 ${waveY(0, t).toFixed(1)}`;
@@ -307,10 +307,31 @@ function wavePath(t: number) {
     const third = (xb - xa) / 3;
     d += `C${(xa + third).toFixed(1)} ${(waveY(a, t) + slope(a)).toFixed(1)} ${(xb - third).toFixed(1)} ${(waveY(b, t) - slope(b)).toFixed(1)} ${xb.toFixed(1)} ${waveY(b, t).toFixed(1)}`;
   }
-  return `${d}V59H0Z`;
+  return `${d}${close}`;
 }
 
 const WAVE_FRAMES = Array.from({ length: 9 }, (_, i) => wavePath(i / 8));
+// The same wave filled downwards instead, for the curtain's leading edge.
+const LIP_FRAMES = Array.from({ length: 9 }, (_, i) => wavePath(i / 8, "V230H0Z"));
+
+/**
+ * Everything after the home hero. On roomy screens the hero pins (globals.css) and this rides up over
+ * it, white wave first, like a curtain going up. Elsewhere it's a plain wrapper.
+ */
+export function Curtain({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative z-10">
+      <div data-curtain-lip aria-hidden className="pointer-events-none hidden">
+        <svg data-wave viewBox="0 60 1900 155" preserveAspectRatio="none" className="block h-[clamp(52px,8vw,128px)] w-full overflow-visible">
+          <path className="fill-white" d={LIP_FRAMES[0]}>
+            <animate attributeName="d" values={LIP_FRAMES.join(";")} dur="18s" begin="-11s" repeatCount="indefinite" />
+          </path>
+        </svg>
+      </div>
+      <div className="bg-white">{children}</div>
+    </div>
+  );
+}
 
 /** Slowly rolling edge between two sections. Sits over the top of the lower section, so its glow carries on underneath; `fill` is the upper section's colour. */
 export function WaveDivider({ fill = "fill-white", begin = "0s", height = "h-[clamp(52px,8vw,128px)]" }: { fill?: string; begin?: string; height?: string }) {
@@ -592,7 +613,7 @@ export function Testimonials({ heading = true, grid }: { heading?: boolean; grid
 
 export function News({ heading = true }: { heading?: boolean }) {
   return (
-    <section id="news" className={cn(section, "relative z-10 bg-white text-ink", heading && "-mt-10 rounded-t-[40px]")}>
+    <section id="news" className={cn(section, "relative z-10 bg-white text-ink", heading && "pt-[clamp(28px,3.5vw,56px)]")}>
       <div className={wrap}>
         {heading && (
           <div className="mb-11 flex flex-wrap items-end justify-between gap-6">
@@ -643,9 +664,11 @@ export function ClosingCta() {
   return (
     <>
       <WaveDivider fill="fill-white" begin="-3s" />
-      <section className="relative overflow-hidden bg-blue pt-[clamp(120px,14vw,200px)] pb-[clamp(72px,8vw,120px)] text-white">
+      <section data-pause-offscreen className="relative overflow-hidden bg-blue pt-[clamp(120px,14vw,200px)] pb-[clamp(72px,8vw,120px)] text-white">
         <BrushStroke d="M20 215 300 25 95 345 345 215 372 400" viewBox="0 0 400 420" className="pointer-events-none absolute top-[8%] right-[4%] h-[38%] w-auto overflow-visible opacity-30 max-lg:hidden" />
-        <div className={cn(wrap, "relative grid items-end gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,.8fr)]")}>
+        {/* A soft light behind the contact card, so the blue has some depth. */}
+        <div aria-hidden className="pointer-events-none absolute top-[-15%] right-[-12%] aspect-square w-[min(70vw,900px)] animate-[float-a_16s_ease-in-out_infinite] rounded-full bg-[radial-gradient(closest-side,rgba(120,180,255,.24),transparent)] motion-reduce:animate-none" />
+        <div className={cn(wrap, "relative grid items-center gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,.8fr)]")}>
           <div>
             <RiseWords text="Start your journey with G-TEC." className="font-display mb-6 text-[clamp(40px,6.4vw,92px)] leading-[1.02] font-bold tracking-[-.035em]" />
             <p data-reveal="0.2" className="mb-9 max-w-[520px] text-[17px] leading-[1.7] text-pretty text-white/85">
@@ -662,16 +685,36 @@ export function ClosingCta() {
               </Link>
             </div>
           </div>
-          <div data-stagger className="relative grid border-t border-white/25">
-            {channels.map(({ icon: Icon, label, value, href }) => (
-              <a key={label} href={href} className="group flex items-center gap-4 border-b border-white/25 py-4.5 transition-[padding] duration-300 ease-out-expo hover:pl-2">
-                <Icon className="size-5 flex-none text-sky" />
-                <span className="min-w-0">
-                  <span className="block text-xs font-semibold text-white/75">{label}</span>
-                  <span className="block font-bold break-words">{value}</span>
-                </span>
-                <Arrow className="ml-auto flex-none opacity-60 transition-[opacity,transform] duration-300 group-hover:translate-x-1 group-hover:opacity-100" />
-              </a>
+          <div className="relative rounded-[28px] border border-white/15 bg-white/[.07] p-3 backdrop-blur-sm">
+            <p className="px-4 pt-3 pb-2 text-sm font-semibold text-white/75">Prefer to talk? Reach us directly.</p>
+            <div data-stagger className="grid gap-1">
+              {channels.map(({ icon: Icon, label, value, href }) => (
+                <a key={label} href={href} className="group flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-colors duration-300 hover:bg-white/10">
+                  <span className="flex size-11 flex-none items-center justify-center rounded-full bg-white text-blue">
+                    <Icon className="size-5" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-xs font-semibold text-white/75">{label}</span>
+                    <span className="block text-[17px] font-bold break-words">{value}</span>
+                  </span>
+                  <Arrow className="ml-auto flex-none opacity-60 transition-[opacity,transform] duration-300 group-hover:translate-x-1 group-hover:opacity-100" />
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+        {/* What you can learn here, drifting past in outline. Decoration: the same list is in the hero picker. */}
+        <div aria-hidden className="relative mt-[clamp(48px,6vw,88px)] overflow-hidden select-none">
+          <div className="marquee flex w-max" style={{ "--dur": "44s" } as React.CSSProperties}>
+            {[0, 1].map((copy) => (
+              <div key={copy} className="font-display flex flex-none items-center text-[clamp(56px,9vw,136px)] leading-none font-bold tracking-[-.035em] whitespace-nowrap text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,.3)]">
+                {["SAP", "Robotics", "Software", "Multimedia", "Networking", "Finance", "CAD"].map((w) => (
+                  <span key={w} className="flex items-center">
+                    {w}
+                    <span className="mx-[.35em] size-[.14em] flex-none rounded-full bg-red" />
+                  </span>
+                ))}
+              </div>
             ))}
           </div>
         </div>

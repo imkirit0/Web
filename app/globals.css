@@ -173,6 +173,12 @@ html:not(.loader-seen) body:has(#site-loader[aria-busy="true"]) :is(.hero-word, 
   animation-play-state: paused;
 }
 
+/* Home, roomy screens: the hero holds still and the rest of the page rides up over it, white wave first. */
+@media (min-width: 1024px) and (min-height: 700px) {
+  [data-hero-pin] { position: sticky; top: 0; }
+  [data-curtain-lip] { display: block; }
+}
+
 /* Header: out of the way while reading, back on scroll up, and never while it's being used. */
 .site-header { transition: translate .4s var(--ease-out-expo); }
 .site-header[data-hidden]:not(:hover, :focus-within) { translate: 0 -100%; }

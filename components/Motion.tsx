@@ -13,15 +13,18 @@ export function Motion() {
     // SVG animations ignore the CSS reduced-motion rule, so hold them still here.
     if (reduce) document.querySelectorAll<SVGSVGElement>("[data-wave]").forEach((svg) => svg.pauseAnimations());
 
-    // [data-stagger] children become reveals with stepped delays.
-    document.querySelectorAll<HTMLElement>("[data-stagger]").forEach((g) => {
-      const kids = Array.from(g.children) as HTMLElement[];
-      const step = Math.min(0.08, 1.2 / kids.length);
-      kids.forEach((c, i) => c.setAttribute("data-reveal", String(i * step)));
-    });
-    document.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
-      el.style.setProperty("--d", `${parseFloat(el.dataset.reveal || "0")}s`);
-    });
+    const prepare = () => {
+      // [data-stagger] children become reveals with stepped delays.
+      document.querySelectorAll<HTMLElement>("[data-stagger]").forEach((g) => {
+        const kids = Array.from(g.children) as HTMLElement[];
+        const step = Math.min(0.08, 1.2 / kids.length);
+        kids.forEach((c, i) => c.setAttribute("data-reveal", String(i * step)));
+      });
+      document.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
+        el.style.setProperty("--d", `${parseFloat(el.dataset.reveal || "0")}s`);
+      });
+    };
+    prepare();
 
     const io = new IntersectionObserver(
       (entries) =>
@@ -34,7 +37,15 @@ export function Motion() {
         }),
       { rootMargin: "0px 0px -8% 0px" },
     );
-    document.querySelectorAll("[data-reveal]:not(.in), [data-count]").forEach((el) => io.observe(el));
+    const watch = () => document.querySelectorAll("[data-reveal]:not(.in), [data-count]").forEach((el) => io.observe(el));
+    watch();
+    // Nodes that arrive later (streamed sections, a hot reload) would otherwise stay hidden for good.
+    const added = new MutationObserver((records) => {
+      if (!records.some((r) => r.addedNodes.length)) return;
+      prepare();
+      watch();
+    });
+    added.observe(document.body, { childList: true, subtree: true });
 
     // Hero parallax.
     const hero = document.querySelector<HTMLElement>("[data-hero]");
@@ -80,6 +91,7 @@ export function Motion() {
 
     return () => {
       io.disconnect();
+      added.disconnect();
       idle.disconnect();
       removeEventListener("scroll", onScroll);
       document.removeEventListener("pointermove", onMove);

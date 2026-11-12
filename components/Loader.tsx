@@ -1,13 +1,21 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion, useMotionTemplate, useSpring, useTransform } from 'framer-motion';
+import { animate, motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { tornEdge } from '@/lib/utils';
 
 const KEY = 'gtec-loaded';
 const MIN_MS = 1400; // long enough to see the logo assemble
 const MAX_MS = 2800; // never trap the visitor on a slow or broken asset
 const LIFT_MS = 1150; // cap toss plus the sheet lifting away
+const FILM = '/loader/drone-firework.mp4';
+const REVEAL_MS = 1300; // flying through the drone logo into the page
+const REVEAL_LEAD = 0.9; // seconds before the film ends that the reveal starts, so it never sits on a frozen frame
+const FILM_MAX_MS = 9000; // a stalled film never traps the visitor
+// Where the drone logo hangs in the film's last frames, tracked through object-cover's crop.
+const LOGO_AT = 'calc(50% + max(1.5vw, 2.7svh)) calc(50% + max(8.4vw, 15svh))';
+// logo: sheet up. film: sheet gone, film playing. reveal: film opening onto the page. lift: no film, straight to the page.
+type Phase = 'logo' | 'film' | 'reveal' | 'lift';
 
 // Survives client-side navigation (e.g. pressing Back to the home page).
 let shownThisVisit = false;
@@ -37,15 +45,48 @@ function waitFor(el: HTMLImageElement) {
 
 /**
  * The logo builds itself: letters rise, the cap lands, and the red ring sweeps round as the page
- * really loads. When it's ready the cap is tossed and the sheet lifts away like torn paper, into the
- * hero. Reduced motion and repeat visits skip it altogether.
+ * really loads. When it's ready the cap is tossed and the sheet lifts away like torn paper, onto the
+ * drone-show film. As the film settles on the drone logo, the camera pushes through it and the sky
+ * opens onto the hero. Reduced motion and repeat visits skip it altogether; a film that hasn't
+ * buffered in time is skipped too.
  */
 export function Loader() {
   const [isDone, setIsDone] = useState(() => shownThisVisit);
-  const [isLeaving, setIsLeaving] = useState(false);
+  const [phase, setPhase] = useState<Phase>('logo');
   const [ready, setReady] = useState(false);
   const [progress, setProgress] = useState(0);
   const stage = useRef<HTMLDivElement>(null);
+  const film = useRef<HTMLVideoElement>(null);
+  const timer = useRef(0);
+  const isLeaving = phase !== 'logo';
+  const isBusy = phase === 'logo' || phase === 'film';
+
+  // The hole in the night sky: nothing until the reveal, then a soft-edged circle growing out of the drone logo.
+  const open = useMotionValue(0);
+  const inner = useTransform(open, (v) => v * 150);
+  const outer = useTransform(open, (v) => v * 195);
+  const hole = useMotionTemplate`radial-gradient(circle at ${LOGO_AT}, transparent ${inner}vmax, #000 ${outer}vmax)`;
+
+  const finish = (next: Phase, ms: number) => {
+    setPhase(next);
+    clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => setIsDone(true), ms);
+  };
+  const reveal = () => finish('reveal', REVEAL_MS);
+  const lift = () => finish('lift', LIFT_MS);
+  const leave = () => {
+    const v = film.current;
+    if (!v || v.error || v.readyState < 3) return lift();
+    setPhase('film');
+    v.play().catch(lift);
+    timer.current = window.setTimeout(reveal, FILM_MAX_MS);
+  };
+
+  useEffect(() => {
+    if (phase !== 'reveal') return;
+    const run = animate(open, 1, { duration: REVEAL_MS / 1000, ease: [0.7, 0, 0.3, 1] });
+    return () => run.stop();
+  }, [phase, open]);
 
   const eased = useSpring(0, { stiffness: 70, damping: 20 });
   const sweep = useTransform(eased, [0, 100], [0, 200]);
@@ -77,7 +118,18 @@ export function Loader() {
 
     // Everything the first screen needs: fonts, eager images. Lazy images load on scroll, so skip them.
     const media = Array.from(document.images).filter((img) => img.loading !== 'lazy');
+    // The film only starts downloading here, so repeat visits and reduced motion never fetch it.
+    const v = film.current;
+    if (v) {
+      v.preload = 'auto';
+      v.load();
+    }
     const tasks: Promise<unknown>[] = [
+      new Promise<void>((r) => {
+        if (!v) return r();
+        v.addEventListener('canplaythrough', () => r(), { once: true });
+        v.addEventListener('error', () => r(), { once: true });
+      }),
       document.fonts.ready,
       document.readyState === 'complete' ? Promise.resolve() : new Promise((r) => addEventListener('load', r, { once: true })),
       ...media.map(waitFor),
@@ -100,17 +152,14 @@ export function Loader() {
       clearInterval(tick);
       setProgress(100);
       // A beat for the ring to close before the cap goes up.
-      doneTimer = window.setTimeout(() => {
-        if (cancelled) return;
-        setIsLeaving(true);
-        doneTimer = window.setTimeout(() => !cancelled && setIsDone(true), LIFT_MS);
-      }, 260);
+      doneTimer = window.setTimeout(() => !cancelled && leave(), 260);
     });
 
     return () => {
       cancelled = true;
       clearInterval(tick);
       clearTimeout(doneTimer);
+      clearTimeout(timer.current);
     };
   }, [isDone]);
 
@@ -128,7 +177,26 @@ export function Loader() {
   return (
     <>
       <script dangerouslySetInnerHTML={{ __html: HIDE_IF_SEEN }} />
-      <aside id="site-loader" aria-label="Loading G-TEC Education" aria-busy={!isLeaving} className={`fixed inset-0 z-[9999] overflow-hidden select-none ${isLeaving ? 'pointer-events-none' : ''}`}>
+      <aside id="site-loader" aria-label="Loading G-TEC Education" aria-busy={isBusy} className={`fixed inset-0 z-[9999] overflow-hidden select-none ${isBusy ? '' : 'pointer-events-none'}`}>
+        <motion.div aria-hidden style={{ maskImage: hole, WebkitMaskImage: hole }} className={`absolute inset-0 bg-[#04050a] ${phase === 'lift' ? 'hidden' : ''}`}>
+          <motion.video
+            ref={film}
+            src={FILM}
+            muted
+            playsInline
+            preload="none"
+            disablePictureInPicture
+            initial={false}
+            animate={{ scale: phase === 'reveal' ? 1.7 : 1 }}
+            transition={{ duration: REVEAL_MS / 1000, ease: [0.7, 0, 0.3, 1] }}
+            style={{ transformOrigin: LOGO_AT }}
+            onTimeUpdate={(e) => phase === 'film' && e.currentTarget.currentTime >= e.currentTarget.duration - REVEAL_LEAD && reveal()}
+            onEnded={() => phase === 'film' && reveal()}
+            onError={() => phase === 'film' && reveal()}
+            className="size-full object-cover will-change-transform"
+          />
+        </motion.div>
+
         <motion.div initial={false} animate={{ y: isLeaving ? '-112%' : '0%' }} transition={{ duration: 0.85, delay: isLeaving ? 0.2 : 0, ease: [0.76, 0, 0.24, 1] }} className="absolute inset-x-0 top-0 h-[112svh] will-change-transform">
           <div aria-hidden className="absolute inset-0 bg-white" style={{ clipPath: PAPER_EDGE }} />
           <div className="absolute inset-0 bg-blue" style={{ clipPath: SHEET_EDGE }} />
@@ -175,20 +243,22 @@ export function Loader() {
             <motion.span initial={false} animate={{ opacity: isLeaving ? 0 : 1 }} className="absolute bottom-6 left-1/2 -translate-x-1/2 text-sm font-semibold text-white/80 tabular-nums">
               {progress}%
             </motion.span>
-            <button
-              type="button"
-              onClick={() => {
-                setProgress(100);
-                setIsLeaving(true);
-                setTimeout(() => setIsDone(true), LIFT_MS);
-              }}
-              aria-label="Skip intro loader"
-              className="absolute right-6 bottom-5 p-2 text-sm font-semibold text-white/80 transition-colors hover:text-white"
-            >
-              Skip
-            </button>
           </div>
         </motion.div>
+
+        {/* Outside the sheet, so it stays put over the film. Skips the logo and film alike, or just the film. */}
+        <button
+          type="button"
+          onClick={() => {
+            if (phase === 'film') return reveal();
+            setProgress(100);
+            lift();
+          }}
+          aria-label="Skip intro"
+          className={`absolute right-6 bottom-5 p-2 text-sm font-semibold text-white/80 transition hover:text-white ${isBusy ? '' : 'opacity-0'}`}
+        >
+          Skip
+        </button>
       </aside>
     </>
   );

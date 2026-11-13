@@ -92,11 +92,11 @@ export function Hero() {
         <HeroDepth className="relative h-[clamp(440px,100vw,600px)] lg:h-auto">
           <DepthLayer depth={38} scroll={-70} tilt={5}>
             <div className="hero-tear absolute top-[3%] -right-[6%] h-[60%] w-full" style={{ "--d": ".2s", "--r": "4deg" } as React.CSSProperties}>
-              <PhotoDeck src={unsplash("1522202176988-66273c2fd55f")} alt="Students laughing together around their laptops" clip={tornEdge(HERO_TOP_TEAR, 23)} backing={tornEdge(HERO_TOP_TEAR, 30, 0.8)} focus="62% 40%" />
+              <PhotoDeck src="/hero/graduation.mp4" alt="G-TEC graduates in caps and gowns at their graduation ceremony, and the crowd at the celebration show" clip={tornEdge(HERO_TOP_TEAR, 23)} backing={tornEdge(HERO_TOP_TEAR, 30, 0.8)} focus="50% 45%" />
             </div>
           </DepthLayer>
           <DepthLayer depth={-56} scroll={-130} tilt={-7}>
-            <LoosePhoto src="/hero/graduates.jpg" alt="Graduates in gowns cheering as their caps fly into the air" clip={tornEdge(HERO_LOW_TEAR, 41)} backing={tornEdge(HERO_LOW_TEAR, 48, 0.8)} focus="50% 80%" className="bottom-[5%] left-0 h-[44%] w-[58%]" delay=".42s" tilt="-5deg" />
+            <LoosePhoto src="/hero/graduate-1.jpg" alt="A G-TEC graduate in cap and gown holding his certificate" swap={{ src: "/hero/graduate-2.jpg", focus: "50% 45%" }} clip={tornEdge(HERO_LOW_TEAR, 41)} backing={tornEdge(HERO_LOW_TEAR, 48, 0.8)} focus="55% 22%"className="bottom-[5%] left-0 h-[44%] w-[58%]" delay=".42s" tilt="-5deg" />
           </DepthLayer>
           <DepthLayer depth={-90} scroll={-190} tilt={4}>
             <HeroBrush />

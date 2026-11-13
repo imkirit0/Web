@@ -204,9 +204,20 @@ function useTilt(max: number) {
 /** The photo sits a little oversized in its frame, so it can drift (CSS) and slide against the cursor without showing an edge. */
 function LivePhoto({ src, alt, focus, zoom, live, priority }: { src: string; alt: string; focus?: string; zoom: MotionValue<number>; live: boolean; priority?: boolean }) {
   const depth = useDepth();
+  const video = useRef<HTMLVideoElement>(null);
+  const isVideo = src.endsWith(".mp4");
+  // A film only plays on the top print, and never for reduced motion: its poster (same name, .jpg) stands in.
+  useEffect(() => {
+    if (live) video.current?.play().catch(() => {});
+    else video.current?.pause();
+  }, [live]);
   return (
     <motion.div style={{ x: depth.ix, y: depth.iy, scale: zoom }} className="absolute -inset-[7%]">
+      {isVideo ? (
+        <video ref={video} src={src} poster={src.replace(".mp4", ".jpg")} aria-label={alt || undefined} muted loop playsInline preload="metadata" disablePictureInPicture className="size-full object-cover select-none" style={{ objectPosition: focus }} />
+      ) : (
       <img src={src} alt={alt} draggable={false} fetchPriority={priority ? "high" : undefined} className={cn("size-full object-cover select-none", live && "hero-drift")} style={{ objectPosition: focus }} />
+      )}
     </motion.div>
   );
 }
@@ -324,7 +335,7 @@ const FALLING = Array.from({ length: 22 }, (_, i) => ({
 }));
 
 /** The graduates: a loose print with confetti and caps still coming down inside the picture. Pull it and it springs back; press it to throw the caps. */
-export function LoosePhoto({ src, alt, clip, backing, focus, className, delay, tilt: lean }: { src: string; alt: string; clip: string; backing: string; focus: string; className: string; delay: string; tilt: string }) {
+export function LoosePhoto({ src, alt, clip, backing, focus, swap, className, delay, tilt: lean }: { src: string; alt: string; clip: string; backing: string; focus: string; swap?: { src: string; focus: string }; className: string; delay: string; tilt: string }) {
   const { toss } = useHero();
   const reduced = useReduced();
   const tilt = useTilt(11);
@@ -353,6 +364,12 @@ export function LoosePhoto({ src, alt, clip, backing, focus, className, delay, t
         <div aria-hidden className="absolute -inset-1.5 bg-white" style={{ clipPath: backing }} />
         <div className="absolute inset-0 overflow-hidden" style={{ clipPath: clip }}>
           <LivePhoto src={src} alt={alt} focus={focus} zoom={tilt.zoom} live={!reduced} />
+          {/* A second print fades in and out over the first (CSS); reduced motion keeps the first. */}
+          {swap && (
+            <div className="hero-swap absolute inset-0 opacity-0">
+              <LivePhoto src={swap.src} alt="" focus={swap.focus} zoom={tilt.zoom} live={!reduced} />
+            </div>
+          )}
           {!reduced && (
             <div aria-hidden className="absolute inset-0">
               {FALLING.map((f, i) => (

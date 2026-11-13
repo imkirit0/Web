@@ -121,6 +121,13 @@ body {
   from { transform: scale(1.02) translate(-1.6%, 1%); }
   to { transform: scale(1.1) translate(1.8%, -1.4%); }
 }
+/* The loose print alternates between two photos. */
+.hero-swap { animation: hero-swap 10s ease-in-out infinite; }
+@keyframes hero-swap {
+  0%, 42% { opacity: 0; }
+  50%, 92% { opacity: 1; }
+  100% { opacity: 0; }
+}
 /* Confetti and caps still coming down inside the graduation photo; gone before they reach faces. */
 .hero-fall {
   position: absolute;
@@ -235,7 +242,7 @@ html:not(.motion) [data-mo] {
 [data-spot]:hover::before { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee, .hero-word, .hero-fade, .hero-tear, .hero-brush, .hero-chip, .hero-dot, .hero-drift, .hero-fall, .animate-float { animation: none !important; }
+  .marquee, .hero-word, .hero-fade, .hero-tear, .hero-brush, .hero-chip, .hero-dot, .hero-drift, .hero-swap, .hero-fall, .animate-float { animation: none !important; }
   .site-header, .mobile-menu, .mobile-menu[data-open], .menu-row, [data-open] .menu-row { transition: none !important; }
 }
 

@@ -2,8 +2,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion, MotionConfig, useMotionTemplate, useMotionValue, useSpring, type MotionValue } from "framer-motion";
-import { Pause, Play, Plus } from "lucide-react";
+import { motion, MotionConfig, useMotionTemplate, useMotionValue, useSpring, type MotionValue } from "framer-motion";
+import { Pause, Play } from "lucide-react";
 import { EASE, useDepth, useFinePointer, useReduced, useRich } from "@/components/motion-kit";
 import { COURSES } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -21,15 +21,14 @@ const IDLE_TOSS_MS = 9000;
 // Picker labels, in COURSES order. Each is contained in the full course title, so the accessible name still matches.
 const SHORT = ["Robotics", "Software", "Multimedia", "Networking", "Finance", "CAD", "Non-IT"];
 // What the picker offers: SAP first (G-TEC runs it as its own certification track under Finance), then every programme.
-const PICKS: { label: string; title: string; note: string; href: string; img: number | { src: string; alt: string } }[] = [
+const PICKS: { label: string; title: string; note: string; href: string }[] = [
   {
     label: "SAP",
     title: "SAP Global Certification",
     note: "10 certificate courses",
     href: "/courses/finance-and-business-management/sap-global-certification",
-    img: { src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1000&q=75", alt: "Laptop showing a business dashboard" },
   },
-  ...COURSES.map((c, i) => ({ label: SHORT[i], title: c.title, note: c.note, href: `/courses/${c.slug}`, img: i })),
+  ...COURSES.map((c, i) => ({ label: SHORT[i], title: c.title, note: c.note, href: `/courses/${c.slug}` })),
 ];
 const CONFETTI = ["#8ec5ff", "#e60000", "#004282", "#ffffff"];
 
@@ -202,19 +201,22 @@ function useTilt(max: number) {
 }
 
 /** The photo sits a little oversized in its frame, so it can drift (CSS) and slide against the cursor without showing an edge. */
-function LivePhoto({ src, alt, focus, zoom, live, priority }: { src: string; alt: string; focus?: string; zoom: MotionValue<number>; live: boolean; priority?: boolean }) {
+function LivePhoto({ src, alt, focus, zoom, live, priority, onEnded }: { src: string; alt: string; focus?: string; zoom: MotionValue<number>; live: boolean; priority?: boolean; onEnded?: () => void }) {
   const depth = useDepth();
   const video = useRef<HTMLVideoElement>(null);
   const isVideo = src.endsWith(".mp4");
   // A film only plays on the top print, and never for reduced motion: its poster (same name, .jpg) stands in.
   useEffect(() => {
-    if (live) video.current?.play().catch(() => {});
-    else video.current?.pause();
+    const v = video.current;
+    if (!v) return;
+    if (!live) return v.pause();
+    v.currentTime = 0;
+    v.play().catch(() => {});
   }, [live]);
   return (
     <motion.div style={{ x: depth.ix, y: depth.iy, scale: zoom }} className="absolute -inset-[7%]">
       {isVideo ? (
-        <video ref={video} src={src} poster={src.replace(".mp4", ".jpg")} aria-label={alt || undefined} muted loop playsInline preload="metadata" disablePictureInPicture className="size-full object-cover select-none" style={{ objectPosition: focus }} />
+        <video ref={video} src={src} poster={src.replace(".mp4", ".jpg")} aria-label={alt || undefined} muted loop={!onEnded} onEnded={onEnded} onError={onEnded} playsInline preload="metadata" disablePictureInPicture className="size-full object-cover select-none" style={{ objectPosition: focus }} />
       ) : (
       <img src={src} alt={alt} draggable={false} fetchPriority={priority ? "high" : undefined} className={cn("size-full object-cover select-none", live && "hero-drift")} style={{ objectPosition: focus }} />
       )}
@@ -222,103 +224,55 @@ function LivePhoto({ src, alt, focus, zoom, live, priority }: { src: string; alt
   );
 }
 
+// How the prints lie in the pile: the top one, then the ones peeking out from under it through the tear.
+const PILE = [
+  { x: "0%", y: "0%", rotate: 0, scale: 1 },
+  { x: "2.6%", y: "2.4%", rotate: 3.4, scale: 0.975 },
+  { x: "-2.6%", y: "3.4%", rotate: -3.8, scale: 0.95 },
+  { x: "0%", y: "4%", rotate: 0, scale: 0.92 },
+];
+const DROP_MS = 420;
+
 /**
- * The big photo is a pile of prints. The top one flies off to reveal the next, and it can be grabbed
- * and thrown. The next two peek out from underneath, through the tear.
+ * The big photo is a pile of prints, each with its own film. The top one plays; when it ends it
+ * drops away and tucks in at the bottom of the pile, and the next one plays.
  */
-export function PhotoDeck({ src, alt, clip, backing, focus }: { src: string; alt: string; clip: string; backing: string; focus: string }) {
-  const { active, images, select, hold } = useHero();
+export function PhotoDeck({ sheets, clip, backing }: { sheets: { src: string; alt: string; focus?: string }[]; clip: string; backing: string }) {
   const reduced = useReduced();
   const tilt = useTilt(9);
-  const [loadRest, setLoadRest] = useState(false);
-  const [touched, setTouched] = useState(false);
-  // The other prints wait until the page has settled, so they never hold up the opening.
-  useEffect(() => {
-    const t = setTimeout(() => setLoadRest(true), 1800);
-    return () => clearTimeout(t);
-  }, []);
-
-  const sheets = [{ src, alt, focus }, ...PICKS.map((p) => ({ ...(typeof p.img === "number" ? images[p.img] : p.img), focus: undefined }))];
   const N = sheets.length;
-  const top = active + 1;
-  const last = useRef({ top, thrown: -1 });
-  const throwDir = useRef(1);
-  if (last.current.top !== top) last.current = { top, thrown: last.current.top };
-  const course = PICKS[active];
+  // dropping: the print that has just left the top and is still falling clear of the pile.
+  const [{ top, dropping }, setDeck] = useState({ top: 0, dropping: -1 });
+  useEffect(() => {
+    if (dropping < 0) return;
+    const t = setTimeout(() => setDeck((d) => ({ ...d, dropping: -1 })), DROP_MS);
+    return () => clearTimeout(t);
+  }, [dropping]);
 
   return (
-    <motion.div
-      style={tilt.style}
-      className="pointer-events-auto absolute inset-0"
-      {...tilt.handlers}
-      onPointerEnter={(e) => e.pointerType === "mouse" && hold(true)}
-      onPointerLeave={(e) => {
-        tilt.handlers.onPointerLeave();
-        if (e.pointerType === "mouse") hold(false);
-      }}
-    >
+    <motion.div style={tilt.style} className="pointer-events-auto absolute inset-0" {...tilt.handlers}>
       {sheets.map((sheet, i) => {
-        if (i !== 0 && i !== top && !loadRest) return null;
         const rel = (i - top + N) % N;
-        const isTop = i === top;
-        const thrown = !isTop && i === last.current.thrown;
-        const dir = throwDir.current;
-        const pose = isTop
-          ? { x: "0%", y: "0%", rotate: 0, scale: 1, opacity: 1 }
-          : thrown
-            ? { x: `${dir * 95}%`, y: "-24%", rotate: dir * 24, scale: 1.04, opacity: 0 }
-            : rel === 1
-              ? { x: "2.6%", y: "2.4%", rotate: 3.4, scale: 0.975, opacity: 1 }
-              : rel === 2
-                ? { x: "-2.6%", y: "3.4%", rotate: -3.8, scale: 0.95, opacity: 1 }
-                : { x: "0%", y: "4%", rotate: 0, scale: 0.92, opacity: 0 };
+        const isTop = rel === 0;
+        const isDropping = i === dropping;
         return (
           <motion.div
             key={sheet.src}
-            drag={isTop && !reduced ? "x" : false}
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.75}
-            onDragStart={() => {
-              hold(true);
-              setTouched(true);
-            }}
-            onDragEnd={(_, info) => {
-              hold(false);
-              if (Math.abs(info.offset.x) < 70 && Math.abs(info.velocity.x) < 500) return;
-              throwDir.current = info.offset.x < 0 ? -1 : 1;
-              setTimeout(() => (throwDir.current = 1), 900);
-              select(active >= PICKS.length - 1 ? -1 : active + 1);
-            }}
             initial={false}
-            animate={pose}
-            transition={{ duration: thrown ? 0.8 : 0.7, ease: EASE, opacity: { duration: thrown ? 0.75 : 0.4, ease: "easeIn" } }}
-            whileDrag={{ scale: 1.03 }}
-            style={{ zIndex: thrown ? 40 : isTop ? 30 : rel === 1 ? 20 : rel === 2 ? 10 : 0 }}
-            className={cn("absolute inset-0 touch-pan-y", isTop ? "cursor-grab active:cursor-grabbing" : "pointer-events-none")}
+            animate={isDropping ? { x: "-6%", y: "62%", rotate: -9, scale: 0.96 } : PILE[Math.min(rel, PILE.length - 1)]}
+            transition={{ duration: isDropping ? DROP_MS / 1000 : 0.7, ease: isDropping ? "easeIn" : EASE }}
+            style={{ zIndex: isDropping ? N + 1 : N - rel }}
+            className="absolute inset-0"
           >
             <div aria-hidden className="absolute -inset-1.5 translate-y-1.5 bg-[rgba(0,31,66,.16)]" style={{ clipPath: backing }} />
             <div aria-hidden className="absolute -inset-1.5 bg-white" style={{ clipPath: backing }} />
             <div className="absolute inset-0 overflow-hidden" style={{ clipPath: clip }}>
-              <LivePhoto src={sheet.src} alt={isTop ? (sheet.alt ?? "") : ""} focus={sheet.focus} zoom={tilt.zoom} live={isTop && !reduced} priority={i === 0} />
+              <LivePhoto src={sheet.src} alt={isTop ? sheet.alt : ""} focus={sheet.focus} zoom={tilt.zoom} live={isTop && !reduced} priority={i === 0} onEnded={() => isTop && setDeck({ top: (top + 1) % N, dropping: i })} />
               <motion.div aria-hidden style={{ background: tilt.glare, opacity: tilt.lit }} className="pointer-events-none absolute inset-0 mix-blend-soft-light" />
             </div>
           </motion.div>
         );
       })}
-      <AnimatePresence>
-        {course && (
-          <motion.div key={course.label} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8, transition: { duration: 0.18 } }} transition={{ duration: 0.5, delay: 0.15, ease: EASE }} className="pointer-events-none absolute right-[5%] bottom-[12%] z-50 max-w-[62%] rounded-lg bg-white px-3.5 py-2.5 text-ink shadow-[0_10px_28px_rgba(0,31,66,.28)]">
-            <p className="font-display text-[15px] leading-tight font-bold tracking-tight sm:text-lg">{course.title}</p>
-            <p className="mt-0.5 text-[12px] font-medium text-ink-2 sm:text-[13px]">{course.note}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      {!touched && !reduced && (
-        <span className="pointer-events-none absolute top-[24%] right-[5%] z-50 rounded-full bg-ink/80 px-3 py-1.5 text-[12px] font-semibold text-white">
-          <span className="[@media(hover:none)]:hidden">Drag to flip</span>
-          <span className="hidden [@media(hover:none)]:inline">Swipe to flip</span>
-        </span>
-      )}
     </motion.div>
   );
 }
@@ -335,7 +289,7 @@ const FALLING = Array.from({ length: 22 }, (_, i) => ({
 }));
 
 /** The graduates: a loose print with confetti and caps still coming down inside the picture. Pull it and it springs back; press it to throw the caps. */
-export function LoosePhoto({ src, alt, clip, backing, focus, swap, className, delay, tilt: lean }: { src: string; alt: string; clip: string; backing: string; focus: string; swap?: { src: string; focus: string }; className: string; delay: string; tilt: string }) {
+export function LoosePhoto({ src, alt, clip, backing, focus, className, delay, tilt: lean }: { src: string; alt: string; clip: string; backing: string; focus: string; className: string; delay: string; tilt: string }) {
   const { toss } = useHero();
   const reduced = useReduced();
   const tilt = useTilt(11);
@@ -364,12 +318,6 @@ export function LoosePhoto({ src, alt, clip, backing, focus, swap, className, de
         <div aria-hidden className="absolute -inset-1.5 bg-white" style={{ clipPath: backing }} />
         <div className="absolute inset-0 overflow-hidden" style={{ clipPath: clip }}>
           <LivePhoto src={src} alt={alt} focus={focus} zoom={tilt.zoom} live={!reduced} />
-          {/* A second print fades in and out over the first (CSS); reduced motion keeps the first. */}
-          {swap && (
-            <div className="hero-swap absolute inset-0 opacity-0">
-              <LivePhoto src={swap.src} alt="" focus={swap.focus} zoom={tilt.zoom} live={!reduced} />
-            </div>
-          )}
           {!reduced && (
             <div aria-hidden className="absolute inset-0">
               {FALLING.map((f, i) => (
@@ -446,24 +394,5 @@ export function HeroBrush() {
         <path key={rich ? chosen : 0} pathLength={1} d="M20 215 300 25 95 345 345 215 372 400" className={cn("hero-brush fill-none stroke-sky", chosen > 0 && "hero-brush-again")} strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
       </g>
     </svg>
-  );
-}
-
-/** A proof chip that opens to say what the claim actually means. */
-export function FactChip({ label, fact, icon, className, delay }: { label: string; fact: string; icon: React.ReactNode; className: string; delay: string }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div style={{ "--d": delay } as React.CSSProperties} className={cn("hero-chip pointer-events-auto absolute z-10 max-w-[min(15rem,70%)] rounded-md bg-white text-ink shadow-[0_8px_24px_rgba(0,31,66,.2)]", className)} onPointerEnter={(e) => e.pointerType === "mouse" && setOpen(true)} onPointerLeave={(e) => e.pointerType === "mouse" && setOpen(false)}>
-      <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} onFocus={() => setOpen(true)} onBlur={() => setOpen(false)} className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] font-semibold whitespace-nowrap sm:text-sm">
-        {icon}
-        {label}
-        <motion.span initial={false} animate={{ rotate: open ? 45 : 0 }} transition={{ type: "spring", stiffness: 340, damping: 22 }} className="ml-auto">
-          <Plus className="size-3.5 text-blue" strokeWidth={2.6} />
-        </motion.span>
-      </button>
-      <motion.div initial={false} animate={{ height: open ? "auto" : 0, opacity: open ? 1 : 0 }} transition={{ duration: 0.32, ease: EASE }} className="overflow-hidden">
-        <p className="w-56 max-w-full px-3 pb-2.5 text-[13px] leading-snug text-ink-2">{fact}</p>
-      </motion.div>
-    </div>
   );
 }

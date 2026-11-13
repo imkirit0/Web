@@ -3,7 +3,7 @@ import { ArrowRight, Award, Briefcase, FlaskConical, Globe2, Landmark, Mail, Mes
 import { AboutAccordion } from "@/components/AboutAccordion";
 import { CourseExplorer } from "@/components/CourseExplorer";
 import { NewsRows } from "@/components/NewsRows";
-import { CapLayer, CoursePicker, FactChip, HeroBrush, HeroProvider, LoosePhoto, PhotoDeck } from "@/components/hero/HeroInteractive";
+import { CapLayer, CoursePicker, HeroBrush, HeroProvider, LoosePhoto, PhotoDeck } from "@/components/hero/HeroInteractive";
 import { BrushStroke, DepthLayer, HeroDepth, Magnetic, Parallax, RiseWords, ScrollWords } from "@/components/motion-kit";
 import { Stories } from "@/components/Stories";
 import { GlobeNetwork } from "@/components/GlobeNetwork";
@@ -21,7 +21,6 @@ import {
 } from "@/lib/data";
 import { cn, tornEdge } from "@/lib/utils";
 
-const SITE = "https://www.gteceducation.com";
 const wrap = "mx-auto w-[min(1240px,100%)] px-6";
 const h2 = "font-display text-[clamp(32px,4.2vw,54px)] font-bold leading-[1.06] tracking-[-.025em] text-balance";
 const section = "py-[clamp(80px,9vw,136px)]";
@@ -92,18 +91,28 @@ export function Hero() {
         <HeroDepth className="relative h-[clamp(440px,100vw,600px)] lg:h-auto">
           <DepthLayer depth={38} scroll={-70} tilt={5}>
             <div className="hero-tear absolute top-[3%] -right-[6%] h-[60%] w-full" style={{ "--d": ".2s", "--r": "4deg" } as React.CSSProperties}>
-              <PhotoDeck src="/hero/graduation.mp4" alt="G-TEC graduates in caps and gowns at their graduation ceremony, and the crowd at the celebration show" clip={tornEdge(HERO_TOP_TEAR, 23)} backing={tornEdge(HERO_TOP_TEAR, 30, 0.8)} focus="50% 45%" />
+              <PhotoDeck
+                sheets={[
+                  { src: "/hero/reel-1.mp4", alt: "G-TEC graduates in caps and gowns at their graduation ceremony" },
+                  { src: "/hero/reel-2.mp4", alt: "The stage and crowd at G-TEC's 25th anniversary show" },
+                  { src: "/hero/reel-3.mp4", alt: "G-TEC graduates in caps and gowns at their graduation ceremony" },
+                  { src: "/hero/reel-4.mp4", alt: "The stage and crowd at G-TEC's 25th anniversary show" },
+                  { src: "/hero/reel-5.mp4", alt: "G-TEC graduates in caps and gowns at their graduation ceremony" },
+                  { src: "/hero/reel-6.mp4", alt: "The stage and crowd at G-TEC's 25th anniversary show" },
+                  { src: "/hero/reel-7.mp4", alt: "The stage and crowd at G-TEC's 25th anniversary show" },
+                  { src: "/hero/reel-8.mp4", alt: "The stage and crowd at G-TEC's 25th anniversary show" },
+                  { src: "/hero/reel-9.mp4", alt: "Fireworks over G-TEC's 25th anniversary show" },
+                ]}
+                clip={tornEdge(HERO_TOP_TEAR, 23)}
+                backing={tornEdge(HERO_TOP_TEAR, 30, 0.8)}
+              />
             </div>
           </DepthLayer>
           <DepthLayer depth={-56} scroll={-130} tilt={-7}>
-            <LoosePhoto src="/hero/graduate-1.jpg" alt="A G-TEC graduate in cap and gown holding his certificate" swap={{ src: "/hero/graduate-2.jpg", focus: "50% 45%" }} clip={tornEdge(HERO_LOW_TEAR, 41)} backing={tornEdge(HERO_LOW_TEAR, 48, 0.8)} focus="55% 22%"className="bottom-[5%] left-0 h-[44%] w-[58%]" delay=".42s" tilt="-5deg" />
+            <LoosePhoto src="/photos/students-1.jpg" alt="Five G-TEC students cheering with raised fists" clip={tornEdge(HERO_LOW_TEAR, 41)} backing={tornEdge(HERO_LOW_TEAR, 48, 0.8)} focus="50% 40%" className="bottom-[5%] left-0 h-[44%] w-[58%]" delay=".42s" tilt="-5deg" />
           </DepthLayer>
           <DepthLayer depth={-90} scroll={-190} tilt={4}>
             <HeroBrush />
-          </DepthLayer>
-          <DepthLayer depth={70} scroll={-100} tilt={3}>
-            <FactChip label="ISO-certified" fact="Every centre is held to the same audited standard, so you get the same quality wherever you study." icon={<Award className="size-4 flex-none text-blue" />} className="top-[20%] right-[2%] sm:top-[9%]" delay=".95s" />
-            <FactChip label="Government partner" fact="Governments trust us to run their skilling projects. That says a lot about how we teach." icon={<Landmark className="size-4 flex-none text-blue" />} className="top-[7%] left-0 sm:left-[10%]" delay="1.1s" />
           </DepthLayer>
           <CapLayer />
         </HeroDepth>
@@ -216,10 +225,10 @@ export function About({ cta = true }: { cta?: boolean }) {
             className="font-display text-[clamp(36px,5.6vw,80px)] leading-[1.08] font-bold tracking-[-.03em] text-balance"
             parts={[
               ...words("Where people"),
-              { node: <InlinePhoto src={unsplash("1523240795612-9a054b0db644")} alt="Students studying together" /> },
+              { node: <InlinePhoto src="/photos/students-5.jpg" alt="G-TEC students holding their course folders" /> },
               ...words("come to"),
               { text: "learn,", className: "text-blue" },
-              { node: <InlinePhoto src={unsplash("1581092160562-40aa08e78837")} alt="Engineer working in a lab" /> },
+              { node: <InlinePhoto src="/photos/students-9.jpg" alt="Three students working together at their laptops" /> },
               ...words("grow and"),
               { text: "get", className: "text-red" },
               { text: "hired.", className: "text-red" },
@@ -273,7 +282,7 @@ export function About({ cta = true }: { cta?: boolean }) {
 
           <figure data-reveal="0.2" className="relative sm:px-12 sm:py-16">
             <Parallax y={[24, -24]} className="relative">
-              <img src={`${SITE}/assets/img/home/intro-tmb-lg.webp`} alt="G-TEC students" loading="lazy" className="aspect-[4/3] w-full object-cover" style={{ clipPath: tornEdge([[1, 2], [99, 0.6], [99.4, 98], [0.6, 99.4]], 67, 0.5) }} />
+              <img src="/photos/students-5.jpg" alt="Six G-TEC students holding their course folders" loading="lazy" className="aspect-[4/3] w-full object-cover" style={{ clipPath: tornEdge([[1, 2], [99, 0.6], [99.4, 98], [0.6, 99.4]], 67, 0.5) }} />
             </Parallax>
             <dl className="mt-3 grid grid-cols-2 gap-3 sm:contents">
               {STATS.slice(0, 4).map((s, i) => (
@@ -348,20 +357,19 @@ export function WaveDivider({ fill = "fill-white", begin = "0s", height = "h-[cl
 
 /* ── Courses ───────────────────────────────────────────────── */
 
-const unsplash = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1000&q=75`;
-// One shot per programme area, in course order, then campus life.
+// G-TEC students, one shot per programme area in course order, then campus life.
 const COURSE_IMAGES = [
-  { src: unsplash("1485827404703-89b55fcc595e"), alt: "Humanoid robot" },
-  { src: unsplash("1461749280684-dccba630e2f6"), alt: "Code on a screen" },
-  { src: unsplash("1531482615713-2afd69097998"), alt: "Team designing at computers" },
-  { src: unsplash("1558494949-ef010cbdcc31"), alt: "Network server rack" },
-  { src: unsplash("1554224155-6726b3ff858f"), alt: "Accounting with a calculator" },
-  { src: unsplash("1503387762-592deb58ef4e"), alt: "Architectural drawings" },
-  { src: unsplash("1523240795612-9a054b0db644"), alt: "Students studying together" },
-  { src: unsplash("1518770660439-4636190af475"), alt: "Circuit board" },
-  { src: unsplash("1555066931-4365d14bab8c"), alt: "Laptop with code editor" },
-  { src: unsplash("1581092160562-40aa08e78837"), alt: "Engineer working in a lab" },
-  { src: unsplash("1517694712202-14dd9538aa97"), alt: "Developer at a laptop" },
+  { src: "/photos/students-9.jpg", alt: "Three students working together at their laptops" },
+  { src: "/photos/students-6.jpg", alt: "A student working at her laptop" },
+  { src: "/photos/students-4.jpg", alt: "Students gathered around a laptop" },
+  { src: "/photos/students-10.jpg", alt: "Two students working side by side at laptops" },
+  { src: "/photos/students-2.jpg", alt: "A student taking notes" },
+  { src: "/photos/students-7.jpg", alt: "A student typing at her desk" },
+  { src: "/photos/students-5.jpg", alt: "Six G-TEC students holding their course folders" },
+  { src: "/photos/students-8.jpg", alt: "A student reading at his desk" },
+  { src: "/photos/students-3.jpg", alt: "Two students celebrating over a laptop" },
+  { src: "/photos/students-11.jpg", alt: "A student at his desk" },
+  { src: "/photos/students-1.jpg", alt: "Five G-TEC students cheering with raised fists" },
 ];
 
 const FOLDER_ART: ArtPreset[] = ["ember", "aurora", "dusk", "verdant", "glacier"];

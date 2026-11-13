@@ -22,7 +22,7 @@ const STOPS = [
     title: "Learn by building",
     text: "You spend most of your time doing, not just listening, in equipped labs at every centre.",
     link: { href: "/courses", label: "Browse courses" },
-    img: { src: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=900&q=75", alt: "Engineer working in a lab" },
+    img: { src: "/photos/students-9.jpg", alt: "Three students working together at their laptops" },
     seed: 19,
   },
   {

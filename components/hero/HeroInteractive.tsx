@@ -56,8 +56,8 @@ function makeBurst(count: number): Particle[] {
       id: nextId++,
       cap,
       // Out of the top of the graduates photo, in the collage's lower left.
-      left: 8 + Math.random() * 44,
-      top: 58 + Math.random() * 10,
+      left: 4 + Math.random() * 32,
+      top: 51 + Math.random() * 8,
       y: 240 + Math.random() * 340,
       fall: 60 + Math.random() * 120,
       x: (Math.random() - 0.5) * 240,
@@ -187,7 +187,7 @@ function useTilt(max: number) {
         rotateX.set((0.5 - py) * max * 2);
         gx.set(px * 100);
         gy.set(py * 100);
-        zoom.set(1.09);
+        zoom.set(1.04);
         lit.set(1);
       },
       onPointerLeave: () => {
@@ -214,7 +214,8 @@ function LivePhoto({ src, alt, focus, zoom, live, priority, onEnded }: { src: st
     v.play().catch(() => {});
   }, [live]);
   return (
-    <motion.div style={{ x: depth.ix, y: depth.iy, scale: zoom }} className="absolute -inset-[7%]">
+    // A film fills its frame exactly, so the whole shot shows; only stills are oversized to drift.
+    <motion.div style={isVideo ? { scale: zoom } : { x: depth.ix, y: depth.iy, scale: zoom }} className={cn("absolute", isVideo ? "inset-0" : "-inset-[6%]")}>
       {isVideo ? (
         <video ref={video} src={src} poster={src.replace(".mp4", ".jpg")} aria-label={alt || undefined} muted loop={!onEnded} onEnded={onEnded} onError={onEnded} playsInline preload="metadata" disablePictureInPicture className="size-full object-cover select-none" style={{ objectPosition: focus }} />
       ) : (
@@ -382,7 +383,7 @@ export function HeroBrush() {
   const { chosen } = useHero();
   const rich = useRich();
   return (
-    <svg data-wave aria-hidden viewBox="0 0 400 420" className="absolute right-[3%] bottom-[5%] h-[32%] w-auto overflow-visible">
+    <svg data-wave aria-hidden viewBox="0 0 400 420" className="absolute right-[8%] bottom-[3%] h-[26%] w-auto overflow-visible">
       <filter id="hero-brush" x="-10%" y="-10%" width="120%" height="120%">
         {/* Line boil: the edge redraws a few times a second, like hand-drawn animation. Motion.tsx pauses it off-screen. */}
         <feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="4">

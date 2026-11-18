@@ -32,7 +32,7 @@ function Arrow({ className }: { className?: string }) {
 
 /* ── Hero (home) ───────────────────────────────────────────── */
 
-const HERO_TOP_TEAR: [number, number][] = [[1, 3], [99, 1], [100, 98], [80, 98], [66, 84], [42, 78], [18, 72], [3, 42]];
+const HERO_TOP_TEAR: [number, number][] = [[1, 3], [99, 1], [100, 98], [56, 98], [42, 90], [22, 86], [3, 66]];
 const HERO_LOW_TEAR: [number, number][] = [[4, 5], [97, 1], [100, 91], [7, 99], [1, 58]];
 
 export function Hero() {
@@ -88,20 +88,23 @@ export function Hero() {
         </div>
 
         {/* Paper collage: each layer enters on its own beat (CSS), then drifts with the cursor and scroll at its own depth. */}
-        <HeroDepth className="relative h-[clamp(440px,100vw,600px)] lg:h-auto">
+        <HeroDepth className="relative aspect-[15/16] max-h-[640px] [container-type:size] lg:aspect-auto lg:max-h-none">
+          {/* The collage keeps its own proportions whatever the column does, so no print gets stretched into a crop. */}
+          <div className="absolute top-1/2 left-1/2 aspect-[15/16] w-[min(100cqw,100cqh*15/16)] -translate-x-1/2 -translate-y-1/2">
+          <DepthLayer depth={-90} scroll={-190} tilt={4}>
+            <HeroBrush />
+          </DepthLayer>
           <DepthLayer depth={38} scroll={-70} tilt={5}>
-            <div className="hero-tear absolute top-[3%] -right-[6%] h-[60%] w-full" style={{ "--d": ".2s", "--r": "4deg" } as React.CSSProperties}>
+            {/* 84% x 73% of the stage is the films' own 864x800 shape, so nothing is cropped. */}
+            <div className="hero-tear absolute top-0 right-0 h-[73%] w-[84%]" style={{ "--d": ".2s", "--r": "4deg" } as React.CSSProperties}>
               <PhotoDeck
                 sheets={[
-                  { src: "/hero/reel-1.mp4", alt: "G-TEC graduates in caps and gowns at their graduation ceremony" },
-                  { src: "/hero/reel-2.mp4", alt: "The stage and crowd at G-TEC's 25th anniversary show" },
-                  { src: "/hero/reel-3.mp4", alt: "G-TEC graduates in caps and gowns at their graduation ceremony" },
-                  { src: "/hero/reel-4.mp4", alt: "The stage and crowd at G-TEC's 25th anniversary show" },
-                  { src: "/hero/reel-5.mp4", alt: "G-TEC graduates in caps and gowns at their graduation ceremony" },
-                  { src: "/hero/reel-6.mp4", alt: "The stage and crowd at G-TEC's 25th anniversary show" },
-                  { src: "/hero/reel-7.mp4", alt: "The stage and crowd at G-TEC's 25th anniversary show" },
-                  { src: "/hero/reel-8.mp4", alt: "The stage and crowd at G-TEC's 25th anniversary show" },
-                  { src: "/hero/reel-9.mp4", alt: "Fireworks over G-TEC's 25th anniversary show" },
+                  { src: "/hero/reel-3.mp4", alt: "G-TEC graduates in caps and gowns holding their certificates" },
+                  { src: "/hero/reel-1.mp4", alt: "A graduate receiving her certificate on stage" },
+                  { src: "/hero/reel-4.mp4", alt: "Students holding a G-TEC Education sign on stage at the 25th anniversary show" },
+                  { src: "/hero/reel-8.mp4", alt: "A presenter on stage in front of the crowd at the 25th anniversary show" },
+                  { src: "/hero/reel-2.mp4", alt: "A performer on stage at the 25th anniversary show" },
+                  { src: "/hero/reel-9.mp4", alt: "Fireworks over the 25th anniversary show" },
                 ]}
                 clip={tornEdge(HERO_TOP_TEAR, 23)}
                 backing={tornEdge(HERO_TOP_TEAR, 30, 0.8)}
@@ -109,12 +112,10 @@ export function Hero() {
             </div>
           </DepthLayer>
           <DepthLayer depth={-56} scroll={-130} tilt={-7}>
-            <LoosePhoto src="/photos/students-1.jpg" alt="Five G-TEC students cheering with raised fists" clip={tornEdge(HERO_LOW_TEAR, 41)} backing={tornEdge(HERO_LOW_TEAR, 48, 0.8)} focus="50% 40%" className="bottom-[5%] left-0 h-[44%] w-[58%]" delay=".42s" tilt="-5deg" />
-          </DepthLayer>
-          <DepthLayer depth={-90} scroll={-190} tilt={4}>
-            <HeroBrush />
+            <LoosePhoto src="/hero/graduates.jpg" alt="Graduates in gowns cheering as their caps fly into the air" clip={tornEdge(HERO_LOW_TEAR, 41)} backing={tornEdge(HERO_LOW_TEAR, 48, 0.8)} focus="50% 80%" className="bottom-[2%] left-0 h-[48%] w-[40%]" delay=".42s" tilt="-5deg" />
           </DepthLayer>
           <CapLayer />
+          </div>
         </HeroDepth>
         </HeroProvider>
       </div>
@@ -358,17 +359,21 @@ export function WaveDivider({ fill = "fill-white", begin = "0s", height = "h-[cl
 /* ── Courses ───────────────────────────────────────────────── */
 
 // G-TEC students, one shot per programme area in course order, then campus life.
+// The first seven follow COURSES order, one per field; the rest are for variety.
+// ponytail: the i.pinimg.com shots are hotlinked Pinterest pins and are unlicensed. Replace them with licensed photos.
 const COURSE_IMAGES = [
-  { src: "/photos/students-9.jpg", alt: "Three students working together at their laptops" },
-  { src: "/photos/students-6.jpg", alt: "A student working at her laptop" },
-  { src: "/photos/students-4.jpg", alt: "Students gathered around a laptop" },
-  { src: "/photos/students-10.jpg", alt: "Two students working side by side at laptops" },
-  { src: "/photos/students-2.jpg", alt: "A student taking notes" },
-  { src: "/photos/students-7.jpg", alt: "A student typing at her desk" },
+  { src: "https://i.pinimg.com/736x/fd/0d/8e/fd0d8ee4f4e39f34599329b14c9199b2.jpg", alt: "Students building a small robot arm together" },
+  { src: "https://i.pinimg.com/736x/71/0a/78/710a782ddbdeca44585b226f6106a9a7.jpg", alt: "A team of developers working through code at their desks" },
+  { src: "https://i.pinimg.com/736x/39/49/4b/39494bdeda245ea83cf08e7dc3ce1d2e.jpg", alt: "A designer working on a layout at her desk" },
+  { src: "https://i.pinimg.com/736x/25/37/f4/2537f4dce9fce33e5998c34c52c6d7c3.jpg", alt: "A technician patching cables in a server room" },
+  { src: "https://i.pinimg.com/736x/f1/9e/43/f19e4360fb91641770631849b5ea989c.jpg", alt: "An accountant going through paperwork at her desk" },
+  { src: "https://i.pinimg.com/736x/f3/c9/93/f3c9934830dc127bdce4bf6be6429b54.jpg", alt: "A drafter working on a floor plan in CAD software" },
   { src: "/photos/students-5.jpg", alt: "Six G-TEC students holding their course folders" },
-  { src: "/photos/students-8.jpg", alt: "A student reading at his desk" },
   { src: "/photos/students-3.jpg", alt: "Two students celebrating over a laptop" },
-  { src: "/photos/students-11.jpg", alt: "A student at his desk" },
+  { src: "https://i.pinimg.com/736x/9e/05/e0/9e05e0eebb77b5448268ffd44250c246.jpg", alt: "Five students smiling with their books on campus" },
+  { src: "/photos/students-4.jpg", alt: "Students gathered around a laptop" },
+  { src: "https://i.pinimg.com/736x/d0/22/1e/d0221e8a172c9fe0c360b69ff2051bf3.jpg", alt: "Three students looking at a laptop together" },
+  { src: "/photos/students-6.jpg", alt: "A student working at her laptop" },
   { src: "/photos/students-1.jpg", alt: "Five G-TEC students cheering with raised fists" },
 ];
 

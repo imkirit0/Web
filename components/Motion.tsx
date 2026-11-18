@@ -32,12 +32,16 @@ export function Motion() {
           if (!e.isIntersecting) return;
           io.unobserve(e.target);
           const el = e.target as HTMLElement;
-          if (el.dataset.count) countUp(el, reduce);
+          if (el.dataset.count) {
+            // Mark it done: counting rewrites the text, which the observer below would otherwise see as a new node and restart the count forever.
+            el.dataset.counted = "";
+            countUp(el, reduce);
+          }
           else el.classList.add("in");
         }),
       { rootMargin: "0px 0px -8% 0px" },
     );
-    const watch = () => document.querySelectorAll("[data-reveal]:not(.in), [data-count]").forEach((el) => io.observe(el));
+    const watch = () => document.querySelectorAll("[data-reveal]:not(.in), [data-count]:not([data-counted])").forEach((el) => io.observe(el));
     watch();
     // Nodes that arrive later (streamed sections, a hot reload) would otherwise stay hidden for good.
     const added = new MutationObserver((records) => {

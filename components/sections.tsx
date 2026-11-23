@@ -60,24 +60,24 @@ export function Hero() {
               </span>
             ))}
           </h1>
-          <p className="hero-fade mb-[clamp(16px,2.6svh,24px)] max-w-[520px] text-[clamp(16px,1.3vw,18px)] leading-relaxed text-pretty text-white/90" style={{ "--d": ".55s" } as React.CSSProperties}>
+          <p className="hero-fade mb-[clamp(16px,2.6svh,24px)] max-w-[520px] max-sm:hidden text-[clamp(16px,1.3vw,18px)] leading-relaxed text-pretty text-white/90" style={{ "--d": ".55s" } as React.CSSProperties}>
             For 25 years we&apos;ve helped students learn IT, pick up real skills and land jobs they&apos;re proud of. Today
             that&apos;s 800+ centres in 23 countries, and employers know our name.
           </p>
-          <div className="hero-fade flex flex-wrap items-center gap-3" style={{ "--d": ".7s" } as React.CSSProperties}>
+          <div className="hero-fade flex flex-wrap items-center gap-3 max-sm:grid max-sm:grid-cols-2 max-sm:gap-2.5" style={{ "--d": ".7s" } as React.CSSProperties}>
             <Magnetic>
-              <a href="#enquire" className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-[15px] font-bold text-blue transition-colors hover:bg-sky active:scale-[.97]">
+              <a href="#enquire" className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-[15px] font-bold text-blue transition-colors hover:bg-sky active:scale-[.97] max-sm:w-full max-sm:justify-center max-sm:px-3 max-sm:text-[14px]">
                 Enquire now <Arrow className="transition-transform duration-300 ease-out-expo group-hover:translate-x-1" />
               </a>
             </Magnetic>
             <Magnetic strength={0.18}>
-              <Link href="/courses" className="inline-flex items-center rounded-full border border-white/55 px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:border-white hover:bg-white hover:text-blue active:scale-[.97]">
+              <Link href="/courses" className="inline-flex items-center rounded-full border border-white/55 px-6 py-3.5 text-[15px] font-semibold max-sm:w-full max-sm:justify-center max-sm:px-3 max-sm:text-[14px] text-white transition-colors hover:border-white hover:bg-white hover:text-blue active:scale-[.97]">
                 Explore Courses
               </Link>
             </Magnetic>
           </div>
-          <CoursePicker className="hero-fade mt-[clamp(16px,3svh,28px)]" style={{ "--d": ".8s" } as React.CSSProperties} />
-          <dl className="hero-fade mt-5 grid w-full grid-cols-3 gap-x-4 rounded-2xl border border-white/30 px-4 py-4 sm:flex sm:w-fit sm:gap-x-9 sm:px-6 lg:[@media(max-height:760px)]:hidden" style={{ "--d": ".95s" } as React.CSSProperties}>
+          <CoursePicker className="hero-fade mt-[clamp(16px,3svh,28px)] max-sm:hidden" style={{ "--d": ".8s" } as React.CSSProperties} />
+          <dl className="hero-fade mt-5 grid w-full grid-cols-3 max-sm:hidden gap-x-4 rounded-2xl border border-white/30 px-4 py-4 sm:flex sm:w-fit sm:gap-x-9 sm:px-6 lg:[@media(max-height:760px)]:hidden" style={{ "--d": ".95s" } as React.CSSProperties}>
             {STATS.slice(1, 4).map((s) => (
               <div key={s.label} className="transition-transform duration-300 ease-out-expo hover:-translate-y-1">
                 <dd className="font-display text-[clamp(26px,2.4vw,34px)] leading-none font-bold tracking-tight tabular-nums"><span data-count={s.value}>{s.value}</span>{s.suffix}</dd>

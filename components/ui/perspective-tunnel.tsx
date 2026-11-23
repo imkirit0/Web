@@ -156,7 +156,7 @@ export function PerspectiveTunnel({
   const promptOpacity = useTransform(smoothProgress, [0, 0.1], [1, 0]);
 
   return (
-    <div ref={containerRef} className={cn("relative h-[240vh]", className)}>
+    <div ref={containerRef} className={cn("relative h-[170vh] lg:h-[240vh]", className)}>
       <div
         className="sticky top-0 flex h-svh min-h-[660px] w-full items-center justify-center overflow-hidden select-none"
         style={{ perspective: stage.isMobile ? "900px" : "1200px", transformStyle: "preserve-3d" }}

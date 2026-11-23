@@ -39,14 +39,14 @@ export function Hero() {
   return (
     <section data-hero data-hero-pin data-pause-offscreen className="relative overflow-hidden bg-blue pt-18 text-white">
       {/* White wave rolling along the foot of the blue hero. `fill` is the colour above the wave's edge. */}
-      <div aria-hidden className="absolute inset-x-0 bottom-0 isolate h-[clamp(96px,14vh,140px)] bg-white">
+      <div aria-hidden className="absolute inset-x-0 bottom-0 isolate h-[clamp(72px,12svh,140px)] bg-white">
         <WaveDivider fill="fill-blue" begin="-11s" height="h-[clamp(36px,4.5vw,70px)]" />
       </div>
 
-      <div className={cn(wrap, "relative grid gap-8 lg:min-h-[max(620px,calc(100svh-4.5rem))] lg:grid-cols-[minmax(0,1.06fr)_minmax(0,1.1fr)]")}>
+      <div className={cn(wrap, "relative grid gap-8 lg:min-h-[max(520px,calc(100svh-4.5rem))] lg:grid-cols-[minmax(0,1.06fr)_minmax(0,1.1fr)]")}>
         <HeroProvider images={COURSE_IMAGES}>
-        <div data-hero-copy className="flex flex-col justify-center pt-[clamp(36px,6vh,64px)] lg:pb-[calc(clamp(96px,14vh,140px)+32px)]">
-          <h1 className="font-display mb-5 text-[clamp(42px,min(5.2vw,8.8svh),76px)] leading-[1.02] font-bold tracking-[-.035em]">
+        <div data-hero-copy className="flex flex-col justify-center pt-[clamp(20px,4svh,64px)] lg:pb-[calc(clamp(72px,12svh,140px)+20px)]">
+          <h1 className="font-display mb-[clamp(12px,2svh,20px)] text-[clamp(40px,min(5.2vw,7.6svh),76px)] leading-[1.02] font-bold tracking-[-.035em]">
             {["Making", "Professionals", "Globally."].map((w, i) => (
               <span key={w} className="-mt-[.12em] -mb-[.1em] block overflow-hidden pt-[.12em] pb-[.1em]">
                 <span className="hero-word" style={{ "--i": i } as React.CSSProperties}>
@@ -60,7 +60,7 @@ export function Hero() {
               </span>
             ))}
           </h1>
-          <p className="hero-fade mb-6 max-w-[520px] text-[clamp(16px,1.3vw,18px)] leading-relaxed text-pretty text-white/90" style={{ "--d": ".55s" } as React.CSSProperties}>
+          <p className="hero-fade mb-[clamp(16px,2.6svh,24px)] max-w-[520px] text-[clamp(16px,1.3vw,18px)] leading-relaxed text-pretty text-white/90" style={{ "--d": ".55s" } as React.CSSProperties}>
             For 25 years we&apos;ve helped students learn IT, pick up real skills and land jobs they&apos;re proud of. Today
             that&apos;s 800+ centres in 23 countries, and employers know our name.
           </p>
@@ -76,8 +76,8 @@ export function Hero() {
               </Link>
             </Magnetic>
           </div>
-          <CoursePicker className="hero-fade mt-7" style={{ "--d": ".8s" } as React.CSSProperties} />
-          <dl className="hero-fade mt-5 grid w-full grid-cols-3 gap-x-4 rounded-2xl border border-white/30 px-4 py-4 sm:flex sm:w-fit sm:gap-x-9 sm:px-6" style={{ "--d": ".95s" } as React.CSSProperties}>
+          <CoursePicker className="hero-fade mt-[clamp(16px,3svh,28px)]" style={{ "--d": ".8s" } as React.CSSProperties} />
+          <dl className="hero-fade mt-5 grid w-full grid-cols-3 gap-x-4 rounded-2xl border border-white/30 px-4 py-4 sm:flex sm:w-fit sm:gap-x-9 sm:px-6 lg:[@media(max-height:760px)]:hidden" style={{ "--d": ".95s" } as React.CSSProperties}>
             {STATS.slice(1, 4).map((s) => (
               <div key={s.label} className="transition-transform duration-300 ease-out-expo hover:-translate-y-1">
                 <dd className="font-display text-[clamp(26px,2.4vw,34px)] leading-none font-bold tracking-tight tabular-nums"><span data-count={s.value}>{s.value}</span>{s.suffix}</dd>
@@ -286,7 +286,7 @@ export function About({ cta = true }: { cta?: boolean }) {
               {/* ponytail: hotlinked Pinterest pin, unlicensed. Replace with a licensed photo before publishing. */}
               <img src="https://i.pinimg.com/736x/18/af/3c/18af3cde23f5f1c2d88ef4a38796247e.jpg" alt="A group of smiling students walking across campus with books and a laptop" loading="lazy" className="aspect-[4/3] w-full object-cover" style={{ clipPath: tornEdge([[1, 2], [99, 0.6], [99.4, 98], [0.6, 99.4]], 67, 0.5) }} />
             </Parallax>
-            <dl className="mt-3 grid grid-cols-2 gap-3 sm:contents">
+            <dl className="hidden sm:contents">
               {STATS.slice(0, 4).map((s, i) => (
                 <Parallax key={s.label} y={STAT_DRIFT[i]} className={cn("rounded-2xl bg-white px-5 py-4 shadow-[0_14px_36px_rgba(11,26,51,.14)] ring-1 ring-ink/[.05] sm:absolute", STAT_SPOTS[i])}>
                   <dd className="font-display text-[clamp(26px,2.4vw,34px)] leading-none font-extrabold tracking-tight tabular-nums">
@@ -395,7 +395,7 @@ export function CoursesSection({ heading = true }: { heading?: boolean }) {
           axis={72}
           curve={72}
           fade={14}
-          className="mb-12 h-[800px] w-full md:h-[clamp(540px,66vh,640px)] lg:mb-0"
+          className="mb-12 h-[560px] w-full md:h-[clamp(540px,66vh,640px)] lg:mb-0"
         >
           <div className={cn(wrap, "relative z-10 grid grid-cols-[repeat(auto-fit,minmax(min(100%,400px),1fr))] items-end gap-x-16 gap-y-6")}>
             <div>
@@ -678,7 +678,7 @@ export function ClosingCta() {
   return (
     <>
       <WaveDivider fill="fill-white" begin="-3s" />
-      <section data-pause-offscreen className="relative overflow-hidden bg-blue pt-[clamp(120px,14vw,200px)] pb-[clamp(72px,8vw,120px)] text-white">
+      <section data-pause-offscreen className="relative overflow-hidden bg-blue pt-[clamp(80px,14vw,200px)] pb-[clamp(56px,8vw,120px)] text-white">
         <BrushStroke d="M20 215 300 25 95 345 345 215 372 400" viewBox="0 0 400 420" className="pointer-events-none absolute top-[8%] right-[4%] h-[38%] w-auto overflow-visible opacity-30 max-lg:hidden" />
         {/* A soft light behind the contact card, so the blue has some depth. */}
         <div aria-hidden className="pointer-events-none absolute top-[-15%] right-[-12%] aspect-square w-[min(70vw,900px)] animate-[float-a_16s_ease-in-out_infinite] rounded-full bg-[radial-gradient(closest-side,rgba(120,180,255,.24),transparent)] motion-reduce:animate-none" />
@@ -718,7 +718,7 @@ export function ClosingCta() {
           </div>
         </div>
         {/* What you can learn here, drifting past in outline. Decoration: the same list is in the hero picker. */}
-        <div aria-hidden className="relative mt-[clamp(48px,6vw,88px)] overflow-hidden select-none">
+        <div aria-hidden className="relative mt-[clamp(48px,6vw,88px)] overflow-hidden select-none max-sm:hidden">
           <div className="marquee flex w-max" style={{ "--dur": "44s" } as React.CSSProperties}>
             {[0, 1].map((copy) => (
               <div key={copy} className="font-display flex flex-none items-center text-[clamp(56px,9vw,136px)] leading-none font-bold tracking-[-.035em] whitespace-nowrap text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,.3)]">

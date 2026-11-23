@@ -280,7 +280,7 @@ export function GlobeNetwork({ intro, footer }: { intro: React.ReactNode; footer
         </label>
         <div
           data-stagger
-          className="mb-10 flex flex-wrap gap-2"
+          className="mb-10 flex flex-wrap gap-2 max-sm:-mx-6 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-6 max-sm:pb-1 max-sm:[scrollbar-width:none] max-sm:[&>*]:flex-none"
           onMouseLeave={() => {
             hover.current = "";
             setLabel(IDLE);

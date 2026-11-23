@@ -125,7 +125,7 @@ export function JourneyLine() {
             <motion.div
               ref={strip}
               style={rich ? { x } : undefined}
-              className="relative mx-auto flex w-full max-w-[640px] flex-col gap-16 px-6 pt-[clamp(120px,14vw,180px)] pb-24 lg:motion-safe:mx-0 lg:motion-safe:h-full lg:motion-safe:w-max lg:motion-safe:max-w-none lg:motion-safe:flex-row lg:motion-safe:items-center lg:motion-safe:gap-[clamp(110px,10vw,180px)] lg:motion-safe:py-0 lg:motion-safe:pr-[12vw] lg:motion-safe:pl-[max(24px,calc((100vw-1240px)/2))]"
+              className="relative mx-auto flex w-full max-w-[640px] flex-col gap-10 px-6 pt-[clamp(64px,14vw,180px)] pb-16 sm:gap-16 sm:pb-24 lg:motion-safe:mx-0 lg:motion-safe:h-full lg:motion-safe:w-max lg:motion-safe:max-w-none lg:motion-safe:flex-row lg:motion-safe:items-center lg:motion-safe:gap-[clamp(110px,10vw,180px)] lg:motion-safe:py-0 lg:motion-safe:pr-[12vw] lg:motion-safe:pl-[max(24px,calc((100vw-1240px)/2))]"
             >
               {line && (
                 <svg aria-hidden width={line.w} height={line.h} viewBox={`0 0 ${line.w} ${line.h}`} className="pointer-events-none absolute top-0 left-0 max-w-none">
@@ -180,7 +180,7 @@ function Stop({ stop, n, on, lower }: { stop: (typeof STOPS)[number]; n: number;
   return (
     <article className={cn("relative flex-none pl-9 lg:motion-safe:pl-0", poster ? "lg:motion-safe:flex lg:motion-safe:w-[min(72vw,860px)] lg:motion-safe:items-center lg:motion-safe:gap-10" : "lg:motion-safe:w-[clamp(320px,29vw,430px)]", !poster && lower && "lg:motion-safe:translate-y-[7svh]", !poster && !lower && "lg:motion-safe:-translate-y-[5svh]")}>
       <span data-rail aria-hidden className="absolute top-0 left-2 size-px" />
-      <div data-node className={cn("relative", poster ? "aspect-[4/5] w-full flex-none lg:motion-safe:h-[clamp(320px,68svh,600px)] lg:motion-safe:w-auto" : "aspect-[4/3] w-full lg:motion-safe:h-[clamp(170px,36svh,330px)]")}>
+      <div data-node className={cn("relative max-sm:hidden", poster ? "aspect-[16/9] w-full flex-none sm:aspect-[4/5] lg:motion-safe:h-[clamp(320px,68svh,600px)] lg:motion-safe:w-auto" : "aspect-[16/9] w-full sm:aspect-[4/3] lg:motion-safe:h-[clamp(170px,36svh,330px)]")}>
         <motion.a
           data-mo
           href={stop.link.href}
@@ -201,7 +201,7 @@ function Stop({ stop, n, on, lower }: { stop: (typeof STOPS)[number]; n: number;
         initial={false}
         animate={{ opacity: on ? 1 : 0.82 }}
         transition={{ duration: 0.5 }}
-        className={cn("relative mt-5 rounded-lg lg:motion-safe:bg-white", poster && "lg:motion-safe:mt-0 lg:motion-safe:min-w-0 lg:motion-safe:flex-1")}
+        className={cn("relative mt-5 rounded-lg max-sm:mt-0 lg:motion-safe:bg-white", poster && "lg:motion-safe:mt-0 lg:motion-safe:min-w-0 lg:motion-safe:flex-1")}
       >
         <h3 className="font-display flex items-baseline gap-2.5 text-[clamp(26px,2.5vw,36px)] leading-[1.05] font-bold tracking-[-.025em]">
           <span className="text-red tabular-nums">{n}</span>

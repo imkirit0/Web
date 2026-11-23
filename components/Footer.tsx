@@ -6,8 +6,8 @@ const SITE = "https://www.gteceducation.com";
 export function Footer() {
   return (
     <footer className="border-t border-white/6 bg-abyss pt-18 pb-8">
-      <div className="mx-auto grid w-[min(1240px,100%)] grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-x-8 gap-y-10 px-6">
-        <div>
+      <div className="mx-auto grid w-[min(1240px,100%)] grid-cols-2 gap-x-4 gap-y-10 px-6 sm:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] sm:gap-x-8">
+        <div className="max-sm:col-span-2">
           <img src="/logo-mark.png" alt="G-TEC Education" className="mb-5 block h-16 w-auto" />
           <p className="mb-5 max-w-[280px] text-sm leading-relaxed text-white/60">
             World&apos;s largest IT education network. A global leader in training and skilling since 2000.
@@ -22,7 +22,7 @@ export function Footer() {
         </div>
 
         {FOOTER_LINKS.map((col) => (
-          <div key={col.title}>
+          <div key={col.title} className="min-w-0">
             <p className="font-display mb-4.5 text-sm font-bold">{col.title}</p>
             <div className="grid gap-2.5 text-sm text-white/60">
               {col.links.map((l) =>
@@ -36,13 +36,13 @@ export function Footer() {
           </div>
         ))}
 
-        <div>
+        <div className="min-w-0 [overflow-wrap:anywhere]">
           <p className="font-display mb-4.5 text-sm font-bold">Connect</p>
           <div className="grid gap-2.5 text-sm leading-relaxed text-white/60">
             <span>{CONTACT.address[0]}<br />{CONTACT.address[1]}</span>
             <a href={CONTACT.phone.href} className="hover:text-white">{CONTACT.phone.label}</a>
             <a href={CONTACT.whatsapp.tel} className="hover:text-white">{CONTACT.whatsapp.label}</a>
-            <a href={CONTACT.email.href} className="hover:text-white">{CONTACT.email.label}</a>
+            <a href={CONTACT.email.href} className="hover:text-white">{CONTACT.email.label.replace("@", "@​")}</a>
             <a href="/supportdesk" className="hover:text-white">Support Desk</a>
           </div>
         </div>

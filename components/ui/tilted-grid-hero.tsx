@@ -231,7 +231,7 @@ export function TiltedGridHero({
         // tiles added later would otherwise run out of phase and overlap.
         key={columns}
         aria-hidden
-        className="pointer-events-none absolute inset-0 transition-opacity duration-500"
+        className="pointer-events-none absolute inset-0 transition-opacity duration-500 max-sm:hidden"
         style={{
           opacity: layout ? 1 : 0,
           // A shared vanishing point on the row's centre line, so the ends

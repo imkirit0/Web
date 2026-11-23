@@ -99,6 +99,7 @@ export function Hero() {
             <div className="hero-tear absolute top-0 right-0 h-[73%] w-[84%]" style={{ "--d": ".2s", "--r": "4deg" } as React.CSSProperties}>
               <PhotoDeck
                 sheets={[
+                  { src: "/hero/reel-0.mp4", alt: "Drones spelling out the G-TEC logo in the night sky above the stage" },
                   { src: "/hero/reel-9.mp4", alt: "Fireworks over the 25th anniversary show" },
                   { src: "/hero/reel-3.mp4", alt: "G-TEC graduates in caps and gowns holding their certificates" },
                   { src: "/hero/reel-1.mp4", alt: "A graduate receiving her certificate on stage" },
@@ -395,7 +396,8 @@ export function CoursesSection({ heading = true }: { heading?: boolean }) {
           axis={72}
           curve={72}
           fade={14}
-          className="mb-12 h-[560px] w-full md:h-[clamp(540px,66vh,640px)] lg:mb-0"
+          // Phones: no photo band, so the box hugs the heading (size containment off, or it collapses to 0).
+          className="mb-12 h-[560px] w-full max-sm:h-auto max-sm:[container-type:normal]! md:h-[clamp(540px,66vh,640px)] lg:mb-0"
         >
           <div className={cn(wrap, "relative z-10 grid grid-cols-[repeat(auto-fit,minmax(min(100%,400px),1fr))] items-end gap-x-16 gap-y-6")}>
             <div>

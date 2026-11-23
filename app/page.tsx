@@ -1,7 +1,7 @@
 import { Loader } from "@/components/Loader";
 import { JourneyLine } from "@/components/JourneyLine";
 import { ScrollProgress } from "@/components/motion-kit";
-import { About, Affiliations, ClosingCta, CoursesSection, Curtain, Global, Hero, News, Subsidiaries, Testimonials, WaveDivider } from "@/components/sections";
+import { About, Affiliations, AlumniConnect, ClosingCta, CoursesSection, Curtain, Global, Hero, News, Subsidiaries, Testimonials, WaveDivider } from "@/components/sections";
 
 export default function Home() {
   return (
@@ -19,6 +19,7 @@ export default function Home() {
         <JourneyLine />
         <WaveDivider fill="fill-white" begin="-9s" />
         <Global />
+        <AlumniConnect />
         <Testimonials />
         <Subsidiaries />
         <ClosingCta />

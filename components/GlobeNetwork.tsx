@@ -280,7 +280,7 @@ export function GlobeNetwork({ intro, footer }: { intro: React.ReactNode; footer
         </label>
         <div
           data-stagger
-          className="mb-10 flex flex-wrap gap-2 max-sm:-mx-6 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-6 max-sm:pb-1 max-sm:[scrollbar-width:none] max-sm:[&>*]:flex-none"
+          className="mb-10 flex flex-wrap gap-2 max-sm:mb-8 max-sm:gap-1.5"
           onMouseLeave={() => {
             hover.current = "";
             setLabel(IDLE);
@@ -303,7 +303,7 @@ export function GlobeNetwork({ intro, footer }: { intro: React.ReactNode; footer
                 hover.current = c.name;
                 setLabel(c.name === "India" ? "Head office · Calicut, India" : `Calicut → ${c.name}`);
               }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/6 py-1.5 pr-3.5 pl-1.5 text-[13px] font-semibold backdrop-blur-md transition duration-300 ease-out-expo hover:-translate-y-0.5 hover:border-coral hover:bg-red/12"
+              className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/6 py-1.5 pr-3.5 pl-1.5 text-[13px] font-semibold max-sm:gap-1.5 max-sm:py-1 max-sm:pr-2.5 max-sm:pl-1 max-sm:text-[12px] backdrop-blur-md transition duration-300 ease-out-expo hover:-translate-y-0.5 hover:border-coral hover:bg-red/12"
             >
               <img src={c.flag} alt="" loading="lazy" className="block h-4 w-6 rounded object-cover" />
               {c.name}

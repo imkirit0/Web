@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Award, Briefcase, FlaskConical, Globe2, Landmark, Mail, MessageCircle, Phone } from "lucide-react";
+import { ArrowRight, Award, Briefcase, CalendarDays, FlaskConical, Globe2, Landmark, Mail, MessageCircle, Phone, TrendingUp, UserPlus, Users } from "lucide-react";
 import { AboutAccordion } from "@/components/AboutAccordion";
 import { CourseExplorer } from "@/components/CourseExplorer";
 import { NewsRows } from "@/components/NewsRows";
@@ -584,6 +584,89 @@ export function Global({ cta = true }: { cta?: boolean }) {
             </div>
           }
         />
+      </div>
+    </section>
+  );
+}
+
+/* ── Alumni Connect ────────────────────────────────────────── */
+
+const ALUMNI_STATS = [
+  ["4.3M+", "Alumni worldwide"],
+  ["400K", "Students placed"],
+  ["500+", "Join every day"],
+  ["25+", "Years of trust"],
+];
+
+const ALUMNI_WAYS = [
+  { icon: Briefcase, title: "Careers board", text: "Openings shared by alumni and partner employers.", href: "/vacancies" },
+  { icon: CalendarDays, title: "Job fairs", text: "Meet hiring companies face to face.", href: "/jobfair" },
+  { icon: TrendingUp, title: "Placements", text: "See where our people work today.", href: "/placements" },
+  { icon: UserPlus, title: "Hire our alumni", text: "Post a vacancy for trained G-TEC talent.", href: "/postvacancy" },
+];
+
+export function AlumniConnect() {
+  return (
+    <section id="alumni" className={cn(section, "relative overflow-hidden bg-white text-ink")}>
+      <div className={cn(wrap, "grid items-center gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,.95fr)]")}>
+        <div>
+          <p data-reveal="0" className="mb-4 inline-flex items-center gap-2 rounded-full bg-red/10 px-3.5 py-1.5 text-[13px] font-bold tracking-wide text-red uppercase">
+            <Users className="size-4" strokeWidth={2.2} /> G-TEC Alumni Connect
+          </p>
+          <RiseWords text="Connections make things happen." className={cn(h2, "mb-5 max-w-[14ch]")} />
+          <p data-reveal="0.2" className="mb-8 max-w-[520px] text-[17px] leading-[1.7] text-pretty text-ink-2">
+            In the age of AI, the careers you study for today may change tomorrow. The people beside you won&apos;t. Join a family of 4.3 million
+            G-TEC alumni who open doors, share ideas and help each other succeed.
+          </p>
+          <dl data-stagger className="mb-9 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
+            {ALUMNI_STATS.map(([n, label]) => (
+              <div key={label}>
+                <dt className="sr-only">{label}</dt>
+                <dd className="font-display text-[clamp(30px,3.2vw,42px)] leading-none font-extrabold tracking-[-.04em] text-blue">{n}</dd>
+                <dd className="mt-1.5 text-[13px] font-semibold text-ink-2">{label}</dd>
+              </div>
+            ))}
+          </dl>
+          <div data-reveal="0.3" className="flex flex-wrap items-center gap-3">
+            <Magnetic>
+              <a href="#enquire" className="group inline-flex items-center gap-2.5 rounded-full bg-blue px-7 py-4 text-[15px] font-bold text-white transition-colors hover:bg-navy active:scale-[.97]">
+                Join the network <Arrow className="transition-transform group-hover:translate-x-1" />
+              </a>
+            </Magnetic>
+            <Link href="/careers" className="rounded-full border border-ink/15 px-6.5 py-4 text-[15px] font-semibold transition-colors hover:border-ink/40 active:scale-[.97]">
+              Work at G-TEC
+            </Link>
+          </div>
+        </div>
+
+        <div data-reveal="0.15" className="relative mx-auto w-full max-w-[560px] pb-10 sm:pb-14">
+          <div className="overflow-hidden rounded-[28px] shadow-[0_30px_60px_-30px_rgba(10,30,90,.45)]">
+            <Parallax y={[24, -24]}>
+              <img src="/photos/students-10.jpg" alt="Two G-TEC alumni working together at a laptop" loading="lazy" className="aspect-[4/3] w-full scale-110 object-cover object-[55%_40%]" />
+            </Parallax>
+          </div>
+          <div className="absolute bottom-0 left-[-4%] flex items-center gap-3 rounded-2xl bg-white p-2.5 pr-5 shadow-[0_18px_40px_-18px_rgba(10,30,90,.5)] max-sm:left-3">
+            <img src="/photos/students-11.jpg" alt="" loading="lazy" className="size-14 rounded-xl object-cover object-[50%_45%]" />
+            <span>
+              <span className="block text-[13px] font-semibold text-ink-2">Your network starts</span>
+              <span className="font-display block text-[17px] font-bold tracking-tight">on convocation day</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div data-stagger className={cn(wrap, "mt-[clamp(48px,6vw,80px)] grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4")}>
+        {ALUMNI_WAYS.map(({ icon: Icon, title, text, href }) => (
+          <Link key={title} href={href} className="group flex flex-col rounded-[22px] border border-ink/10 bg-mist p-4 transition duration-300 ease-out-expo hover:-translate-y-1 hover:border-blue/30 hover:bg-white hover:shadow-[0_20px_40px_-24px_rgba(10,30,90,.45)] sm:p-6">
+            <span className="mb-4 flex size-11 items-center justify-center rounded-[14px] bg-blue text-white transition-colors group-hover:bg-red sm:mb-6">
+              <Icon className="size-5" strokeWidth={2} />
+            </span>
+            <span className="font-display flex items-center justify-between gap-2 text-[16px] font-bold tracking-tight sm:text-lg">
+              {title} <Arrow className="flex-none text-blue transition-transform group-hover:translate-x-1" />
+            </span>
+            <span className="mt-1 text-[13px] leading-normal text-ink-2 max-sm:hidden">{text}</span>
+          </Link>
+        ))}
       </div>
     </section>
   );

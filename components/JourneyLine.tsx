@@ -34,9 +34,10 @@ const STOPS = [
   },
   {
     title: "Get placed",
-    text: "Job fairs, live vacancies and employer tie-ups. This wall is one week of it: 197 success stories in the first week of January.",
+    text: "Job fairs, live vacancies and employer tie-ups. In the first week of January alone, 197 of our students were placed.",
     link: { href: "/placements", label: "See placements" },
-    img: { src: `${STORAGE}/placement/20-01-26-02-46-Jan-1st-Week.jpg`, alt: "G-TEC poster titled 197 success stories, January first week, filled with photos of placed students" },
+    // ponytail: hotlinked Pinterest pin, unlicensed. Replace with a licensed photo before publishing.
+    img: { src: "https://i.pinimg.com/736x/2b/9d/11/2b9d11fceba81384746c82e35df0c4f0.jpg", alt: "A smiling young graduate shaking hands with her new manager in a bright office" },
     seed: 43,
     poster: true,
   },
@@ -192,7 +193,7 @@ function Stop({ stop, n, on, lower }: { stop: (typeof STOPS)[number]; n: number;
           className="absolute inset-0 block drop-shadow-[0_8px_14px_rgba(0,31,66,.18)]"
         >
           <span aria-hidden className="absolute -inset-1.5 bg-white" style={{ clipPath: tornEdge(TEAR, stop.seed + 5, 0.7) }} />
-          <img src={stop.img.src} alt={stop.img.alt} loading="lazy" className={cn("relative size-full object-cover", poster && "object-top")} style={{ clipPath: tornEdge(TEAR, stop.seed, 0.45) }} />
+          <img src={stop.img.src} alt={stop.img.alt} loading="lazy" className={cn("relative size-full object-cover", poster && "object-[50%_55%]")} style={{ clipPath: tornEdge(TEAR, stop.seed, 0.45) }} />
         </motion.a>
         {poster && <span data-node aria-hidden className="absolute right-[6%] bottom-[8%] size-px" />}
       </div>

@@ -3,7 +3,7 @@ import { ArrowRight, Award, Briefcase, FlaskConical, Globe2, Landmark, Mail, Mes
 import { AboutAccordion } from "@/components/AboutAccordion";
 import { CourseExplorer } from "@/components/CourseExplorer";
 import { NewsRows } from "@/components/NewsRows";
-import { CapLayer, CoursePicker, HeroBrush, HeroProvider, LoosePhoto, PhotoDeck } from "@/components/hero/HeroInteractive";
+import { CapLayer, CoursePicker, HeroBrush, HeroIntro, HeroProvider, LoosePhoto, PhotoDeck } from "@/components/hero/HeroInteractive";
 import { BrushStroke, DepthLayer, HeroDepth, Magnetic, Parallax, RiseWords, ScrollWords } from "@/components/motion-kit";
 import { Stories } from "@/components/Stories";
 import { GlobeNetwork } from "@/components/GlobeNetwork";
@@ -35,6 +35,9 @@ function Arrow({ className }: { className?: string }) {
 const HERO_TOP_TEAR: [number, number][] = [[1, 3], [99, 1], [100, 98], [56, 98], [42, 90], [22, 86], [3, 66]];
 const HERO_LOW_TEAR: [number, number][] = [[4, 5], [97, 1], [100, 91], [7, 99], [1, 58]];
 
+// Where each headline word's letters start in the one letter-by-letter count.
+const LETTER_AT = [0, 6, 19];
+
 export function Hero() {
   return (
     <section data-hero data-hero-pin data-pause-offscreen className="relative overflow-hidden bg-blue pt-18 text-white">
@@ -43,18 +46,19 @@ export function Hero() {
         <WaveDivider fill="fill-blue" begin="-11s" height="h-[clamp(36px,4.5vw,70px)]" />
       </div>
 
-      <div className={cn(wrap, "relative grid gap-8 lg:min-h-[max(520px,calc(100svh-4.5rem))] lg:grid-cols-[minmax(0,1.06fr)_minmax(0,1.1fr)]")}>
+      <HeroIntro className={cn(wrap, "relative grid gap-8 lg:min-h-[max(520px,calc(100svh-4.5rem))] lg:grid-cols-[minmax(0,1.06fr)_minmax(0,1.1fr)]")}>
         <HeroProvider images={COURSE_IMAGES}>
         <div data-hero-copy className="flex flex-col justify-center pt-[clamp(20px,4svh,64px)] lg:pb-[calc(clamp(72px,12svh,140px)+20px)]">
           <h1 className="font-display mb-[clamp(12px,2svh,20px)] text-[clamp(40px,min(5.2vw,7.6svh),76px)] leading-[1.02] font-bold tracking-[-.035em]">
             {["Making", "Professionals", "Globally."].map((w, i) => (
-              <span key={w} className="-mt-[.12em] -mb-[.1em] block overflow-hidden pt-[.12em] pb-[.1em]">
+              <span key={w} className="block">
                 <span className="hero-word" style={{ "--i": i } as React.CSSProperties}>
                   <span className="sr-only">{w}</span>
                   {/* Letters lift under the cursor; screen readers get the whole word above. */}
                   <span aria-hidden>
-                    {w.replace(".", "").split("").map((l, j) => <span key={j} className="hero-letter">{l}</span>)}
-                    {w.endsWith(".") && <span className="hero-dot text-red">.</span>}
+                    {/* Each letter resolves out of a blur in turn, counting on across the three lines. */}
+                    {w.replace(".", "").split("").map((l, j) => <span key={j} className="hero-letter hero-in" style={{ "--j": LETTER_AT[i] + j } as React.CSSProperties}>{l}</span>)}
+                    {w.endsWith(".") && <span className="hero-in" style={{ "--j": LETTER_AT[i] + w.length } as React.CSSProperties}><span className="hero-dot text-red">.</span></span>}
                   </span>
                 </span>
               </span>
@@ -118,7 +122,7 @@ export function Hero() {
           </div>
         </HeroDepth>
         </HeroProvider>
-      </div>
+      </HeroIntro>
     </section>
   );
 }

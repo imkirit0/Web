@@ -87,25 +87,35 @@ body {
 /* Hero headline: each word slides up out of its mask. */
 /* CSS only, so above-the-fold hero text never waits on JavaScript. */
 .hero-fade {
-  animation: hero-fade 0.85s var(--ease-out-expo) both;
+  animation: hero-fade 1.3s var(--ease-out-expo) both;
   animation-delay: var(--d, 0s);
 }
 @keyframes hero-fade {
-  from { opacity: 0; transform: translateY(28px); }
+  from { opacity: 0; transform: translateY(24px) scale(.88); filter: blur(6px); }
+  60% { filter: blur(0); }
 }
 .hero-word {
   display: inline-block;
-  animation: rise 1s var(--ease-out-expo) both;
-  animation-delay: calc(0.2s + var(--i) * 0.11s);
+}
+/* Headline letters resolve one by one out of a blur (the "blur" text effect), inside the hero's camera push. */
+.hero-in {
+  display: inline-block;
+  animation: letter-in .9s var(--ease-out-expo) both;
+  animation-delay: calc(.35s + var(--j) * .032s);
+}
+@keyframes letter-in {
+  from { opacity: 0; transform: translateY(.3em) scale(.6); filter: blur(12px); }
+  55% { filter: blur(0); }
 }
 
 /* Hero collage: photos are laid down, the brush stroke is drawn, then the chips pop on and float. */
 .hero-tear {
-  animation: tear-in 1s var(--ease-out-expo) both;
+  animation: tear-in 1.6s var(--ease-out-expo) both;
   animation-delay: var(--d, 0s);
 }
 @keyframes tear-in {
-  from { opacity: 0; transform: translateY(44px) rotate(var(--r, 3deg)) scale(.93); }
+  from { opacity: 0; transform: translateY(40px) rotate(var(--r, 3deg)) scale(.72); filter: blur(10px); }
+  60% { filter: blur(0); }
 }
 .hero-brush { animation: draw 1.3s ease-in-out .85s both; }
 @keyframes draw {
@@ -163,22 +173,17 @@ body {
 /* A chip holds still under the cursor, so it's easy to use. */
 .hero-chip:hover, .hero-chip:focus-within { animation-play-state: paused, paused; }
 @keyframes chip-in {
-  from { opacity: 0; transform: translateY(14px) scale(.8); }
+  from { opacity: 0; transform: translateY(14px) scale(.4); filter: blur(8px); }
 }
 @keyframes chip-float {
   50% { transform: translateY(-7px); }
 }
 /* Hold the entrance behind a loader that's still showing, or nobody ever sees it. */
-html:not(.loader-seen) body:has(#site-loader[aria-busy="true"]) :is(.hero-word, .hero-fade, .hero-tear, .hero-brush, .hero-chip) {
+html:not(.loader-seen) body:has(#site-loader[aria-busy="true"]) :is(.hero-in, .hero-fade, .hero-tear, .hero-brush, .hero-chip) {
   animation-play-state: paused;
 }
-/* Intro: under the loader the page waits small, dim and set back; as the sheet lifts (aria-busy flips) it rushes forward on the sheet's own easing. */
+/* The header waits above the screen and slides down as the loader's sheet lifts. */
 @media (prefers-reduced-motion: no-preference) {
-  [data-hero] {
-    transform-origin: 50% 45svh;
-    transition: scale 1.1s cubic-bezier(.76, 0, .24, 1) .15s, filter 1.1s cubic-bezier(.76, 0, .24, 1) .15s, border-radius 1.1s cubic-bezier(.76, 0, .24, 1) .15s;
-  }
-  html:not(.loader-seen) body:has(#site-loader[aria-busy="true"]) [data-hero] { scale: .82; filter: brightness(.7); border-radius: 32px; }
   html:not(.loader-seen) body:has(#site-loader[aria-busy="true"]) .site-header { translate: 0 -100%; }
 }
 
@@ -244,7 +249,7 @@ html:not(.motion) [data-mo] {
 [data-spot]:hover::before { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee, .hero-word, .hero-fade, .hero-tear, .hero-brush, .hero-chip, .hero-dot, .hero-drift, .hero-fall, .animate-float { animation: none !important; }
+  .marquee, .hero-in, .hero-fade, .hero-tear, .hero-brush, .hero-chip, .hero-dot, .hero-drift, .hero-fall, .animate-float { animation: none !important; }
   .site-header, .mobile-menu, .mobile-menu[data-open], .menu-row, [data-open] .menu-row { transition: none !important; }
 }
 

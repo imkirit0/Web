@@ -211,7 +211,12 @@ function LivePhoto({ src, alt, focus, zoom, live, priority, onEnded }: { src: st
     if (!v) return;
     if (!live) return v.pause();
     v.currentTime = 0;
-    v.play().catch(() => {});
+    const play = () => void v.play().catch(() => {});
+    // Hold the opening film until the loader's sheet lifts, or it's over before anyone sees it.
+    if (!document.querySelector('#site-loader[aria-busy="true"]')) return play();
+    v.pause();
+    addEventListener("gtec:lift", play, { once: true });
+    return () => removeEventListener("gtec:lift", play);
   }, [live]);
   return (
     // A film fills its frame exactly, so the whole shot shows; only stills are oversized to drift.
@@ -395,5 +400,48 @@ export function HeroBrush() {
         <path key={rich ? chosen : 0} pathLength={1} d="M20 215 300 25 95 345 345 215 372 400" className={cn("hero-brush fill-none stroke-sky", chosen > 0 && "hero-brush-again")} strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
       </g>
     </svg>
+  );
+}
+
+/**
+ * The opening shot. Under the loader the hero waits far back in space (pushed away, tipped back, soft);
+ * the moment the sheet starts to lift it glides forward into place, so the page comes to you as the
+ * paper goes up. Skipped when there's no loader to wait for (repeat visit, reduced motion).
+ */
+const FAR = { opacity: 0, z: -900, rotateX: 16, y: 120, filter: "blur(18px)", transformPerspective: 1400 };
+const HERE = { opacity: 1, z: 0, rotateX: 0, y: 0, filter: "blur(0px)", transformPerspective: 1400 };
+
+export function HeroIntro({ className, children }: { className?: string; children: React.ReactNode }) {
+  const reduced = useReduced();
+  // wait: behind the loader. go: the sheet is lifting, glide in. now: no loader, just be there.
+  const [mode, setMode] = useState<"wait" | "go" | "now">("wait");
+  useEffect(() => {
+    const busy = document.querySelector('#site-loader[aria-busy="true"]');
+    if (!busy || document.documentElement.classList.contains("loader-seen")) return setMode("now");
+    const start = () => setMode("go");
+    addEventListener("gtec:lift", start, { once: true });
+    const bail = setTimeout(start, 4500); // never leave the hero waiting on a stuck loader
+    return () => {
+      removeEventListener("gtec:lift", start);
+      clearTimeout(bail);
+    };
+  }, []);
+  // Always the same element, so the hero's videos and letter animations never restart.
+  return (
+    <motion.div
+      data-hero-intro
+      className={className}
+      initial={reduced ? false : FAR}
+      animate={reduced || mode !== "wait" ? HERE : undefined}
+      // Starts with the sheet (same beat) and settles a little after it clears the screen.
+      transition={
+        reduced || mode === "now"
+          ? { duration: 0 }
+          : { delay: 0.12, duration: 1.7, ease: [0.16, 1, 0.3, 1], opacity: { delay: 0.05, duration: 0.45, ease: "easeOut" }, filter: { delay: 0.12, duration: 1.2, ease: [0.16, 1, 0.3, 1] } }
+      }
+      style={{ transformOrigin: "50% 40%" }}
+    >
+      {children}
+    </motion.div>
   );
 }

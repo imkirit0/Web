@@ -49,6 +49,8 @@ export function Loader() {
   const timer = useRef(0);
 
   const lift = () => {
+    // The hero's camera push starts on this, so the page comes forward as the sheet goes up.
+    dispatchEvent(new Event('gtec:lift'));
     setIsLeaving(true);
     clearTimeout(timer.current);
     timer.current = window.setTimeout(() => setIsDone(true), LIFT_MS);

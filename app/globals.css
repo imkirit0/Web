@@ -172,6 +172,15 @@ body {
 html:not(.loader-seen) body:has(#site-loader[aria-busy="true"]) :is(.hero-word, .hero-fade, .hero-tear, .hero-brush, .hero-chip) {
   animation-play-state: paused;
 }
+/* Intro: under the loader the page waits small, dim and set back; as the sheet lifts (aria-busy flips) it rushes forward on the sheet's own easing. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-hero] {
+    transform-origin: 50% 45svh;
+    transition: scale 1.1s cubic-bezier(.76, 0, .24, 1) .15s, filter 1.1s cubic-bezier(.76, 0, .24, 1) .15s, border-radius 1.1s cubic-bezier(.76, 0, .24, 1) .15s;
+  }
+  html:not(.loader-seen) body:has(#site-loader[aria-busy="true"]) [data-hero] { scale: .82; filter: brightness(.7); border-radius: 32px; }
+  html:not(.loader-seen) body:has(#site-loader[aria-busy="true"]) .site-header { translate: 0 -100%; }
+}
 
 /* Home, roomy screens: the hero holds still and the rest of the page rides up over it, white wave first. */
 @media (min-width: 1024px) and (min-height: 700px) {

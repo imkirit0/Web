@@ -100,7 +100,6 @@ export function Hero() {
               <PhotoDeck
                 sheets={[
                   { src: "/hero/reel-0.mp4", alt: "Drones spelling out the G-TEC logo in the night sky above the stage" },
-                  { src: "/hero/reel-9.mp4", alt: "Fireworks over the 25th anniversary show" },
                   { src: "/hero/reel-3.mp4", alt: "G-TEC graduates in caps and gowns holding their certificates" },
                   { src: "/hero/reel-1.mp4", alt: "A graduate receiving her certificate on stage" },
                   { src: "/hero/reel-4.mp4", alt: "Students holding a G-TEC Education sign on stage at the 25th anniversary show" },

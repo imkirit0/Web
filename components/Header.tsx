@@ -96,8 +96,9 @@ export function Header() {
   return (
     <>
       <header data-hidden={hidden || undefined} className="site-header font-nav fixed inset-x-0 top-0 z-60 bg-blue text-white shadow-[0_4px_20px_rgba(11,26,51,.1)]">
-        <div className="mx-auto flex h-18 max-w-[1440px] items-center justify-between gap-4 px-5 lg:px-8 xl:grid xl:grid-cols-[1fr_auto_1fr]">
-          <div className="flex items-center gap-6">
+        <div className="mx-auto flex h-18 max-w-[1440px] items-center justify-between gap-4 px-5 max-sm:grid max-sm:grid-cols-[1fr_auto_1fr] lg:px-8 xl:grid xl:grid-cols-[1fr_auto_1fr]">
+          {/* Phones: logo centred, Menu on the right. */}
+          <div className="flex items-center gap-6 max-sm:col-start-2">
             <Link href="/" aria-label="G-TEC Education home" className="flex-none">
               <img src="/logo-mark.png" alt="G-TEC Education" className="block h-15 w-auto" />
             </Link>
@@ -118,9 +119,12 @@ export function Header() {
             Enquire now
           </a>
 
-          <button ref={menuButton} type="button" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} className="flex flex-col items-end gap-1.5 p-2 xl:hidden">
-            <span className="h-0.5 w-6 bg-white" />
-            <span className="h-0.5 w-4 bg-red" />
+          <button ref={menuButton} type="button" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} className="flex items-center gap-2.5 p-2 text-[15px] font-semibold max-sm:col-start-3 max-sm:justify-self-end xl:hidden">
+            Menu
+            <span aria-hidden className="flex flex-col items-end gap-1.5">
+              <span className="h-0.5 w-6 bg-white" />
+              <span className="h-0.5 w-4 bg-red" />
+            </span>
           </button>
         </div>
       </header>

@@ -283,7 +283,8 @@ export function About({ cta = true }: { cta?: boolean }) {
 
           <figure data-reveal="0.2" className="relative sm:px-12 sm:py-16">
             <Parallax y={[24, -24]} className="relative">
-              <img src="/photos/students-5.jpg" alt="Six G-TEC students holding their course folders" loading="lazy" className="aspect-[4/3] w-full object-cover" style={{ clipPath: tornEdge([[1, 2], [99, 0.6], [99.4, 98], [0.6, 99.4]], 67, 0.5) }} />
+              {/* ponytail: hotlinked Pinterest pin, unlicensed. Replace with a licensed photo before publishing. */}
+              <img src="https://i.pinimg.com/736x/18/af/3c/18af3cde23f5f1c2d88ef4a38796247e.jpg" alt="A group of smiling students walking across campus with books and a laptop" loading="lazy" className="aspect-[4/3] w-full object-cover" style={{ clipPath: tornEdge([[1, 2], [99, 0.6], [99.4, 98], [0.6, 99.4]], 67, 0.5) }} />
             </Parallax>
             <dl className="mt-3 grid grid-cols-2 gap-3 sm:contents">
               {STATS.slice(0, 4).map((s, i) => (

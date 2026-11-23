@@ -217,7 +217,7 @@ function LivePhoto({ src, alt, focus, zoom, live, priority, onEnded }: { src: st
     // A film fills its frame exactly, so the whole shot shows; only stills are oversized to drift.
     <motion.div style={isVideo ? { scale: zoom } : { x: depth.ix, y: depth.iy, scale: zoom }} className={cn("absolute", isVideo ? "inset-0" : "-inset-[6%]")}>
       {isVideo ? (
-        <video ref={video} src={src} poster={src.replace(".mp4", ".jpg")} aria-label={alt || undefined} muted loop={!onEnded} onEnded={onEnded} onError={onEnded} playsInline preload="metadata" disablePictureInPicture className="size-full object-cover select-none" style={{ objectPosition: focus }} />
+        <video ref={video} src={src} poster={src.replace(".mp4", ".jpg")} aria-label={alt || undefined} muted loop={!onEnded} onLoadedMetadata={(e) => { const v = e.currentTarget; if (v.duration < 2) v.playbackRate = v.duration / 2.2; }} onEnded={onEnded} onError={onEnded} playsInline preload="metadata" disablePictureInPicture className="size-full object-cover select-none" style={{ objectPosition: focus }} />
       ) : (
       <img src={src} alt={alt} draggable={false} fetchPriority={priority ? "high" : undefined} className={cn("size-full object-cover select-none", live && "hero-drift")} style={{ objectPosition: focus }} />
       )}

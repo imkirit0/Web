@@ -77,7 +77,7 @@ export function Hero() {
             </Magnetic>
           </div>
           <CoursePicker className="hero-fade mt-7" style={{ "--d": ".8s" } as React.CSSProperties} />
-          <dl className="hero-fade mt-5 flex w-fit max-w-full flex-wrap gap-x-9 gap-y-3 rounded-2xl border border-white/30 px-6 py-4" style={{ "--d": ".95s" } as React.CSSProperties}>
+          <dl className="hero-fade mt-5 grid w-full grid-cols-3 gap-x-4 rounded-2xl border border-white/30 px-4 py-4 sm:flex sm:w-fit sm:gap-x-9 sm:px-6" style={{ "--d": ".95s" } as React.CSSProperties}>
             {STATS.slice(1, 4).map((s) => (
               <div key={s.label} className="transition-transform duration-300 ease-out-expo hover:-translate-y-1">
                 <dd className="font-display text-[clamp(26px,2.4vw,34px)] leading-none font-bold tracking-tight tabular-nums"><span data-count={s.value}>{s.value}</span>{s.suffix}</dd>
@@ -88,7 +88,7 @@ export function Hero() {
         </div>
 
         {/* Paper collage: each layer enters on its own beat (CSS), then drifts with the cursor and scroll at its own depth. */}
-        <HeroDepth className="relative aspect-[15/16] max-h-[640px] [container-type:size] lg:aspect-auto lg:max-h-none">
+        <HeroDepth className="relative mx-auto aspect-[15/16] w-full max-w-[560px] [container-type:size] lg:aspect-auto lg:max-w-none">
           {/* The collage keeps its own proportions whatever the column does, so no print gets stretched into a crop. */}
           <div className="absolute top-1/2 left-1/2 aspect-[15/16] w-[min(100cqw,100cqh*15/16)] -translate-x-1/2 -translate-y-1/2">
           <DepthLayer depth={-90} scroll={-190} tilt={4}>
@@ -99,12 +99,12 @@ export function Hero() {
             <div className="hero-tear absolute top-0 right-0 h-[73%] w-[84%]" style={{ "--d": ".2s", "--r": "4deg" } as React.CSSProperties}>
               <PhotoDeck
                 sheets={[
+                  { src: "/hero/reel-9.mp4", alt: "Fireworks over the 25th anniversary show" },
                   { src: "/hero/reel-3.mp4", alt: "G-TEC graduates in caps and gowns holding their certificates" },
                   { src: "/hero/reel-1.mp4", alt: "A graduate receiving her certificate on stage" },
                   { src: "/hero/reel-4.mp4", alt: "Students holding a G-TEC Education sign on stage at the 25th anniversary show" },
                   { src: "/hero/reel-8.mp4", alt: "A presenter on stage in front of the crowd at the 25th anniversary show" },
                   { src: "/hero/reel-2.mp4", alt: "A performer on stage at the 25th anniversary show" },
-                  { src: "/hero/reel-9.mp4", alt: "Fireworks over the 25th anniversary show" },
                 ]}
                 clip={tornEdge(HERO_TOP_TEAR, 23)}
                 backing={tornEdge(HERO_TOP_TEAR, 30, 0.8)}

@@ -240,7 +240,8 @@ html:not(.motion) [data-mo] {
 }
 
 /* Rich text scraped from the live site (course outlines, centre pages, blog posts). */
-.prose-gtec { color: var(--color-ink-2); font-size: 16px; line-height: 1.75; }
+.prose-gtec { color: var(--color-ink-2); font-size: 16px; line-height: 1.75; overflow-wrap: anywhere; }
+.prose-gtec img, .prose-gtec iframe, .prose-gtec video { max-width: 100%; height: auto; }
 .prose-gtec h2, .prose-gtec h3, .prose-gtec h4, .prose-gtec h5 { font-family: var(--font-display); color: var(--color-ink); font-weight: 700; letter-spacing: -0.01em; margin: 2em 0 0.6em; text-transform: none; }
 .prose-gtec h2 { font-size: 26px; } .prose-gtec h3 { font-size: 21px; } .prose-gtec h4, .prose-gtec h5 { font-size: 18px; }
 .prose-gtec > :first-child { margin-top: 0; }
@@ -253,6 +254,7 @@ html:not(.motion) [data-mo] {
 .prose-gtec ol { counter-reset: n; } .prose-gtec ol > li { counter-increment: n; }
 .prose-gtec ol > li::before { content: counter(n) "."; position: absolute; left: 0; font-weight: 700; color: var(--color-blue); }
 .prose-gtec table { width: 100%; border-collapse: collapse; margin: 0 0 1.4em; font-size: 15px; }
+@media (max-width: 640px) { .prose-gtec table { display: block; overflow-x: auto; } }
 .prose-gtec td, .prose-gtec th { border: 1px solid rgb(11 26 51 / 0.1); padding: 0.6em 0.8em; text-align: left; }
 
 /* Display type: Bricolage is optically sized, so big headings get tighter spacing automatically. */

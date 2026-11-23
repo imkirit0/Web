@@ -27,7 +27,7 @@ export default function TrainingPage() {
       />
 
       <Band eyebrow="Centre support" title="Everything our centres and trainers need." intro={<p>We give full support to our centres and trainers with helpful tools at every stage of a course.</p>}>
-        <ul className="grid grid-cols-2 gap-3 md:grid-cols-3">
+        <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
           {SUPPORT.map(([Icon, t]) => (
             <li key={t} className={`${card} flex items-center gap-4 p-5`}>
               <span className="flex size-11 flex-none items-center justify-center rounded-full bg-ice text-blue"><Icon className="size-5" /></span>

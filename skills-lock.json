@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "skills": {
+    "agentic-site-building": {
+      "source": "divyanshu-iitian/agent-website-design-skills",
+      "sourceType": "github",
+      "skillPath": "agentic-site-building/SKILL.md",
+      "computedHash": "38483d2745288487d3e1d7487e5882948a96c2e82f1e47daec0609dd493c0707"
+    },
+    "conversion-accessibility-polish": {
+      "source": "divyanshu-iitian/agent-website-design-skills",
+      "sourceType": "github",
+      "skillPath": "conversion-accessibility-polish/SKILL.md",
+      "computedHash": "b22f0b8e0cb326df50189db032e889883aa3fc821263b44c57ff4d7bcba5c72c"
+    },
+    "landing-page-craft": {
+      "source": "divyanshu-iitian/agent-website-design-skills",
+      "sourceType": "github",
+      "skillPath": "landing-page-craft/SKILL.md",
+      "computedHash": "3164bbf25e65b72d5557fdb850015769f6a1434aaa5ad5f9227fda95e5233dea"
+    },
+    "product-motion-design": {
+      "source": "divyanshu-iitian/agent-website-design-skills",
+      "sourceType": "github",
+      "skillPath": "product-motion-design/SKILL.md",
+      "computedHash": "2a1c364f3118964fb70e270ea5eed61b89d4b94c5fa1c284c178b2aeacc38841"
+    },
+    "production-web-architecture": {
+      "source": "divyanshu-iitian/agent-website-design-skills",
+      "sourceType": "github",
+      "skillPath": "production-web-architecture/SKILL.md",
+      "computedHash": "06247e5893555c871bed65d2b7806af141210493aab4101f454e5c3745408dda"
+    },
+    "responsive-ui-qa": {
+      "source": "divyanshu-iitian/agent-website-design-skills",
+      "sourceType": "github",
+      "skillPath": "responsive-ui-qa/SKILL.md",
+      "computedHash": "24df0adc6bf15070ee07bb7eaea64879ef19dc59b1a9175778837684af526a75"
+    },
+    "technical-seo-discovery": {
+      "source": "divyanshu-iitian/agent-website-design-skills",
+      "sourceType": "github",
+      "skillPath": "technical-seo-discovery/SKILL.md",
+      "computedHash": "ba56219c73b98abcde6587b15a0924299a6326c549e9a434623c5db98b3da4ff"
+    },
+    "web-design-system": {
+      "source": "divyanshu-iitian/agent-website-design-skills",
+      "sourceType": "github",
+      "skillPath": "web-design-system/SKILL.md",
+      "computedHash": "0c96da2bc407c45f0ec04269a6192573a7cd03f75386f1a181ee2327fbaac52e"
+    },
+    "web-visual-direction": {
+      "source": "divyanshu-iitian/agent-website-design-skills",
+      "sourceType": "github",
+      "skillPath": "web-visual-direction/SKILL.md",
+      "computedHash": "df376d8831598127890e418a013abf95964a0ee64bb041b61e143e3df4bd7eda"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Motion Design"
+  short_description: "Ship purposeful, performant web motion and 3D"
+  default_prompt: "Use $product-motion-design to design and verify the motion system for this interface."

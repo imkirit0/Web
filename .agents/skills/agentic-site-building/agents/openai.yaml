@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agentic Site Building"
+  short_description: "Build verified, token-aware website editing agents"
+  default_prompt: "Use $agentic-site-building to design or harden this AI website-building workflow."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Technical SEO Discovery"
+  short_description: "Fix crawl, indexing, canonical, and sitemap failures"
+  default_prompt: "Use $technical-seo-discovery to diagnose and verify this site's public search discovery."

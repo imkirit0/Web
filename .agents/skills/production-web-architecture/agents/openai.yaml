@@ -1,0 +1,4 @@
+interface:
+  display_name: "Production Web Architecture"
+  short_description: "Design reliable startup systems without overbuilding"
+  default_prompt: "Use $production-web-architecture to review and harden this web platform for production."

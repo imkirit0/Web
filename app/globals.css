@@ -278,3 +278,50 @@ html:not(.motion) [data-mo] {
 
 /* Soft layered elevation for light cards. */
 .shadow-card { box-shadow: 0 1px 2px rgb(11 26 51 / 0.04), 0 12px 32px -12px rgb(11 26 51 / 0.12); }
+
+
+/* Desktop nav dropdowns: a spiral-bound notebook page. It flips down from the nav, each link is a ruled line
+   numbered in the red margin, and hovering swipes a highlighter across the label. */
+.nav-book {
+  position: relative;
+  counter-reset: page;
+  padding: 30px 0 8px;
+  border-radius: 6px 6px 12px 12px;
+  background: linear-gradient(90deg, transparent 46px, rgb(255 1 0 / .3) 46px 47px, transparent 47px) #fff;
+  box-shadow: 0 3px 0 -1px #eef3fa, 0 6px 0 -2px #dde6f2, 0 22px 48px rgb(11 26 51 / .22);
+  transform-origin: 50% 0;
+  transform: perspective(900px) rotateX(-70deg);
+  transition: transform 460ms var(--ease-out-expo);
+}
+.group:hover .nav-book, .group:has(:focus-visible) .nav-book { transform: perspective(900px) rotateX(0deg); }
+/* Coils over the top edge, each dropping into a punched hole. */
+.nav-book::before {
+  content: "";
+  position: absolute;
+  inset: -9px 16px auto;
+  height: 30px;
+  background:
+    radial-gradient(circle at 11px 21px, rgb(11 26 51 / .55) 0 3.5px, #dde6f2 4px 5px, transparent 5.5px) 0 0 / 22px 30px repeat-x,
+    linear-gradient(90deg, transparent 8px, #8d9bb0 8px 10px, #e9eef5 10px 12px, #8d9bb0 12px 14px, transparent 14px) 0 0 / 22px 21px repeat-x;
+  pointer-events: none;
+}
+.nav-book a { position: relative; border-bottom: 1px solid rgb(142 197 255 / .45); }
+.nav-book a:last-child { border-bottom: 0; }
+.nav-book a::before {
+  counter-increment: page;
+  content: counter(page, decimal-leading-zero);
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: .04em;
+  color: rgb(255 1 0 / .65);
+}
+.nav-book .nav-label {
+  background: linear-gradient(transparent 55%, rgb(142 197 255 / .7) 55% 95%, transparent 95%) no-repeat 0 0 / 0 100%;
+  transition: background-size 320ms var(--ease-out-expo);
+}
+.nav-book a:hover .nav-label, .nav-book a:focus-visible .nav-label, .nav-book a.is-current .nav-label { background-size: 100% 100%; }
+@media (prefers-reduced-motion: reduce) {
+  .nav-book { transform: none; transition: none; }
+}

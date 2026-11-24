@@ -13,10 +13,10 @@ function MenuLink({ link, className }: { link: NavLink; className?: string }) {
   const desc = link.desc && <span className="mt-0.5 block text-[13px] font-normal text-ink-2/80">{link.desc}</span>;
   return link.href.startsWith("/") ? (
     // Blur so the focus-driven dropdown closes after client-side navigation.
-    <Link href={link.href} onClick={(e) => e.currentTarget.blur()} className={className}>{link.label}{desc}</Link>
+    <Link href={link.href} onClick={(e) => e.currentTarget.blur()} className={className}><span className="nav-label">{link.label}</span>{desc}</Link>
   ) : (
     <a href={link.href} target="_blank" rel="noopener noreferrer" className={className}>
-      {link.label} <ArrowUpRight className="inline size-3.5 opacity-50" />
+      <span className="nav-label">{link.label}</span> <ArrowUpRight className="inline size-3.5 opacity-50" />
       {desc}
     </a>
   );
@@ -27,8 +27,9 @@ const topLink = "relative flex h-10 items-center gap-1 rounded-full px-2.5 text-
 const underline = "after:absolute after:inset-x-2.5 after:bottom-1 after:h-0.5 after:origin-left after:scale-x-0 after:bg-red after:transition-transform after:duration-300 after:ease-out-expo hover:after:scale-x-100 2xl:after:inset-x-3.5";
 // Mouse users open on hover only, so a clicked trigger can't hold its menu open over the next one. Keyboard users open on focus. Closing turns transparent at once, so two menus never overlap; visibility lags slightly so Tab can still land on a link inside.
 const panel = "invisible absolute top-full left-0 z-10 pt-3 translate-y-1.5 opacity-0 [transition:visibility_0s_linear_60ms] group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-hover:[transition:opacity_200ms,translate_260ms_var(--ease-out-expo)] group-has-[:focus-visible]:visible group-has-[:focus-visible]:translate-y-0 group-has-[:focus-visible]:opacity-100";
-const panelInner = "max-h-[calc(100svh-6rem)] w-72 overflow-y-auto rounded-2xl bg-white p-2 shadow-[0_16px_48px_rgba(11,26,51,.16)] ring-1 ring-ink/[.06]";
-const panelLink = "block rounded-xl px-3.5 py-2.5 text-base font-medium text-ink transition hover:bg-mist";
+// A spiral notebook page that flips down from the nav (styles: .nav-book in globals.css).
+const panelInner = "nav-book w-80";
+const panelLink = "block py-2.5 pr-4 pl-15 text-base font-medium text-ink";
 
 function Dropdown({ item, pathname, trigger }: { item: { label: string; children: NavLink[] }; pathname: string; trigger: string }) {
   return (
@@ -39,7 +40,9 @@ function Dropdown({ item, pathname, trigger }: { item: { label: string; children
       </button>
       <div className={panel}>
         <div className={panelInner}>
-          {item.children.map((c) => <MenuLink key={c.href} link={c} className={cn(panelLink, isActive(pathname, c.href) && "bg-ice")} />)}
+          <div className="max-h-[calc(100svh-8rem)] overflow-y-auto">
+            {item.children.map((c) => <MenuLink key={c.href} link={c} className={cn(panelLink, isActive(pathname, c.href) && "is-current")} />)}
+          </div>
         </div>
       </div>
     </div>

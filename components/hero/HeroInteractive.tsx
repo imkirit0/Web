@@ -294,12 +294,11 @@ const FALLING = Array.from({ length: 22 }, (_, i) => ({
   spin: i % 2 ? 1 : -1,
 }));
 
-/** The graduates: a loose print with confetti and caps still coming down inside the picture. Pull it and it springs back; press it to throw the caps. */
+/** The graduates: a loose print with confetti and caps still coming down inside the picture. Pull it and it springs back; hover it to throw the caps. */
 export function LoosePhoto({ src, alt, clip, backing, focus, className, delay, tilt: lean }: { src: string; alt: string; clip: string; backing: string; focus: string; className: string; delay: string; tilt: string }) {
   const { toss } = useHero();
   const reduced = useReduced();
   const tilt = useTilt(11);
-  const dragged = useRef(false);
   const last = useRef(0);
   return (
     <div className={cn("hero-tear pointer-events-auto absolute", className)} style={{ "--d": delay, "--r": lean } as React.CSSProperties}>
@@ -309,8 +308,6 @@ export function LoosePhoto({ src, alt, clip, backing, focus, className, delay, t
         dragElastic={0.5}
         dragTransition={{ bounceStiffness: 260, bounceDamping: 14 }}
         whileDrag={{ scale: 1.05, rotate: -3 }}
-        onDragStart={() => void (dragged.current = true)}
-        onDragEnd={() => void setTimeout(() => (dragged.current = false), 60)}
         style={tilt.style}
         {...tilt.handlers}
         onPointerEnter={(e) => {
@@ -335,17 +332,6 @@ export function LoosePhoto({ src, alt, clip, backing, focus, className, delay, t
           )}
           <motion.div aria-hidden style={{ background: tilt.glare, opacity: tilt.lit }} className="pointer-events-none absolute inset-0 mix-blend-soft-light" />
         </div>
-        {!reduced && (
-          <button
-            type="button"
-            onClick={() => {
-              if (!dragged.current) toss(16);
-            }}
-            className="absolute bottom-[9%] left-1/2 -translate-x-1/2 rounded-full bg-white px-3 py-1.5 text-[12px] font-bold whitespace-nowrap text-blue shadow-[0_8px_20px_rgba(0,31,66,.3)] transition-transform duration-300 ease-out-expo hover:scale-105 active:scale-95"
-          >
-            Toss the caps
-          </button>
-        )}
       </motion.div>
     </div>
   );

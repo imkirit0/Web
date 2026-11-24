@@ -72,6 +72,10 @@ export function Loader() {
     // The inline script may already have stood the loader down on a very slow connection.
     if (seen || document.documentElement.classList.contains('loader-seen') || matchMedia('(prefers-reduced-motion: reduce)').matches) {
       shownThisVisit = true;
+      // The server-rendered sheet still says busy until React removes it: stand it down now and send the lift,
+      // so the hero's films (which wait on either) start instead of waiting on a loader that never runs.
+      document.getElementById('site-loader')?.setAttribute('aria-busy', 'false');
+      dispatchEvent(new Event('gtec:lift'));
       setIsDone(true);
       return;
     }

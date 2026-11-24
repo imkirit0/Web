@@ -1,46 +1,11 @@
 "use server";
 
-import { appendFile, mkdir } from "node:fs/promises";
-import path from "node:path";
+import { deliver } from "@/lib/deliver";
+import { PAYMENTS, RZP_ID, razorpay, sendPaymentReceipt, type PayKind } from "@/lib/razorpay";
+import { validSignature } from "@/lib/signature";
 import { CONTACT, COUNTRIES, COURSES } from "@/lib/data";
 
 const FAILED = `Sorry, we couldn't send that right now. Please call us on ${CONTACT.phone.label}.`;
-
-/**
- * Emails a submission to the G-TEC team via Resend (RESEND_API_KEY, optional FORMS_TO / FORMS_FROM).
- * Without a key, development falls back to data/<file>.jsonl; production reports failure rather than dropping it.
- */
-async function deliver(subject: string, fields: Record<string, string>, file: string): Promise<boolean> {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) {
-    if (process.env.NODE_ENV === "production") {
-      console.error("RESEND_API_KEY is not set; form submission not delivered:", subject);
-      return false;
-    }
-    const dir = path.join(process.cwd(), "data");
-    await mkdir(dir, { recursive: true });
-    await appendFile(path.join(dir, file), JSON.stringify({ subject, ...fields, at: new Date().toISOString() }) + "\n");
-    return true;
-  }
-  const esc = (v: string) => v.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
-  const rows = Object.entries(fields)
-    .filter(([, v]) => v)
-    .map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#4a5873"><b>${esc(k)}</b></td><td style="padding:4px 0">${esc(v).replace(/\n/g, "<br>")}</td></tr>`)
-    .join("");
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      from: process.env.FORMS_FROM ?? "G-TEC Website <onboarding@resend.dev>",
-      to: (process.env.FORMS_TO ?? CONTACT.email.label).split(","),
-      reply_to: fields.email || undefined,
-      subject,
-      html: `<table>${rows}</table>`,
-    }),
-  }).catch(() => null);
-  if (!res?.ok) console.error("Resend failed:", res?.status, await res?.text().catch(() => ""));
-  return !!res?.ok;
-}
 
 export type EnquiryState = { ok: boolean; message: string; errors?: Record<string, string> };
 
@@ -82,4 +47,47 @@ export async function submitForm(_: FormState, form: FormData): Promise<FormStat
 
   const sent = await deliver(`Website form (${kind}): ${data.name}`, { form: kind, ...data }, "forms.jsonl");
   return sent ? { ok: true, message: "" } : { ok: false, message: FAILED };
+}
+
+// ---- Razorpay ----
+
+export type OrderResult = { ok: true; key: string; orderId: string; amount: number; currency: string } | { ok: false; message: string };
+
+/** Validates the payer's details and creates a Razorpay order. The amount is what the payer enters (fee payment). */
+export async function createPaymentOrder(form: FormData): Promise<OrderResult> {
+  const get = (k: string) => String(form.get(k) ?? "").trim();
+  const kind = get("kind") as PayKind;
+  if (!Object.hasOwn(PAYMENTS, kind)) return { ok: false, message: "Unknown payment type." };
+  const f = { name: get("name"), email: get("email"), phone: get("phone"), centre: get("centre"), purpose: get("purpose"), details: get("details") };
+  if (f.name.length < 2 || f.name.length > 100) return { ok: false, message: "Please enter your name." };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email) || f.email.length > 200) return { ok: false, message: "Please enter a valid email." };
+  if (!/^\+?[\d\s()-]{7,20}$/.test(f.phone)) return { ok: false, message: "Please enter a valid phone number." };
+  if (!(PAYMENTS[kind].purposes as readonly string[]).includes(f.purpose)) return { ok: false, message: "Please choose what you are paying for." };
+  const amount = get("amount");
+  if (!/^\d{1,7}(\.\d{1,2})?$/.test(amount) || Number(amount) < 1) return { ok: false, message: "Please enter a valid amount." };
+
+  const currency = PAYMENTS[kind].currency;
+  const notes = Object.fromEntries(Object.entries({ kind, ...f }).map(([k, v]) => [k, v.slice(0, 250)]));
+  const res = await razorpay("/orders", {
+    method: "POST",
+    body: JSON.stringify({ amount: Math.round(Number(amount) * 100), currency, receipt: `gtec-${Date.now()}`, notes }),
+  });
+  if (!res?.ok) {
+    console.error("Razorpay order failed:", res?.status, await res?.text().catch(() => ""));
+    return { ok: false, message: FAILED };
+  }
+  const order = (await res.json()) as { id: string; amount: number };
+  return { ok: true, key: process.env.RAZORPAY_KEY_ID!, orderId: order.id, amount: order.amount, currency };
+}
+
+/** Checks Razorpay's checkout signature, then sends the (verified, de-duplicated) receipt. */
+export async function verifyPayment(orderId: string, paymentId: string, signature: string): Promise<FormState> {
+  const secret = process.env.RAZORPAY_KEY_SECRET;
+  if (!secret || ![orderId, paymentId, signature].every((s) => typeof s === "string" && RZP_ID.test(s)))
+    return { ok: false, message: "Payment could not be verified." };
+  if (!validSignature(`${orderId}|${paymentId}`, signature, secret)) return { ok: false, message: "Payment could not be verified." };
+
+  // The payer has paid either way; a failed receipt is retried by the webhook.
+  await sendPaymentReceipt(orderId, paymentId);
+  return { ok: true, message: paymentId };
 }

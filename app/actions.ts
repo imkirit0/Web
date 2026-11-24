@@ -1,8 +1,8 @@
 "use server";
 
 import { deliver } from "@/lib/deliver";
-import { PAYMENTS, RZP_ID, razorpay, sendPaymentReceipt, type PayKind } from "@/lib/razorpay";
-import { validSignature } from "@/lib/signature";
+import { cookies, headers } from "next/headers";
+import { PAY_COOKIE, PAYMENTS, initiateSale, sealPayer, type PayKind } from "@/lib/icici";
 import { CONTACT, COUNTRIES, COURSES } from "@/lib/data";
 
 const FAILED = `Sorry, we couldn't send that right now. Please call us on ${CONTACT.phone.label}.`;
@@ -49,11 +49,14 @@ export async function submitForm(_: FormState, form: FormData): Promise<FormStat
   return sent ? { ok: true, message: "" } : { ok: false, message: FAILED };
 }
 
-// ---- Razorpay ----
+// ---- ICICI Orange PG ----
 
-export type OrderResult = { ok: true; key: string; orderId: string; amount: number; currency: string } | { ok: false; message: string };
+export type OrderResult = { ok: true; url: string } | { ok: false; message: string };
 
-/** Validates the payer's details and creates a Razorpay order. The amount is what the payer enters (fee payment). */
+/**
+ * Validates the payer's details, registers the sale with ICICI and returns ICICI's hosted payment page to redirect to.
+ * The amount is what the payer enters (fee payment). ICICI posts the result to /api/icici/return.
+ */
 export async function createPaymentOrder(form: FormData): Promise<OrderResult> {
   const get = (k: string) => String(form.get(k) ?? "").trim();
   const kind = get("kind") as PayKind;
@@ -66,28 +69,14 @@ export async function createPaymentOrder(form: FormData): Promise<OrderResult> {
   const amount = get("amount");
   if (!/^\d{1,7}(\.\d{1,2})?$/.test(amount) || Number(amount) < 1) return { ok: false, message: "Please enter a valid amount." };
 
-  const currency = PAYMENTS[kind].currency;
-  const notes = Object.fromEntries(Object.entries({ kind, ...f }).map(([k, v]) => [k, v.slice(0, 250)]));
-  const res = await razorpay("/orders", {
-    method: "POST",
-    body: JSON.stringify({ amount: Math.round(Number(amount) * 100), currency, receipt: `gtec-${Date.now()}`, notes }),
-  });
-  if (!res?.ok) {
-    console.error("Razorpay order failed:", res?.status, await res?.text().catch(() => ""));
-    return { ok: false, message: FAILED };
-  }
-  const order = (await res.json()) as { id: string; amount: number };
-  return { ok: true, key: process.env.RAZORPAY_KEY_ID!, orderId: order.id, amount: order.amount, currency };
-}
+  const h = await headers();
+  const host = h.get("host") ?? "www.gteceducation.com";
+  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+  const sale = await initiateSale({ kind, amount, ...f, returnURL: `${proto}://${host}/api/icici/return` });
+  if (!sale) return { ok: false, message: `Sorry, the payment gateway isn't available right now. Please try again or call us on ${CONTACT.phone.label}.` };
 
-/** Checks Razorpay's checkout signature, then sends the (verified, de-duplicated) receipt. */
-export async function verifyPayment(orderId: string, paymentId: string, signature: string): Promise<FormState> {
-  const secret = process.env.RAZORPAY_KEY_SECRET;
-  if (!secret || ![orderId, paymentId, signature].every((s) => typeof s === "string" && RZP_ID.test(s)))
-    return { ok: false, message: "Payment could not be verified." };
-  if (!validSignature(`${orderId}|${paymentId}`, signature, secret)) return { ok: false, message: "Payment could not be verified." };
-
-  // The payer has paid either way; a failed receipt is retried by the webhook.
-  await sendPaymentReceipt(orderId, paymentId);
-  return { ok: true, message: paymentId };
+  // The return post is cross-site from ICICI, so the cookie must be SameSite=None (and therefore Secure).
+  const payer = Object.fromEntries(Object.entries({ kind, ...f, amount: `${PAYMENTS[kind].currency} ${Number(amount).toFixed(2)}`, txn: sale.txnNo }).map(([k, v]) => [k, v.slice(0, 250)]));
+  (await cookies()).set(PAY_COOKIE, sealPayer(payer, process.env.ICICI_PG_SECRET!), { httpOnly: true, secure: true, sameSite: "none", path: "/api/icici", maxAge: 3600 });
+  return { ok: true, url: sale.url };
 }

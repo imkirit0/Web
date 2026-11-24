@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { PaymentForm } from "@/components/PaymentForm";
-import { PAYMENTS } from "@/lib/razorpay";
+import { PAYMENTS } from "@/lib/icici";
 import { ContactChips, LIVE, PaymentTabs, Split } from "@/components/student-pages";
 
 export const metadata: Metadata = { title: "Online International Payment", description: "Secure online payment for G-TEC international centres, in US dollars." };

@@ -295,7 +295,7 @@ export const NAV: NavItem[] = [
     { href: "/jobfair", label: "G-TEC Job Fair", desc: "Meet employers in person" },
   ] },
   { href: "/careers", label: "Careers" },
-  { href: "/#alumni", label: "Alumni" },
+  { href: "/alumni", label: "Alumni" },
   { label: "More", children: [
     { href: "/blog", label: "Blog", desc: "Insights on skills and careers" },
     { href: "/newsandevent", label: "News and Events", desc: "What's happening at G-TEC" },

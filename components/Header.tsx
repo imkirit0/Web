@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, ChevronDown, Phone, X } from "lucide-react";
+import { ArrowUpRight, ChevronDown, CreditCard, Phone, X } from "lucide-react";
 import { CONTACT, COURSES_NAV, NAV, type NavItem, type NavLink } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -22,9 +22,9 @@ function MenuLink({ link, className }: { link: NavLink; className?: string }) {
   );
 }
 
-const topLink = "relative flex h-10 items-center gap-1 rounded-full px-2.5 text-base font-medium whitespace-nowrap transition-colors hover:text-sky 2xl:px-3.5";
+const topLink = "relative flex h-10 items-center gap-1 rounded-full px-2.5 text-base font-medium whitespace-nowrap transition-colors hover:text-sky xl:px-1.5 2xl:px-2.5";
 /** Underline that wipes in from the left. */
-const underline = "after:absolute after:inset-x-2.5 after:bottom-1 after:h-0.5 after:origin-left after:scale-x-0 after:bg-red after:transition-transform after:duration-300 after:ease-out-expo hover:after:scale-x-100 2xl:after:inset-x-3.5";
+const underline = "after:absolute after:inset-x-2.5 after:bottom-1 after:h-0.5 after:origin-left after:scale-x-0 after:bg-red after:transition-transform after:duration-300 after:ease-out-expo hover:after:scale-x-100 xl:after:inset-x-1.5 2xl:after:inset-x-2.5";
 // Mouse users open on hover only, so a clicked trigger can't hold its menu open over the next one. Keyboard users open on focus. Closing turns transparent at once, so two menus never overlap; visibility lags slightly so Tab can still land on a link inside.
 const panel = "invisible absolute top-full left-0 z-10 pt-3 translate-y-1.5 opacity-0 [transition:visibility_0s_linear_60ms] group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-hover:[transition:opacity_200ms,translate_260ms_var(--ease-out-expo)] group-has-[:focus-visible]:visible group-has-[:focus-visible]:translate-y-0 group-has-[:focus-visible]:opacity-100";
 // A spiral notebook page that flips down from the nav (styles: .nav-book in globals.css).
@@ -99,7 +99,7 @@ export function Header() {
   return (
     <>
       <header data-hidden={hidden || undefined} className="site-header font-nav fixed inset-x-0 top-0 z-60 bg-blue text-white shadow-[0_4px_20px_rgba(11,26,51,.1)]">
-        <div className="mx-auto flex h-18 max-w-[1440px] items-center justify-between gap-4 px-5 max-sm:grid max-sm:grid-cols-[1fr_auto_1fr] lg:px-8 xl:grid xl:grid-cols-[1fr_auto_1fr]">
+        <div className="mx-auto flex h-18 max-w-[1440px] items-center justify-between gap-4 px-5 max-sm:grid max-sm:grid-cols-[1fr_auto_1fr] lg:px-8">
           {/* Phones: logo centred, Menu on the right. */}
           <div className="flex items-center gap-6 max-sm:col-start-2">
             <Link href="/" aria-label="G-TEC Education home" className="flex-none">
@@ -118,9 +118,16 @@ export function Header() {
             {NAV.map((item) => <DesktopItem key={item.label} item={item} pathname={pathname} />)}
           </nav>
 
-          <a href="#enquire" className="hidden h-11 flex-none items-center justify-self-end rounded-full bg-white px-6 text-base font-medium whitespace-nowrap text-blue transition-colors hover:bg-ice active:scale-[.97] xl:flex">
-            Enquire now
-          </a>
+          <div className="hidden flex-none items-center gap-2 justify-self-end xl:flex">
+            {/* Below 2xl the row is tight: Pay now drops to its icon, Enquire now to one word. */}
+            <Link href={CONTACT.pay} title="Pay now" className="flex h-11 items-center gap-2 rounded-full border border-white/50 px-3 text-base font-medium whitespace-nowrap transition-colors hover:bg-white hover:text-blue active:scale-[.97] 2xl:px-5">
+              <CreditCard aria-hidden className="size-5 2xl:hidden" />
+              <span className="max-2xl:sr-only">Pay now</span>
+            </Link>
+            <a href="#enquire" className="flex h-11 items-center rounded-full bg-white px-6 text-base font-medium whitespace-nowrap text-blue transition-colors hover:bg-ice active:scale-[.97]">
+              Enquire<span className="max-2xl:hidden">&nbsp;now</span>
+            </a>
+          </div>
 
           <button ref={menuButton} type="button" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} className="flex items-center gap-2.5 p-2 text-[15px] font-semibold max-sm:col-start-3 max-sm:justify-self-end xl:hidden">
             Menu

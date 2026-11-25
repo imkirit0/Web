@@ -201,9 +201,18 @@ function useTilt(max: number) {
 }
 
 /** The photo sits a little oversized in its frame, so it can drift (CSS) and slide against the cursor without showing an edge. */
-function LivePhoto({ src, alt, focus, zoom, live, priority, onEnded }: { src: string; alt: string; focus?: string; zoom: MotionValue<number>; live: boolean; priority?: boolean; onEnded?: () => void }) {
+function LivePhoto({ src, alt, focus, zoom, live, priority, onEnded, minMs }: { src: string; alt: string; focus?: string; zoom: MotionValue<number>; live: boolean; priority?: boolean; onEnded?: () => void; minMs?: number }) {
   const depth = useDepth();
   const video = useRef<HTMLVideoElement>(null);
+  const started = useRef(0);
+  // A film shorter than minMs replays from the start until it has been on screen that long.
+  const ended = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const v = e.currentTarget;
+    if (minMs && performance.now() - started.current < minMs) {
+      v.currentTime = 0;
+      void v.play().catch(() => onEnded?.());
+    } else onEnded?.();
+  };
   const isVideo = src.endsWith(".mp4");
   // A film only plays on the top print, and never for reduced motion: its poster (same name, .jpg) stands in.
   useEffect(() => {
@@ -211,7 +220,10 @@ function LivePhoto({ src, alt, focus, zoom, live, priority, onEnded }: { src: st
     if (!v) return;
     if (!live) return v.pause();
     v.currentTime = 0;
-    const play = () => void v.play().catch(() => {});
+    const play = () => {
+      started.current = performance.now();
+      void v.play().catch(() => {});
+    };
     // Hold the opening film until the loader's sheet lifts, or it's over before anyone sees it.
     if (!document.querySelector('#site-loader[aria-busy="true"]')) return play();
     v.pause();
@@ -222,7 +234,7 @@ function LivePhoto({ src, alt, focus, zoom, live, priority, onEnded }: { src: st
     // A film fills its frame exactly, so the whole shot shows; only stills are oversized to drift.
     <motion.div style={isVideo ? { scale: zoom } : { x: depth.ix, y: depth.iy, scale: zoom }} className={cn("absolute", isVideo ? "inset-0" : "-inset-[6%]")}>
       {isVideo ? (
-        <video ref={video} src={src} poster={src.replace(".mp4", ".jpg")} aria-label={alt || undefined} muted loop={!onEnded} onLoadedMetadata={(e) => { const v = e.currentTarget; if (v.duration < 2) v.playbackRate = v.duration / 2.2; }} onEnded={onEnded} onError={onEnded} playsInline preload="metadata" disablePictureInPicture className="size-full object-cover select-none" style={{ objectPosition: focus }} />
+        <video ref={video} src={src} poster={src.replace(".mp4", ".jpg")} aria-label={alt || undefined} muted loop={!onEnded} onLoadedMetadata={(e) => { const v = e.currentTarget; if (v.duration < 2) v.playbackRate = v.duration / 2.2; }} onEnded={ended} onError={onEnded} playsInline preload="metadata" disablePictureInPicture className="size-full object-cover select-none" style={{ objectPosition: focus }} />
       ) : (
       <img src={src} alt={alt} draggable={false} fetchPriority={priority ? "high" : undefined} className={cn("size-full object-cover select-none", live && "hero-drift")} style={{ objectPosition: focus }} />
       )}
@@ -273,7 +285,7 @@ export function PhotoDeck({ sheets, clip, backing }: { sheets: { src: string; al
             <div aria-hidden className="absolute -inset-1.5 translate-y-1.5 bg-[rgba(0,31,66,.16)]" style={{ clipPath: backing }} />
             <div aria-hidden className="absolute -inset-1.5 bg-white" style={{ clipPath: backing }} />
             <div className="absolute inset-0 overflow-hidden" style={{ clipPath: clip }}>
-              <LivePhoto src={sheet.src} alt={isTop ? sheet.alt : ""} focus={sheet.focus} zoom={tilt.zoom} live={isTop && !reduced} priority={i === 0} onEnded={() => isTop && setDeck({ top: (top + 1) % N, dropping: i })} />
+              <LivePhoto src={sheet.src} alt={isTop ? sheet.alt : ""} focus={sheet.focus} zoom={tilt.zoom} live={isTop && !reduced} priority={i === 0} minMs={i === 0 ? 4000 : undefined} onEnded={() => isTop && setDeck({ top: (top + 1) % N, dropping: i })} />
               <motion.div aria-hidden style={{ background: tilt.glare, opacity: tilt.lit }} className="pointer-events-none absolute inset-0 mix-blend-soft-light" />
             </div>
           </motion.div>

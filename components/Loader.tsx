@@ -2,12 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useMotionTemplate, useSpring, useTransform } from 'framer-motion';
-import { tornEdge } from '@/lib/utils';
 
 const KEY = 'gtec-loaded';
 const MIN_MS = 1400; // long enough to see the logo assemble
 const MAX_MS = 2800; // never trap the visitor on a slow or broken asset
-const LIFT_MS = 1150; // cap toss plus the sheet lifting away
+const LIFT_MS = 1000; // the logo rising out plus the blue dissolving
 
 // Survives client-side navigation (e.g. pressing Back to the home page).
 let shownThisVisit = false;
@@ -20,9 +19,6 @@ const HIDE_IF_SEEN = `(function(){function h(){var s=document.createElement('sty
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const LETTERS = ['g', 'dash', 't', 'e', 'c'];
-// The sheet's torn lower edge sits just below the viewport until it lifts. Seeded, so server and client match.
-const SHEET_EDGE = tornEdge([[-2, -2], [102, -2], [102, 95], [-2, 95]], 29, 0.5);
-const PAPER_EDGE = tornEdge([[-2, -2], [102, -2], [102, 97], [-2, 97]], 37, 0.6);
 // The layers in public/loader are the real logo, cut apart (they stack back into it exactly).
 const part = (name: string) => `/loader/${name}.webp`;
 
@@ -37,8 +33,8 @@ function waitFor(el: HTMLImageElement) {
 
 /**
  * The logo builds itself: letters rise, the cap lands, and the red ring sweeps round as the page
- * really loads. When it's ready the cap is tossed and the sheet lifts away like torn paper, onto the
- * page. Reduced motion and repeat visits skip it altogether.
+ * really loads. When it's ready the logo springs up out of frame and the blue dissolves while the
+ * page glides forward from behind. Reduced motion and repeat visits skip it altogether.
  */
 export function Loader() {
   const [isDone, setIsDone] = useState(() => shownThisVisit);
@@ -139,12 +135,11 @@ export function Loader() {
     <>
       <script dangerouslySetInnerHTML={{ __html: HIDE_IF_SEEN }} />
       <aside id="site-loader" aria-label="Loading G-TEC Education" aria-busy={!isLeaving} className={`fixed inset-0 z-[9999] overflow-hidden select-none ${isLeaving ? 'pointer-events-none' : ''}`}>
-        <motion.div initial={false} animate={{ y: isLeaving ? '-112%' : '0%' }} transition={{ duration: 0.85, delay: isLeaving ? 0.2 : 0, ease: [0.76, 0, 0.24, 1] }} className="absolute inset-x-0 top-0 h-[112svh] will-change-transform">
-          <div aria-hidden className="absolute inset-0 bg-white" style={{ clipPath: PAPER_EDGE }} />
-          <div className="absolute inset-0 bg-blue" style={{ clipPath: SHEET_EDGE }} />
-
-          <div className="absolute inset-x-0 top-0 flex h-svh items-center justify-center px-6">
-            <div ref={stage} className="relative aspect-[2828/1725] w-[min(78vw,640px)]">
+        {/* No curtain: the blue simply dissolves once the logo is on its way up, and the hero glides in from behind. */}
+        <motion.div initial={false} animate={{ opacity: isLeaving ? 0 : 1 }} transition={{ duration: 0.6, delay: isLeaving ? 0.3 : 0, ease: 'easeOut' }} className="absolute inset-0 bg-blue">
+          <div className="absolute inset-0 flex items-center justify-center px-6">
+            {/* .loader-logo-out (globals.css): a small dip, then the logo shoots up and out of frame. */}
+            <div ref={stage} className={`relative aspect-[2828/1725] w-[min(78vw,640px)] ${isLeaving ? 'loader-logo-out' : ''}`}>
               <motion.img src={part('ring')} alt="" fetchPriority="high" style={{ maskImage: mask, WebkitMaskImage: mask }} className="absolute inset-0 size-full" />
               {LETTERS.map((name, i) => (
                 <motion.img
@@ -167,14 +162,14 @@ export function Loader() {
                 transition={{ duration: 0.7, delay: 0.5, ease: EASE }}
                 className="absolute inset-0 size-full"
               />
-              {/* The cap drops on, settles, and on the way out is tossed clean off the top. */}
+              {/* The cap drops on and settles; it leaves with the rest of the logo. */}
               <motion.img
                 src={part('cap')}
                 alt=""
                 fetchPriority="high"
                 initial={{ opacity: 0, y: '-70%', rotate: -16 }}
-                animate={isLeaving ? { opacity: 1, y: '-260%', rotate: 340, scale: 1.12 } : ready ? { opacity: 1, y: '0%', rotate: 0, scale: 1 } : undefined}
-                transition={isLeaving ? { duration: 0.8, ease: [0.3, 0, 0.7, 1] } : { type: 'spring', stiffness: 260, damping: 15, delay: 0.3 }}
+                animate={ready || isLeaving ? { opacity: 1, y: '0%', rotate: 0 } : undefined}
+                transition={{ type: 'spring', stiffness: 260, damping: 15, delay: 0.3 }}
                 style={{ originX: 0.285, originY: 0.19 }}
                 className="absolute inset-0 size-full"
               />

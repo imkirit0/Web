@@ -72,6 +72,15 @@ body {
   0%, 100% { box-shadow: 0 0 0 0 rgba(255, 1, 0, 0.45); }
   70% { box-shadow: 0 0 0 10px rgba(255, 1, 0, 0); }
 }
+/* Loader exit: the logo dips, then springs up out of frame (each keyframe's timing function covers the segment after it). */
+@keyframes logo-out {
+  0% { transform: none; opacity: 1; animation-timing-function: ease-out; }
+  20% { transform: translateY(14px) scale(1.03); opacity: 1; animation-timing-function: cubic-bezier(.5, 0, .6, .6); }
+  100% { transform: translateY(-80vh) scale(.6); opacity: 0; }
+}
+/* Must finish before Loader's LIFT_MS unmounts it. */
+.loader-logo-out { animation: logo-out .75s both; }
+
 /* Payment pages: the floating "secured" badge and the sweep across the Pay button. */
 @keyframes float-y {
   50% { transform: translateY(-8px); }

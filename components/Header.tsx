@@ -120,7 +120,7 @@ export function Header() {
 
           <div className="hidden flex-none items-center gap-2 justify-self-end xl:flex">
             {/* Below 2xl the row is tight: Pay now drops to its icon, Enquire now to one word. */}
-            <Link href={CONTACT.pay} title="Pay now" className="flex h-11 items-center gap-2 rounded-full border border-white/50 px-3 text-base font-medium whitespace-nowrap transition-colors hover:bg-white hover:text-blue active:scale-[.97] 2xl:px-5">
+            <Link href={CONTACT.pay} title="Pay now" className="flex h-11 items-center gap-2 rounded-full bg-red-dark px-3 text-base font-medium whitespace-nowrap text-white transition-colors hover:bg-[#c40000] active:scale-[.97] 2xl:px-5">
               <CreditCard aria-hidden className="size-5 2xl:hidden" />
               <span className="max-2xl:sr-only">Pay now</span>
             </Link>

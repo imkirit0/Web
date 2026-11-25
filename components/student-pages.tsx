@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ExternalLink, Lock, Mail, Phone } from "lucide-react";
+import { ArrowRight, Building2, CreditCard, ExternalLink, Globe, Lock, Mail, Phone, ShieldCheck } from "lucide-react";
 import { wrap } from "@/components/courses";
 import { CONTACT } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -75,28 +75,37 @@ export function ContactChips() {
 }
 
 const PAY = [
-  { label: "Online Payment", href: "/onlinepayment" },
-  { label: "Payment for Centres", href: "/paymentforcentres" },
-  { label: "International Payment", href: "/onlineinternationalpayment" },
+  { label: "Online Payment", href: "/onlinepayment", icon: CreditCard },
+  { label: "Payment for Centres", href: "/paymentforcentres", icon: Building2 },
+  { label: "International Payment", href: "/onlineinternationalpayment", icon: Globe },
 ];
 
+/** Glass segmented control between the three payment pages, with trust notes under it. */
 export function PaymentTabs({ current }: { current: string }) {
   return (
-    <nav aria-label="Payment type" className="mt-10 flex flex-wrap gap-2">
-      {PAY.map((p) => (
-        <Link
-          key={p.href}
-          href={p.href}
-          aria-current={p.href === current ? "page" : undefined}
-          className={cn(
-            "rounded-full px-5 py-2.5 text-sm font-semibold transition",
-            p.href === current ? "bg-white text-navy" : "border border-white/20 bg-white/5 text-white/80 hover:bg-white/12",
-          )}
-        >
-          {p.label}
-        </Link>
-      ))}
-    </nav>
+    <div data-reveal="0.3" className="mt-10 grid gap-5">
+      <nav aria-label="Payment type" className="flex w-fit max-w-full flex-wrap gap-1 rounded-[22px] border border-white/12 bg-white/[.06] p-1.5 backdrop-blur-md">
+        {PAY.map(({ label, href, icon: Icon }) => (
+          <Link
+            key={href}
+            href={href}
+            aria-current={href === current ? "page" : undefined}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-semibold transition",
+              href === current ? "bg-white text-navy shadow-[0_6px_20px_rgba(0,0,0,.25)]" : "text-white/70 hover:bg-white/10 hover:text-white",
+            )}
+          >
+            <Icon className={cn("size-4", href === current ? "text-red-dark" : "opacity-70")} />
+            {label}
+          </Link>
+        ))}
+      </nav>
+      <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] font-medium text-white/60">
+        {["Secured by ICICI Bank", "Encrypted checkout", "Instant payment ID"].map((t) => (
+          <li key={t} className="flex items-center gap-2"><ShieldCheck className="size-4 text-emerald-400" />{t}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

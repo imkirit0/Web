@@ -72,6 +72,16 @@ body {
   0%, 100% { box-shadow: 0 0 0 0 rgba(255, 1, 0, 0.45); }
   70% { box-shadow: 0 0 0 10px rgba(255, 1, 0, 0); }
 }
+/* Payment pages: the floating "secured" badge and the sweep across the Pay button. */
+@keyframes float-y {
+  50% { transform: translateY(-8px); }
+}
+.pay-float { animation: float-y 4.5s ease-in-out infinite; }
+@keyframes shimmer {
+  0% { transform: translateX(-120%) skewX(-20deg); }
+  55%, 100% { transform: translateX(360%) skewX(-20deg); }
+}
+.pay-shimmer { animation: shimmer 3.2s ease-in-out infinite; }
 @keyframes pop {
   from { opacity: 0; transform: translateY(24px) scale(.96); }
 }
@@ -249,7 +259,7 @@ html:not(.motion) [data-mo] {
 [data-spot]:hover::before { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee, .hero-in, .hero-fade, .hero-tear, .hero-brush, .hero-chip, .hero-dot, .hero-drift, .hero-fall, .animate-float { animation: none !important; }
+  .marquee, .hero-in, .hero-fade, .hero-tear, .hero-brush, .hero-chip, .hero-dot, .hero-drift, .hero-fall, .animate-float, .pay-float, .pay-shimmer { animation: none !important; }
   .site-header, .mobile-menu, .mobile-menu[data-open], .menu-row, [data-open] .menu-row { transition: none !important; }
 }
 

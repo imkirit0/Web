@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, ChevronDown, CreditCard, Phone, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronDown, ChevronRight, CreditCard, Phone, X } from "lucide-react";
 import { CONTACT, COURSES_NAV, NAV, type NavItem, type NavLink } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -146,40 +146,77 @@ export function Header() {
         aria-label="Menu"
         inert={!open}
         data-open={open || undefined}
-        className="mobile-menu font-nav fixed inset-0 z-70 flex flex-col overflow-auto bg-white px-6 pt-3 pb-8 text-ink xl:hidden"
+        className="mobile-menu fixed inset-0 z-70 flex flex-col overflow-y-auto overscroll-contain bg-white text-ink xl:hidden"
       >
-          <div className="flex items-center justify-between">
-            <img src="/logo-mark-dark.png" alt="G-TEC Education" className="h-15" />
-            <button ref={closeButton} type="button" onClick={() => setOpen(false)} aria-label="Close menu" className="p-2 transition-transform duration-300 hover:rotate-90">
-              <X className="size-6" />
+          <div className="sticky top-0 z-10 flex items-center justify-between border-b border-ink/[.06] bg-white/90 px-5 py-2 backdrop-blur-md">
+            <img src="/logo-mark-dark.png" alt="G-TEC Education" className="h-13" />
+            <button ref={closeButton} type="button" onClick={() => setOpen(false)} aria-label="Close menu" className="flex size-11 items-center justify-center rounded-full bg-mist transition-transform duration-300 active:scale-90">
+              <X className="size-5" />
             </button>
           </div>
-          <nav aria-label="Mobile" className="mt-6 flex flex-col">
-            {[COURSES_NAV, ...NAV].map((item, i) =>
-              "href" in item ? (
-                <Link key={item.label} href={item.href} style={{ "--i": i } as React.CSSProperties} className="menu-row border-b border-ink/10 py-3.5 text-xl font-medium">{item.label}</Link>
-              ) : (
-                <details key={item.label} style={{ "--i": i } as React.CSSProperties} className="menu-row group border-b border-ink/10" open={item.children.some((c) => isActive(pathname, c.href))}>
-                  <summary className="flex cursor-pointer list-none items-center justify-between py-3.5 text-xl font-medium [&::-webkit-details-marker]:hidden">
-                    {item.label}
-                    <ChevronDown className="size-5 text-blue transition-transform group-open:rotate-180" />
+
+          <nav aria-label="Mobile" className="flex flex-col px-5 pt-3 pb-6">
+            {[COURSES_NAV, ...NAV].map((item, i) => {
+              const row = "flex min-h-15 items-center justify-between gap-3 py-3 font-display text-[21px] font-semibold tracking-[-.01em]";
+              if ("href" in item) {
+                const on = isActive(pathname, item.href);
+                return (
+                  <Link key={item.label} href={item.href} aria-current={on ? "page" : undefined} style={{ "--i": i } as React.CSSProperties} className={cn("menu-row border-b border-ink/[.07]", row, on && "text-blue")}>
+                    <span className="flex items-center gap-3">{on && <span className="h-5 w-1 rounded-full bg-red" />}{item.label}</span>
+                    <ChevronRight className="size-5 text-ink/25" />
+                  </Link>
+                );
+              }
+              const on = item.children.some((c) => isActive(pathname, c.href));
+              const isCourses = item === COURSES_NAV;
+              return (
+                <details key={item.label} style={{ "--i": i } as React.CSSProperties} className="menu-row menu-acc group border-b border-ink/[.07]" open={on}>
+                  <summary className={cn(row, "cursor-pointer list-none [&::-webkit-details-marker]:hidden", on && "text-blue")}>
+                    <span className="flex items-center gap-3">
+                      {on && <span className="h-5 w-1 rounded-full bg-red" />}
+                      {item.label}
+                      {isCourses && <span className="rounded-full bg-ice px-2 py-0.5 font-sans text-xs font-bold text-blue">{item.children.length - 1}</span>}
+                    </span>
+                    <span className="flex size-9 items-center justify-center rounded-full bg-mist text-blue transition-[rotate,background-color] duration-300 group-open:rotate-180 group-open:bg-blue group-open:text-white">
+                      <ChevronDown className="size-4" />
+                    </span>
                   </summary>
-                  <div className="grid pb-3">
-                    {item.children.map((c) => <MenuLink key={c.href} link={c} className="py-2 pl-3 text-[15px] font-medium text-ink" />)}
-                  </div>
+                  {isCourses ? (
+                    // Courses as a two-column tile grid: half the height of a list, easier to scan.
+                    <div className="grid grid-cols-2 gap-2 pb-4">
+                      {item.children.map((c, j) => (
+                        <MenuLink
+                          key={c.href}
+                          link={c}
+                          className={cn(
+                            "rounded-2xl bg-mist p-3.5 text-[15px] leading-snug font-bold text-ink transition active:scale-[.97]",
+                            j === 0 && "col-span-2 bg-blue text-white [&_span:last-child]:text-white/70",
+                            isActive(pathname, c.href) && j > 0 && "bg-ice ring-2 ring-blue",
+                          )}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mb-4 ml-1 grid border-l-2 border-ice pl-3">
+                      {item.children.map((c) => (
+                        <MenuLink key={c.href} link={c} className={cn("rounded-xl px-3 py-2.5 text-[16px] font-semibold text-ink transition active:bg-mist", isActive(pathname, c.href) && "bg-ice text-blue")} />
+                      ))}
+                    </div>
+                  )}
                 </details>
-              ),
-            )}
+              );
+            })}
           </nav>
-          <div className="mt-auto grid grid-cols-2 gap-3 pt-10">
-            <a href="#enquire" onClick={() => setOpen(false)} className="col-span-2 rounded-full bg-blue p-4 text-center font-bold text-white">
-              Enquire now
+
+          <div className="sticky bottom-0 mt-auto grid grid-cols-2 gap-2.5 border-t border-ink/[.06] bg-white/95 px-5 pt-4 pb-[max(16px,env(safe-area-inset-bottom))] shadow-[0_-12px_30px_rgba(11,26,51,.06)] backdrop-blur-md">
+            <a href="#enquire" onClick={() => setOpen(false)} className="col-span-2 flex items-center justify-center gap-2 rounded-full bg-blue p-4 font-bold text-white active:scale-[.98]">
+              Enquire now <ArrowRight className="size-4" />
             </a>
-            <Link href={CONTACT.pay} className="rounded-full border border-ink/20 p-4 text-center text-sm font-semibold">
-              Pay now
+            <Link href={CONTACT.pay} className="flex items-center justify-center gap-2 rounded-full bg-red-dark p-3.5 text-sm font-bold text-white active:scale-[.98]">
+              <CreditCard className="size-4" /> Pay now
             </Link>
-            <a href={CONTACT.whatsapp.href} className="inline-flex items-center justify-center gap-2 rounded-full border border-ink/20 p-4 text-sm font-semibold">
-              <Phone className="size-4" /> Contact
+            <a href={CONTACT.whatsapp.href} className="flex items-center justify-center gap-2 rounded-full bg-mist p-3.5 text-sm font-bold text-ink active:scale-[.98]">
+              <Phone className="size-4 text-blue" /> Contact
             </a>
           </div>
       </div>

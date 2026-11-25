@@ -228,6 +228,14 @@ html:not(.loader-seen) body:has(#site-loader[aria-busy="true"]) :is(.hero-in, .h
   translate: 0 0;
   transition: opacity .5s var(--ease-out-expo) calc(.08s + var(--i) * 45ms), translate .5s var(--ease-out-expo) calc(.08s + var(--i) * 45ms);
 }
+/* Mobile menu sections open and close smoothly where ::details-content is supported; elsewhere they just snap. */
+.mobile-menu { interpolate-size: allow-keywords; }
+.menu-acc::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition: block-size .4s var(--ease-out-expo), content-visibility .4s allow-discrete;
+}
+.menu-acc[open]::details-content { block-size: auto; }
 
 /* Framer Motion starts these hidden inline. Without `.motion` (no JS, or reduced motion) they just show. */
 html:not(.motion) [data-mo] {
@@ -260,7 +268,7 @@ html:not(.motion) [data-mo] {
 
 @media (prefers-reduced-motion: reduce) {
   .marquee, .hero-in, .hero-fade, .hero-tear, .hero-brush, .hero-chip, .hero-dot, .hero-drift, .hero-fall, .animate-float, .pay-float, .pay-shimmer { animation: none !important; }
-  .site-header, .mobile-menu, .mobile-menu[data-open], .menu-row, [data-open] .menu-row { transition: none !important; }
+  .site-header, .mobile-menu, .mobile-menu[data-open], .menu-row, [data-open] .menu-row, .menu-acc::details-content { transition: none !important; }
 }
 
 /* Rich text scraped from the live site (course outlines, centre pages, blog posts). */

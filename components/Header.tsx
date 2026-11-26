@@ -27,7 +27,7 @@ const topLink = "relative flex h-10 items-center gap-1 rounded-full px-2.5 text-
 const underline = "after:absolute after:inset-x-2.5 after:bottom-1 after:h-0.5 after:origin-left after:scale-x-0 after:bg-red after:transition-transform after:duration-300 after:ease-out-expo hover:after:scale-x-100 xl:after:inset-x-1.5 2xl:after:inset-x-2.5";
 // Mouse users open on hover only, so a clicked trigger can't hold its menu open over the next one. Keyboard users open on focus. Closing turns transparent at once, so two menus never overlap; visibility lags slightly so Tab can still land on a link inside.
 const panel = "invisible absolute top-full left-0 z-10 pt-3 translate-y-1.5 opacity-0 [transition:visibility_0s_linear_60ms] group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-hover:[transition:opacity_200ms,translate_260ms_var(--ease-out-expo)] group-has-[:focus-visible]:visible group-has-[:focus-visible]:translate-y-0 group-has-[:focus-visible]:opacity-100";
-// A spiral notebook page that flips down from the nav (styles: .nav-book in globals.css).
+// Dark glass HUD panel that wipes down from the nav (styles: .nav-book in globals.css).
 const panelInner = "nav-book w-80";
 const panelLink = "block py-2.5 pr-4 pl-15 text-base font-medium text-ink";
 

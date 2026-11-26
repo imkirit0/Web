@@ -307,48 +307,100 @@ html:not(.motion) [data-mo] {
 .shadow-card { box-shadow: 0 1px 2px rgb(11 26 51 / 0.04), 0 12px 32px -12px rgb(11 26 51 / 0.12); }
 
 
-/* Desktop nav dropdowns: a spiral-bound notebook page. It flips down from the nav, each link is a ruled line
-   numbered in the red margin, and hovering swipes a highlighter across the label. */
+/* Desktop nav dropdowns: a dark glass HUD panel. Gradient hairline border, faint grid, a scan glow along the top,
+   mono indices, and a lit row with a cyan rail on hover. */
 .nav-book {
   position: relative;
   counter-reset: page;
-  padding: 30px 0 8px;
-  border-radius: 6px 6px 12px 12px;
-  background: linear-gradient(90deg, transparent 46px, rgb(255 1 0 / .3) 46px 47px, transparent 47px) #fff;
-  box-shadow: 0 3px 0 -1px #eef3fa, 0 6px 0 -2px #dde6f2, 0 22px 48px rgb(11 26 51 / .22);
+  padding: 10px 8px;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgb(8 18 40 / .92), rgb(8 18 40 / .92)) padding-box,
+    linear-gradient(135deg, rgb(56 189 248 / .7), rgb(99 102 241 / .25) 40%, rgb(255 255 255 / .08) 70%, rgb(56 189 248 / .45)) border-box;
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+  box-shadow: 0 0 0 1px rgb(56 189 248 / .06), 0 24px 60px -12px rgb(2 8 23 / .7), 0 0 40px -10px rgb(56 189 248 / .35);
+  overflow: hidden;
   transform-origin: 50% 0;
-  transform: perspective(900px) rotateX(-70deg);
-  transition: transform 460ms var(--ease-out-expo);
+  transform: scale(.97);
+  clip-path: inset(0 0 100% 0 round 16px);
+  transition: transform 380ms var(--ease-out-expo), clip-path 420ms var(--ease-out-expo);
 }
-.group:hover .nav-book, .group:has(:focus-visible) .nav-book { transform: perspective(900px) rotateX(0deg); }
-/* Coils over the top edge, each dropping into a punched hole. */
+.group:hover .nav-book, .group:has(:focus-visible) .nav-book { transform: none; clip-path: inset(0 0 0 0 round 16px); }
+/* Grid texture plus the scan glow on the top edge. */
 .nav-book::before {
   content: "";
   position: absolute;
-  inset: -9px 16px auto;
-  height: 30px;
+  inset: 0;
   background:
-    radial-gradient(circle at 11px 21px, rgb(11 26 51 / .55) 0 3.5px, #dde6f2 4px 5px, transparent 5.5px) 0 0 / 22px 30px repeat-x,
-    linear-gradient(90deg, transparent 8px, #8d9bb0 8px 10px, #e9eef5 10px 12px, #8d9bb0 12px 14px, transparent 14px) 0 0 / 22px 21px repeat-x;
+    radial-gradient(60% 40px at 50% 0, rgb(56 189 248 / .35), transparent),
+    linear-gradient(rgb(148 197 255 / .05) 1px, transparent 1px) 0 0 / 18px 18px,
+    linear-gradient(90deg, rgb(148 197 255 / .05) 1px, transparent 1px) 0 0 / 18px 18px;
+  mask: linear-gradient(#000, transparent 85%);
   pointer-events: none;
 }
-.nav-book a { position: relative; border-bottom: 1px solid rgb(142 197 255 / .45); }
-.nav-book a:last-child { border-bottom: 0; }
+.nav-book a {
+  position: relative;
+  border-radius: 10px;
+  padding-left: 52px;
+  color: #e6eefc;
+  transition: background-color 200ms, box-shadow 200ms;
+}
+.nav-book a .nav-label ~ span { color: rgb(170 190 220 / .75); }
 .nav-book a::before {
   counter-increment: page;
   content: counter(page, decimal-leading-zero);
   position: absolute;
-  left: 16px;
-  top: 14px;
-  font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  letter-spacing: .04em;
-  color: rgb(255 1 0 / .65);
+  left: 14px;
+  top: 13px;
+  padding: 3px 5px;
+  border: 1px solid rgb(56 189 248 / .3);
+  border-radius: 5px;
+  font: 600 10px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: .06em;
+  color: rgb(125 211 252 / .85);
+  transition: color 200ms, border-color 200ms, box-shadow 200ms;
 }
-.nav-book .nav-label {
-  background: linear-gradient(transparent 55%, rgb(142 197 255 / .7) 55% 95%, transparent 95%) no-repeat 0 0 / 0 100%;
-  transition: background-size 320ms var(--ease-out-expo);
+/* Cyan rail that grows in on the lit row. */
+.nav-book a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 25%;
+  bottom: 25%;
+  width: 2px;
+  border-radius: 2px;
+  background: #38bdf8;
+  box-shadow: 0 0 10px #38bdf8;
+  transform: scaleY(0);
+  transition: transform 260ms var(--ease-out-expo);
 }
-.nav-book a:hover .nav-label, .nav-book a:focus-visible .nav-label, .nav-book a.is-current .nav-label { background-size: 100% 100%; }
+.nav-book a:hover, .nav-book a:focus-visible, .nav-book a.is-current {
+  background: linear-gradient(90deg, rgb(56 189 248 / .14), rgb(56 189 248 / .03));
+  box-shadow: inset 0 0 0 1px rgb(56 189 248 / .15);
+}
+.nav-book a:hover::before, .nav-book a:focus-visible::before, .nav-book a.is-current::before {
+  color: #fff;
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgb(56 189 248 / .5);
+}
+.nav-book a:hover::after, .nav-book a:focus-visible::after, .nav-book a.is-current::after { transform: scaleY(1); }
+/* Arrow that slides in at the row's right edge (internal links only; external ones already show ↗). */
+.nav-book a[href^="/"] .nav-label::after {
+  content: "→";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  font-size: 16px;
+  color: #38bdf8;
+  text-shadow: 0 0 8px rgb(56 189 248 / .7);
+  opacity: 0;
+  transform: translate(-10px, -50%);
+  transition: opacity 200ms, transform 300ms var(--ease-out-expo);
+}
+.nav-book a[href^="/"]:hover .nav-label::after, .nav-book a[href^="/"]:focus-visible .nav-label::after { opacity: 1; transform: translate(0, -50%); }
+.nav-book a:focus-visible { outline: 2px solid #38bdf8; outline-offset: -2px; }
 @media (prefers-reduced-motion: reduce) {
-  .nav-book { transform: none; transition: none; }
+  .nav-book { transform: none; clip-path: none; transition: none; }
 }

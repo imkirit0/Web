@@ -30,6 +30,8 @@ const panel = "invisible absolute top-full left-0 z-10 pt-3 translate-y-1.5 opac
 // Dark glass HUD panel that wipes down from the nav (styles: .nav-book in globals.css).
 const panelInner = "nav-book w-80";
 const panelLink = "block py-2.5 pr-4 pl-15 text-base font-medium text-ink";
+/** Glowing cyan bar marking the current section in the mobile menu. */
+const activeBar = "h-5 w-1 rounded-full bg-sky-400 shadow-[0_0_10px_rgb(56_189_248)]";
 
 function Dropdown({ item, pathname, trigger }: { item: { label: string; children: NavLink[] }; pathname: string; trigger: string }) {
   return (
@@ -40,7 +42,7 @@ function Dropdown({ item, pathname, trigger }: { item: { label: string; children
       </button>
       <div className={panel}>
         <div className={panelInner}>
-          <div className="max-h-[calc(100svh-8rem)] overflow-y-auto">
+          <div className="nav-rows max-h-[calc(100svh-8rem)] overflow-y-auto">
             {item.children.map((c) => <MenuLink key={c.href} link={c} className={cn(panelLink, isActive(pathname, c.href) && "is-current")} />)}
           </div>
         </div>
@@ -146,11 +148,11 @@ export function Header() {
         aria-label="Menu"
         inert={!open}
         data-open={open || undefined}
-        className="mobile-menu fixed inset-0 z-70 flex flex-col overflow-y-auto overscroll-contain bg-white text-ink xl:hidden"
+        className="mobile-menu fixed inset-0 z-70 flex flex-col overflow-y-auto overscroll-contain text-[#e6eefc] xl:hidden"
       >
-          <div className="sticky top-0 z-10 flex items-center justify-between border-b border-ink/[.06] bg-white/90 px-5 py-2 backdrop-blur-md">
-            <img src="/logo-mark-dark.png" alt="G-TEC Education" className="h-13" />
-            <button ref={closeButton} type="button" onClick={() => setOpen(false)} aria-label="Close menu" className="flex size-11 items-center justify-center rounded-full bg-mist transition-transform duration-300 active:scale-90">
+          <div className="sticky top-0 z-10 flex items-center justify-between border-b border-sky-400/15 bg-hud/80 px-5 py-2 backdrop-blur-md">
+            <img src="/logo-mark.png" alt="G-TEC Education" className="h-13" />
+            <button ref={closeButton} type="button" onClick={() => setOpen(false)} aria-label="Close menu" className="flex size-11 items-center justify-center rounded-full bg-white/5 text-sky-300 ring-1 ring-sky-400/30 transition-transform duration-300 active:scale-90">
               <X className="size-5" />
             </button>
           </div>
@@ -161,23 +163,23 @@ export function Header() {
               if ("href" in item) {
                 const on = isActive(pathname, item.href);
                 return (
-                  <Link key={item.label} href={item.href} aria-current={on ? "page" : undefined} style={{ "--i": i } as React.CSSProperties} className={cn("menu-row border-b border-ink/[.07]", row, on && "text-blue")}>
-                    <span className="flex items-center gap-3">{on && <span className="h-5 w-1 rounded-full bg-red" />}{item.label}</span>
-                    <ChevronRight className="size-5 text-ink/25" />
+                  <Link key={item.label} href={item.href} aria-current={on ? "page" : undefined} style={{ "--i": i } as React.CSSProperties} className={cn("menu-row border-b border-white/[.07]", row, on && "text-sky-300")}>
+                    <span className="flex items-center gap-3">{on && <span className={activeBar} />}{item.label}</span>
+                    <ChevronRight className="size-5 text-sky-300/40" />
                   </Link>
                 );
               }
               const on = item.children.some((c) => isActive(pathname, c.href));
               const isCourses = item === COURSES_NAV;
               return (
-                <details key={item.label} style={{ "--i": i } as React.CSSProperties} className="menu-row menu-acc group border-b border-ink/[.07]" open={on}>
-                  <summary className={cn(row, "cursor-pointer list-none [&::-webkit-details-marker]:hidden", on && "text-blue")}>
+                <details key={item.label} style={{ "--i": i } as React.CSSProperties} className="menu-row menu-acc group border-b border-white/[.07]" open={on}>
+                  <summary className={cn(row, "cursor-pointer list-none [&::-webkit-details-marker]:hidden", on && "text-sky-300")}>
                     <span className="flex items-center gap-3">
-                      {on && <span className="h-5 w-1 rounded-full bg-red" />}
+                      {on && <span className={activeBar} />}
                       {item.label}
-                      {isCourses && <span className="rounded-full bg-ice px-2 py-0.5 font-sans text-xs font-bold text-blue">{item.children.length - 1}</span>}
+                      {isCourses && <span className="rounded-md px-1.5 py-0.5 font-mono text-xs font-semibold text-sky-300 ring-1 ring-sky-400/40">{item.children.length - 1}</span>}
                     </span>
-                    <span className="flex size-9 items-center justify-center rounded-full bg-mist text-blue transition-[rotate,background-color] duration-300 group-open:rotate-180 group-open:bg-blue group-open:text-white">
+                    <span className="flex size-9 items-center justify-center rounded-full bg-white/5 text-sky-300 ring-1 ring-sky-400/25 transition-[rotate,background-color,box-shadow] duration-300 group-open:rotate-180 group-open:bg-sky-400 group-open:text-hud group-open:shadow-[0_0_16px_rgb(56_189_248/.6)]">
                       <ChevronDown className="size-4" />
                     </span>
                   </summary>
@@ -189,17 +191,17 @@ export function Header() {
                           key={c.href}
                           link={c}
                           className={cn(
-                            "rounded-2xl bg-mist p-3.5 text-[15px] leading-snug font-bold text-ink transition active:scale-[.97]",
-                            j === 0 && "col-span-2 bg-blue text-white [&_span:last-child]:text-white/70",
-                            isActive(pathname, c.href) && j > 0 && "bg-ice ring-2 ring-blue",
+                            "rounded-2xl bg-white/[.04] p-3.5 text-[15px] leading-snug font-bold text-[#e6eefc] ring-1 ring-white/10 transition active:scale-[.97] [&_span:last-child]:text-[#aabedc]/75",
+                            j === 0 && "col-span-2 bg-linear-to-r from-sky-500/30 to-indigo-500/20 ring-sky-400/50",
+                            isActive(pathname, c.href) && j > 0 && "bg-sky-400/10 ring-2 ring-sky-400",
                           )}
                         />
                       ))}
                     </div>
                   ) : (
-                    <div className="mb-4 ml-1 grid border-l-2 border-ice pl-3">
+                    <div className="nav-rows mb-4 grid">
                       {item.children.map((c) => (
-                        <MenuLink key={c.href} link={c} className={cn("rounded-xl px-3 py-2.5 text-[16px] font-semibold text-ink transition active:bg-mist", isActive(pathname, c.href) && "bg-ice text-blue")} />
+                        <MenuLink key={c.href} link={c} className={cn("block py-2.5 pr-12 text-[16px] font-semibold", isActive(pathname, c.href) && "is-current")} />
                       ))}
                     </div>
                   )}
@@ -208,15 +210,15 @@ export function Header() {
             })}
           </nav>
 
-          <div className="sticky bottom-0 mt-auto grid grid-cols-2 gap-2.5 border-t border-ink/[.06] bg-white/95 px-5 pt-4 pb-[max(16px,env(safe-area-inset-bottom))] shadow-[0_-12px_30px_rgba(11,26,51,.06)] backdrop-blur-md">
-            <a href="#enquire" onClick={() => setOpen(false)} className="col-span-2 flex items-center justify-center gap-2 rounded-full bg-blue p-4 font-bold text-white active:scale-[.98]">
+          <div className="sticky bottom-0 mt-auto grid grid-cols-2 gap-2.5 border-t border-sky-400/15 bg-hud/90 px-5 pt-4 pb-[max(16px,env(safe-area-inset-bottom))] backdrop-blur-md">
+            <a href="#enquire" onClick={() => setOpen(false)} className="col-span-2 flex items-center justify-center gap-2 rounded-full bg-sky-400 p-4 font-bold text-hud shadow-[0_0_24px_rgb(56_189_248/.45)] active:scale-[.98]">
               Enquire now <ArrowRight className="size-4" />
             </a>
             <Link href={CONTACT.pay} className="flex items-center justify-center gap-2 rounded-full bg-red-dark p-3.5 text-sm font-bold text-white active:scale-[.98]">
               <CreditCard className="size-4" /> Pay now
             </Link>
-            <a href={CONTACT.whatsapp.href} className="flex items-center justify-center gap-2 rounded-full bg-mist p-3.5 text-sm font-bold text-ink active:scale-[.98]">
-              <Phone className="size-4 text-blue" /> Contact
+            <a href={CONTACT.whatsapp.href} className="flex items-center justify-center gap-2 rounded-full bg-white/5 p-3.5 text-sm font-bold text-white ring-1 ring-white/15 active:scale-[.98]">
+              <Phone className="size-4 text-sky-300" /> Contact
             </a>
           </div>
       </div>

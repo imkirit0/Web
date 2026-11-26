@@ -16,6 +16,7 @@
   --color-mist: #f5f7fb;
   --color-ice: #e6eef8;
   --color-sky: #8ec5ff;
+  --color-hud: #081228;
   --color-muted: #0b1a33;
   --font-display: var(--font-display-face), ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
@@ -222,6 +223,15 @@ html:not(.loader-seen) body:has(#site-loader[aria-busy="true"]) :is(.hero-in, .h
   translate: 100% 0;
   transition: translate .45s var(--ease-out-expo), visibility 0s linear .45s;
 }
+/* Same dark HUD look as the desktop dropdowns: scan glow at the top, grid fading out below. */
+.mobile-menu {
+  background:
+    radial-gradient(80% 160px at 50% 0, rgb(56 189 248 / .22), transparent),
+    linear-gradient(rgb(148 197 255 / .05) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(90deg, rgb(148 197 255 / .05) 1px, transparent 1px) 0 0 / 22px 22px,
+    var(--color-hud);
+  background-attachment: fixed;
+}
 .mobile-menu[data-open] {
   visibility: visible;
   translate: 0 0;
@@ -309,9 +319,10 @@ html:not(.motion) [data-mo] {
 
 /* Desktop nav dropdowns: a dark glass HUD panel. Gradient hairline border, faint grid, a scan glow along the top,
    mono indices, and a lit row with a cyan rail on hover. */
+/* .nav-rows styles the link list; desktop dropdowns and mobile menu sections share it. */
+.nav-rows { counter-reset: page; }
 .nav-book {
   position: relative;
-  counter-reset: page;
   padding: 10px 8px;
   border-radius: 16px;
   border: 1px solid transparent;
@@ -340,15 +351,15 @@ html:not(.motion) [data-mo] {
   mask: linear-gradient(#000, transparent 85%);
   pointer-events: none;
 }
-.nav-book a {
+.nav-rows a {
   position: relative;
   border-radius: 10px;
   padding-left: 52px;
   color: #e6eefc;
   transition: background-color 200ms, box-shadow 200ms;
 }
-.nav-book a .nav-label ~ span { color: rgb(170 190 220 / .75); }
-.nav-book a::before {
+.nav-rows a .nav-label ~ span { color: rgb(170 190 220 / .75); }
+.nav-rows a::before {
   counter-increment: page;
   content: counter(page, decimal-leading-zero);
   position: absolute;
@@ -363,7 +374,7 @@ html:not(.motion) [data-mo] {
   transition: color 200ms, border-color 200ms, box-shadow 200ms;
 }
 /* Cyan rail that grows in on the lit row. */
-.nav-book a::after {
+.nav-rows a::after {
   content: "";
   position: absolute;
   left: 0;
@@ -376,18 +387,18 @@ html:not(.motion) [data-mo] {
   transform: scaleY(0);
   transition: transform 260ms var(--ease-out-expo);
 }
-.nav-book a:hover, .nav-book a:focus-visible, .nav-book a.is-current {
+.nav-rows a:hover, .nav-rows a:focus-visible, .nav-rows a.is-current {
   background: linear-gradient(90deg, rgb(56 189 248 / .14), rgb(56 189 248 / .03));
   box-shadow: inset 0 0 0 1px rgb(56 189 248 / .15);
 }
-.nav-book a:hover::before, .nav-book a:focus-visible::before, .nav-book a.is-current::before {
+.nav-rows a:hover::before, .nav-rows a:focus-visible::before, .nav-rows a.is-current::before {
   color: #fff;
   border-color: #38bdf8;
   box-shadow: 0 0 10px rgb(56 189 248 / .5);
 }
-.nav-book a:hover::after, .nav-book a:focus-visible::after, .nav-book a.is-current::after { transform: scaleY(1); }
+.nav-rows a:hover::after, .nav-rows a:focus-visible::after, .nav-rows a.is-current::after { transform: scaleY(1); }
 /* Arrow that slides in at the row's right edge (internal links only; external ones already show ↗). */
-.nav-book a[href^="/"] .nav-label::after {
+.nav-rows a[href^="/"] .nav-label::after {
   content: "→";
   position: absolute;
   right: 16px;
@@ -399,8 +410,8 @@ html:not(.motion) [data-mo] {
   transform: translate(-10px, -50%);
   transition: opacity 200ms, transform 300ms var(--ease-out-expo);
 }
-.nav-book a[href^="/"]:hover .nav-label::after, .nav-book a[href^="/"]:focus-visible .nav-label::after { opacity: 1; transform: translate(0, -50%); }
-.nav-book a:focus-visible { outline: 2px solid #38bdf8; outline-offset: -2px; }
+.nav-rows a[href^="/"]:hover .nav-label::after, .nav-rows a[href^="/"]:focus-visible .nav-label::after { opacity: 1; transform: translate(0, -50%); }
+.nav-rows a:focus-visible { outline: 2px solid #38bdf8; outline-offset: -2px; }
 @media (prefers-reduced-motion: reduce) {
   .nav-book { transform: none; clip-path: none; transition: none; }
 }
